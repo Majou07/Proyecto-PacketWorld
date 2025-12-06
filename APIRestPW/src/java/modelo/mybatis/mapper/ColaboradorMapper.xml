@@ -27,8 +27,87 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         VALUES(#{numeroPersonal},#{nombre},#{apellidoPaterno},#{apellidoMaterno},#{curp},#{correoElectronico},#{contrasena},#{numeroLicencia},
         #{idRol},#{codigoSucursal},#{idUnidadAsignada})
     </insert>
+        
+    <update id ="editar" parameterType ="pojo.Colaborador">
+         UPDATE colaborador
+    SET
+        nombre = #{nombre},
+        apellido_paterno = #{apellidoPaterno},
+        apellido_materno = #{apellidoMaterno},
+        curp = #{curp},
+        correo_electronico = #{correoElectronico},
+        contrasena = #{contrasena},
+        numero_licencia = #{numeroLicencia},
+        codigo_sucursal = #{codigoSucursal},
+        id_unidad_asignada = #{idUnidadAsignada}
+    WHERE id_colaborador = #{idColaborador};
+    </update>
     
-    <update id="guardar-foto" parameterType="pojo.Colaborador">
+    <delete id="eliminar" parameterType="int">
+        DELETE FROM colaborador WHERE id_colaborador =#{idColaborador}
+    </delete>
+    
+    
+     <select id="obtener-por-nombre" parameterType="string" resultType="pojo.Colaborador" >
+       SELECT 
+        c.id_colaborador AS idColaborador,
+        c.nombre AS nombre,
+        c.apellido_paterno AS apellidoPaterno,
+        c.apellido_materno AS apellidoMaterno,
+        c.numero_personal AS numeroPersonal,
+        c.curp AS curp,
+        c.correo_electronico AS correoElectronico,
+        c.id_unidad_asignada AS idUnidadAsignada,
+        c.idrol AS idRol,
+        r.nombre_rol AS rol
+    FROM colaborador c
+    INNER JOIN rol r ON r.idrol = c.idrol
+       WHERE nombre LIKE CONCAT('%', #{filtro}, '%')
+       OR apellido_paterno LIKE CONCAT('%', #{filtro}, '%')
+       OR apellido_materno LIKE CONCAT('%', #{filtro}, '%');
+    </select>
+    
+     <select id="obtener-por-noPersonal" parameterType="string" resultType="pojo.Colaborador" >
+       SELECT 
+        c.id_colaborador AS idColaborador,
+        c.nombre AS nombre,
+        c.apellido_paterno AS apellidoPaterno,
+        c.apellido_materno AS apellidoMaterno,
+        c.numero_personal AS numeroPersonal,
+        c.curp AS curp,
+        c.correo_electronico AS correoElectronico,
+        c.id_unidad_asignada AS idUnidadAsignada,
+        c.idrol AS idRol,
+        r.nombre_rol AS rol
+    FROM colaborador c
+    INNER JOIN rol r ON r.idrol = c.idrol
+        WHERE numero_personal = #{numeroPersonal};
+
+    </select>
+    
+    
+    <select id="obtener-por-rol" parameterType="int" resultType="pojo.Colaborador" >
+       SELECT 
+        c.id_colaborador AS idColaborador,
+        c.nombre AS nombre,
+        c.apellido_paterno AS apellidoPaterno,
+        c.apellido_materno AS apellidoMaterno,
+        c.numero_personal AS numeroPersonal,
+        c.curp AS curp,
+        c.correo_electronico AS correoElectronico,
+        c.id_unidad_asignada AS idUnidadAsignada,
+        c.idrol AS idRol,
+        r.nombre_rol AS rol
+    FROM colaborador c
+    INNER JOIN rol r ON r.idrol = c.idrol
+        WHERE c.idrol = #{idRol};
+
+    </select>
+    
+    
+    
+   
+     <update id="guardar-foto" parameterType="pojo.Colaborador">
         UPDATE colaborador set fotografia = #{fotografia}
         WHERE id_colaborador = #{id_colaborador}
     </update>

@@ -26,7 +26,7 @@ public class Colaborador {
     
    
     private String codigoSucursal;
-    private int idUnidadAsignada; // Puede ser null
+    private Integer idUnidadAsignada; // Puede ser null
     
     
     
@@ -152,11 +152,11 @@ public class Colaborador {
         this.codigoSucursal = codigoSucursal;
     }
 
-    public int getIdUnidadAsignada() {
+    public Integer getIdUnidadAsignada() {
         return idUnidadAsignada;
     }
 
-    public void setIdUnidadAsignada(int idUnidadAsignada) {
+    public void setIdUnidadAsignada(Integer idUnidadAsignada) {
         this.idUnidadAsignada = idUnidadAsignada;
     }
 
