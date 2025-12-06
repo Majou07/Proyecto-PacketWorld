@@ -10,7 +10,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         c.curp, c.correo_electronico, c.contrasena, c.idrol,r.nombre_rol
         FROM Colaborador c
         INNER JOIN rol r ON r.idrol = c.idrol
-        WHERE c.numero_personal = #{numeroPersonal} AND contrasena = #{contrasena};
+        WHERE c.numero_personal = #{numeroPersonal} AND c.contrasena = #{contrasena};
     </select>
     
    

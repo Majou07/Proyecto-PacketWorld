@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="colaborador" >
+    
+    <select id="obtener-todos" resultType="pojo.Colaborador" >
+       SELECT 
+        c.id_colaborador AS idColaborador,
+        c.nombre AS nombre,
+        c.apellido_paterno AS apellidoPaterno,
+        c.apellido_materno AS apellidoMaterno,
+        c.numero_personal AS numeroPersonal,
+        c.curp AS curp,
+        c.correo_electronico AS correoElectronico,
+        c.id_unidad_asignada AS idUnidadAsignada,
+        c.idrol AS idRol,
+        r.nombre_rol AS rol
+    FROM colaborador c
+    INNER JOIN rol r ON r.idrol = c.idrol
+    </select>
+
+    <insert id="registrar" parameterType="pojo.Colaborador">
+        INSERT INTO colaborador (numero_personal,nombre,apellido_paterno,apellido_materno,curp,correo_electronico,contrasena,
+        numero_licencia,idrol,codigo_sucursal,id_unidad_asignada) 
+        VALUES(#{numeroPersonal},#{nombre},#{apellidoPaterno},#{apellidoMaterno},#{curp},#{correoElectronico},#{contrasena},#{numeroLicencia},
+        #{idRol},#{codigoSucursal},#{idUnidadAsignada})
+    </insert>
+    
+    <update id="guardar-foto" parameterType="pojo.Colaborador">
+        UPDATE colaborador set fotografia = #{fotografia}
+        WHERE id_colaborador = #{id_colaborador}
+    </update>
+    
+     <select id = "obtener-foto" parameterType = "int" resultType ="pojo.Colaborador">
+        SELECT id_colaborador, TO_BASE64(fotografia) as fotoBase64 FROM colaborador WHERE id_colaborador = #{id_colaborador}
+    </select>
+    
+   
+
+</mapper>

@@ -18,12 +18,20 @@ public class Colaborador {
     private String curp;
     private String correoElectronico;
     private String contrasena; 
+    private byte[] foto;
     private String fotografia;
     private String numeroLicencia; // Solo para conductores
     private int idRol;
     private String rol;
+    
+   
+    private String codigoSucursal;
+    private int idUnidadAsignada; // Puede ser null
+    
+    
+    
 
-    public Colaborador(int idColaborador, String numeroPersonal, String nombre, String apellidoPaterno, String apellidoMaterno, String curp, String correoElectronico, String contrasena, String fotografia, String numeroLicencia, int idRol, String rol) {
+    public Colaborador(int idColaborador, String numeroPersonal, String nombre, String apellidoPaterno, String apellidoMaterno, String curp, String correoElectronico, String contrasena,  String numeroLicencia, int idRol, String rol) {
         this.idColaborador = idColaborador;
         this.numeroPersonal = numeroPersonal;
         this.nombre = nombre;
@@ -32,7 +40,6 @@ public class Colaborador {
         this.curp = curp;
         this.correoElectronico = correoElectronico;
         this.contrasena = contrasena;
-        this.fotografia = fotografia;
         this.numeroLicencia = numeroLicencia;
         this.idRol = idRol;
         this.rol = rol;
@@ -119,6 +126,46 @@ public class Colaborador {
 
     public void setNumeroLicencia(String numeroLicencia) {
         this.numeroLicencia = numeroLicencia;
+    }
+
+    public int getIdRol() {
+        return idRol;
+    }
+
+    public void setIdRol(int idRol) {
+        this.idRol = idRol;
+    }
+
+    public String getRol() {
+        return rol;
+    }
+
+    public void setRol(String rol) {
+        this.rol = rol;
+    }
+
+    public String getCodigoSucursal() {
+        return codigoSucursal;
+    }
+
+    public void setCodigoSucursal(String codigoSucursal) {
+        this.codigoSucursal = codigoSucursal;
+    }
+
+    public int getIdUnidadAsignada() {
+        return idUnidadAsignada;
+    }
+
+    public void setIdUnidadAsignada(int idUnidadAsignada) {
+        this.idUnidadAsignada = idUnidadAsignada;
+    }
+
+    public byte[] getFoto() {
+        return foto;
+    }
+
+    public void setFoto(byte[] foto) {
+        this.foto = foto;
     }
     
     
