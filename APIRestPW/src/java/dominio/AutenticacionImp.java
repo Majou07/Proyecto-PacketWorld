@@ -44,6 +44,8 @@ public class AutenticacionImp {
                 //Flujo alterno 2 error en la ejecucion del Query
                 respuesta.setError(true);
                 respuesta.setMensaje(e.getMessage());
+            }finally{
+                conexionBD.close();
             }
         }else{
             //Flujo alterno 1 sin conexion a base de datos

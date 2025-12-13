@@ -104,8 +104,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     </select>
     
-    
-    
    
      <update id="guardar-foto" parameterType="pojo.Colaborador">
         UPDATE colaborador set fotografia = #{fotografia}

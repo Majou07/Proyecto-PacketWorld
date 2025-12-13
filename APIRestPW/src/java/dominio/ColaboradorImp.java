@@ -51,10 +51,13 @@ public class ColaboradorImp {
                     respuesta.setMensaje("Lo sentimos la informacion no pudo ser guardada, por favor verifique los datos");
                 }
         }catch(Exception e){
+            conexionBD.rollback();
             respuesta.setError(true);
             respuesta.setMensaje(e.getMessage());
             
-        }
+        }finally{
+          conexionBD.close();
+          }
         }else{
             respuesta.setError(true);
             respuesta.setMensaje(Constantes.MSJ_ERROR_BD);
@@ -76,11 +79,15 @@ public class ColaboradorImp {
             }else{
                 respuesta.setMensaje("Lo sentimos:( la información no pudo ser actualizada");
             }
-            conexionBD.close();
         }catch(Exception e){
+            conexionBD.rollback();
+            respuesta.setError(true);
             respuesta.setMensaje(e.getMessage());
+        }finally{
+            conexionBD.close();
         }
     }else{
+        respuesta.setError(true);
         respuesta.setMensaje(Constantes.MSJ_ERROR_BD);
     }
     
@@ -100,12 +107,20 @@ public class ColaboradorImp {
                 respuesta.setError(false);
                 respuesta.setMensaje("La información del colaborador fue eliminada correctamente");
             }else{
+                respuesta.setError(true);
                 respuesta.setMensaje("Lo sentimos :( la información del colaborador no se pudo eliminar");
-                conexionBD.close();
+     
             }
         }catch(Exception e){
-            respuesta.setMensaje(Constantes.MSJ_ERROR_BD);
+            conexionBD.rollback();
+            respuesta.setError(true);
+            respuesta.setMensaje(e.getMessage());
+        }finally{
+            conexionBD.close();
         }
+    }else{
+        respuesta.setError(true);
+        respuesta.setMensaje(Constantes.MSJ_ERROR_BD);
     }
     return respuesta;
 }
@@ -118,6 +133,8 @@ public class ColaboradorImp {
             conexionBD.close();
         } catch (Exception e) {
             e.printStackTrace();
+        }finally{
+            conexionBD.close();
         }
     }
     return colaboradores;
