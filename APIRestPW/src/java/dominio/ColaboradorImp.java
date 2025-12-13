@@ -172,5 +172,46 @@ public class ColaboradorImp {
         return lista;
     }
     
+    public static Respuesta guardarFoto(int idColaborador, byte[] foto){
+    Respuesta respuesta = new Respuesta();
+    respuesta.setError(true);
+    SqlSession conexionBD = MyBatisUtil.getSession();
+    if(conexionBD != null){
+        try{
+            Colaborador colaborador= new Colaborador();
+            colaborador.setIdColaborador(idColaborador);
+            colaborador.setFoto(foto);
+            int filasAfectadas = conexionBD.update("colaborador.guardar-foto", colaborador);
+            conexionBD.commit();
+            if(filasAfectadas>0){
+                respuesta.setError(false);
+                respuesta.setMensaje("La fotografia del colaborador (a) ha sido guardada correctamente");
+            }else{
+                respuesta.setMensaje("Lo sentimos :( la fotografi no ha sido guardada");
+            }
+            conexionBD.close();
+        }catch(Exception e){
+            respuesta.setMensaje(e.getMessage());
+            
+        }
+    }else{
+        respuesta.setMensaje(Constantes.MSJ_ERROR_BD);
+    }
+        return respuesta;
+}
+public static Colaborador obtenerFoto(int idColaborador){
+    Colaborador colaborador = null;
+    SqlSession conexionBD = MyBatisUtil.getSession();
+    if(conexionBD != null){
+        try{
+            colaborador = conexionBD.selectOne("colaborador.obtener-foto",idColaborador);
+            conexionBD.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+    return colaborador;
+}
+    
     
 }
