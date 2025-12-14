@@ -1,6 +1,7 @@
 package clienteescritorio;
 
 import clienteescritorio.utilidad.Utilidades;
+import clienteescritorio.dominio.UnidadImp;
 import clienteescritorio.pojo.Unidad;
 import java.io.IOException;
 import java.net.URL;

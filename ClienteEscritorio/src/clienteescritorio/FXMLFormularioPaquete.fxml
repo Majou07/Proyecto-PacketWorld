@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="350.0" prefWidth="500.0" style="-fx-background-color: white; -fx-border-color: black;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clienteescritorio.FXMLFormularioPaqueteController">
+   <children>
+      <Label layoutX="36.0" layoutY="28.0" text="Registro de Paquete">
+         <font><Font name="System Bold" size="20.0" /></font>
+      </Label>
+      <Label layoutX="36.0" layoutY="70.0" text="Descripción" />
+      <TextField fx:id="tfDescripcion" layoutX="36.0" layoutY="90.0" prefWidth="420.0" style="-fx-background-color: #e0e0e0;" />
+      
+      <Label layoutX="36.0" layoutY="140.0" text="Peso (kg)" />
+      <TextField fx:id="tfPeso" layoutX="36.0" layoutY="160.0" prefWidth="100.0" style="-fx-background-color: #e0e0e0;" />
+      
+      <Label layoutX="170.0" layoutY="140.0" text="Alto (cm)" />
+      <TextField fx:id="tfAlto" layoutX="170.0" layoutY="160.0" prefWidth="80.0" style="-fx-background-color: #e0e0e0;" />
+      
+      <Label layoutX="270.0" layoutY="140.0" text="Ancho (cm)" />
+      <TextField fx:id="tfAncho" layoutX="270.0" layoutY="160.0" prefWidth="80.0" style="-fx-background-color: #e0e0e0;" />
+      
+      <Label layoutX="370.0" layoutY="140.0" text="Profundidad" />
+      <TextField fx:id="tfProfundidad" layoutX="370.0" layoutY="160.0" prefWidth="80.0" style="-fx-background-color: #e0e0e0;" />
+      
+      <Button layoutX="250.0" layoutY="280.0" mnemonicParsing="false" onAction="#clicCancelar" style="-fx-background-color: #d1a3a4;" text="Cancelar" />
+      <Button layoutX="350.0" layoutY="280.0" mnemonicParsing="false" onAction="#clicGuardar" style="-fx-background-color: #d1a3a4;" text="Registrar" />
+   </children>
+</AnchorPane>
