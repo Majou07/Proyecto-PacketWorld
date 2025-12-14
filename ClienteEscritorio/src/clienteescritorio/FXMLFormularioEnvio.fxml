@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="450.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clienteescritorio.FXMLFormularioEnvioController">
+   <children>
+      <Label layoutX="35.0" layoutY="28.0" text="Registro de Envío"><font><Font name="System Bold" size="22.0" /></font></Label>
+      
+      <Label layoutX="35.0" layoutY="80.0" text="Cliente" />
+      <ComboBox fx:id="cbCliente" layoutX="35.0" layoutY="100.0" prefWidth="200.0" />
+      
+      <Label layoutX="260.0" layoutY="80.0" text="Sucursal Origen" />
+      <ComboBox fx:id="cbSucursal" layoutX="260.0" layoutY="100.0" prefWidth="200.0" />
+      
+      <Label layoutX="35.0" layoutY="150.0" text="Nombre Destinatario" />
+      <TextField fx:id="tfNombreDest" layoutX="35.0" layoutY="170.0" prefWidth="200.0" />
+      <Label layoutX="260.0" layoutY="150.0" text="Calle Destino" />
+      <TextField fx:id="tfCalle" layoutX="260.0" layoutY="170.0" prefWidth="200.0" />
+      <Label layoutX="480.0" layoutY="150.0" text="Ciudad" />
+      <TextField fx:id="tfCiudad" layoutX="480.0" layoutY="170.0" prefWidth="180.0" />
+      
+      <Label layoutX="35.0" layoutY="220.0" text="CP" />
+      <TextField fx:id="tfCP" layoutX="35.0" layoutY="240.0" prefWidth="100.0" />
+      <Label layoutX="150.0" layoutY="220.0" text="Estado" />
+      <TextField fx:id="tfEstado" layoutX="150.0" layoutY="240.0" prefWidth="150.0" />
+      
+      <Button layoutX="500.0" layoutY="380.0" mnemonicParsing="false" onAction="#clicGuardar" text="Registrar Envío" />
+   </children>
+</AnchorPane>

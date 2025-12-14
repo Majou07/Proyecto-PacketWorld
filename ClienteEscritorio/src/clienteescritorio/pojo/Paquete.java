@@ -1,3 +1,5 @@
+package clienteescritorio.pojo;
+
 public class Paquete {
     private Integer idPaquete;
     private Integer idEnvio;
