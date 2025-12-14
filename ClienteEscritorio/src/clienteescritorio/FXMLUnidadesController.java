@@ -4,7 +4,10 @@ import clienteescritorio.utilidad.Utilidades;
 import clienteescritorio.pojo.Unidad;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
 import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -41,6 +44,12 @@ public class FXMLUnidadesController implements Initializable {
     }
     
     private void cargarDatos() {
+        HashMap<String, Object> respuesta = UnidadImp.obtenerUnidades();
+        if(!(boolean)respuesta.get("error")){
+            tvUnidades.setItems(FXCollections.observableArrayList((List<Unidad>)respuesta.get("unidades")));
+        } else {
+            Utilidades.mostrarAlertaSimple("Error", (String)respuesta.get("mensaje"), Alert.AlertType.ERROR);
+        }
     }
 
     @FXML

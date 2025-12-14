@@ -79,17 +79,31 @@ public class FXMLEnviosController implements Initializable {
         }
     }
 
-    @FXML private void btnRegistrarEnvio(ActionEvent event) {
+    @FXML 
+    private void btnRegistrarEnvio(ActionEvent event) {
     }
     
-    @FXML private void btnAsignarConductor(ActionEvent event) {
+    @FXML 
+    private void btnAsignarConductor(ActionEvent event) {
     }
     
-    @FXML private void btnAgregarPaquete(ActionEvent event) {
+    @FXML 
+    private void btnAgregarPaquete(ActionEvent event) {
         Envio envioSeleccionado = tvEnvios.getSelectionModel().getSelectedItem();
         if (envioSeleccionado != null) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLFormularioPaquete.fxml"));
+                Parent root = loader.load();
+                FXMLFormularioPaqueteController ctrl = loader.getController();
+                ctrl.setEnvio(envioSeleccionado.getIdEnvio());
+                
+                Stage stage = new Stage();
+                stage.setScene(new Scene(root));
+                stage.showAndWait();
+                // Recargar paquetes
+            } catch(Exception e) { e.printStackTrace(); }
         } else {
-            Utilidades.mostrarAlertaSimple("Selección requerida", "Selecciona un envío para agregar paquetes", Alert.AlertType.WARNING);
+            Utilidades.mostrarAlertaSimple("Selección", "Selecciona un envío", Alert.AlertType.WARNING);
         }
     }
 }
