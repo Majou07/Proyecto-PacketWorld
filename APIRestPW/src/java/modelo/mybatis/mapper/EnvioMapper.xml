@@ -18,6 +18,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         LEFT JOIN colaborador col ON e.id_conductor_asignado = col.id_colaborador
         INNER JOIN estatus_envio est ON e.id_estatus_envio = est.id_estatus_envio
     </select>
+    
+    <insert id="registrar" parameterType="pojo.Envio" useGeneratedKeys="true" keyProperty="idEnvio">
+        INSERT INTO envio (numero_guia, destinatario_nombre, destinatario_ap_paterno, destinatario_ap_materno,
+                           destino_calle, destino_numero, destino_colonia, destino_codigo_postal, destino_ciudad, destino_estado,
+                           costo_total, id_cliente_remitente, codigo_sucursal_origen, id_estatus_envio)
+        VALUES (#{numeroGuia}, #{destinatarioNombre}, #{destinatarioApPaterno}, #{destinatarioApMaterno},
+                #{destinoCalle}, #{destinoNumero}, #{destinoColonia}, #{destinoCodigoPostal}, #{destinoCiudad}, #{destinoEstado},
+                #{costoTotal}, #{idClienteRemitente}, #{codigoSucursalOrigen}, 1)
+    </insert>
+
+    <update id="actualizar-estatus" parameterType="map">
+        UPDATE envio SET id_estatus_envio = #{idEstatus} WHERE id_envio = #{idEnvio}
+    </update>
 
   
 </mapper>

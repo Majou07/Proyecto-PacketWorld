@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="paquete">
+    <select id="obtener-por-envio" parameterType="int" resultType="pojo.Paquete">
+        SELECT id_paquete AS idPaquete, id_envio AS idEnvio, descripcion, peso_kg AS peso, 
+               alto_cm AS alto, ancho_cm AS ancho, profundidad_cm AS profundidad
+        FROM paquete WHERE id_envio = #{idEnvio}
+    </select>
+
+    <insert id="registrar" parameterType="pojo.Paquete">
+        INSERT INTO paquete (id_envio, descripcion, peso_kg, alto_cm, ancho_cm, profundidad_cm)
+        VALUES (#{idEnvio}, #{descripcion}, #{peso}, #{alto}, #{ancho}, #{profundidad})
+    </insert>
+    
+    <delete id="eliminar" parameterType="int">
+        DELETE FROM paquete WHERE id_paquete = #{idPaquete}
+    </delete>
+</mapper>
+
