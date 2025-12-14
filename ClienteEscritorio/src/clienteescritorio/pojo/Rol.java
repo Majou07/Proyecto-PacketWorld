@@ -2,12 +2,16 @@ package clienteescritorio.pojo;
 
 public class Rol {
     private int idRol;
-    private String nombre;
+    private String nombreRol; 
 
-    public Rol(int idRol, String nombre) {
-        this.idRol = idRol;
-        this.nombre = nombre;
+    public Rol() {
     }
+
+    public Rol(int idRol, String nombreRol) {
+        this.idRol = idRol;
+        this.nombreRol = nombreRol;
+    }
+    
 
     public int getIdRol() { 
         return idRol; 
@@ -16,17 +20,17 @@ public class Rol {
     public void setIdRol(int idRol) { 
         this.idRol = idRol; 
     }
-    
-    public String getNombre() { 
-        return nombre; 
+
+    public String getNombreRol() { 
+        return nombreRol; 
     }
     
-    public void setNombre(String nombre) { 
-        this.nombre = nombre; 
+    public void setNombreRol(String nombreRol) { 
+        this.nombreRol = nombreRol; 
     }
 
     @Override
-    public String toString() { 
-        return nombre; 
+    public String toString() {
+        return nombreRol; 
     }
 }
