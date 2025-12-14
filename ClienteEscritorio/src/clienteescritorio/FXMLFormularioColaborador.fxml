@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.image.*?>
 <?import javafx.scene.text.*?>
 <?import java.lang.*?>
@@ -11,39 +12,39 @@
    <children>
       <Label fx:id="lbTitulo" layoutX="36.0" layoutY="28.0" text="Registro de Colaborador">
          <font>
-            <Font size="22.0" />
+            <Font name="System Bold" size="22.0" />
          </font>
       </Label>
       <Label layoutX="36.0" layoutY="80.0" text="Nombre" />
-      <TextField fx:id="tfNombre" layoutX="36.0" layoutY="100.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
+      <TextField fx:id="tfNombre" layoutX="35.0" layoutY="109.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
       
       <Label layoutX="256.0" layoutY="80.0" text="Apellido Paterno" />
-      <TextField fx:id="tfPaterno" layoutX="256.0" layoutY="100.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
+      <TextField fx:id="tfPaterno" layoutX="255.0" layoutY="109.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
       
       <Label layoutX="476.0" layoutY="80.0" text="Apellido Materno" />
-      <TextField fx:id="tfMaterno" layoutX="476.0" layoutY="100.0" prefWidth="180.0" style="-fx-background-color: #e0e0e0;" />
+      <TextField fx:id="tfMaterno" layoutX="475.0" layoutY="109.0" prefWidth="180.0" style="-fx-background-color: #e0e0e0;" />
       
-      <Label layoutX="36.0" layoutY="150.0" text="CURP" />
-      <TextField fx:id="tfCurp" layoutX="36.0" layoutY="170.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
+      <Label layoutX="37.0" layoutY="157.0" text="CURP" />
+      <TextField fx:id="tfCurp" layoutX="33.0" layoutY="186.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
       
-      <Label layoutX="256.0" layoutY="150.0" text="Correo Electrónico" />
-      <TextField fx:id="tfCorreo" layoutX="256.0" layoutY="170.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
+      <Label layoutX="257.0" layoutY="157.0" text="Correo Electrónico" />
+      <TextField fx:id="tfCorreo" layoutX="253.0" layoutY="186.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
       
-      <Label layoutX="476.0" layoutY="150.0" text="No. de Personal" />
-      <TextField fx:id="tfNoPersonal" layoutX="476.0" layoutY="170.0" prefWidth="180.0" style="-fx-background-color: #e0e0e0;" />
+      <Label layoutX="477.0" layoutY="157.0" text="No. de Personal" />
+      <TextField fx:id="tfNoPersonal" layoutX="473.0" layoutY="186.0" prefWidth="180.0" style="-fx-background-color: #e0e0e0;" />
       
-      <Label layoutX="36.0" layoutY="220.0" text="Contraseña" />
-      <PasswordField fx:id="pfContrasena" layoutX="36.0" layoutY="240.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
+      <Label layoutX="39.0" layoutY="236.0" text="Contraseña" />
+      <PasswordField fx:id="pfContrasena" layoutX="34.0" layoutY="259.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
       
-      <Label layoutX="256.0" layoutY="220.0" text="Rol" />
-      <ComboBox fx:id="cbRol" layoutX="256.0" layoutY="240.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
+      <Label layoutX="259.0" layoutY="236.0" text="Rol" />
+      <ComboBox fx:id="cbRol" layoutX="254.0" layoutY="259.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
       
-      <Label layoutX="476.0" layoutY="220.0" text="Sucursal" />
-      <ComboBox fx:id="cbSucursal" layoutX="476.0" layoutY="240.0" prefWidth="180.0" style="-fx-background-color: #e0e0e0;" />
+      <Label layoutX="479.0" layoutY="236.0" text="Sucursal" />
+      <ComboBox fx:id="cbSucursal" layoutX="474.0" layoutY="259.0" prefWidth="180.0" style="-fx-background-color: #e0e0e0;" />
 
-      <Label layoutX="36.0" layoutY="290.0" text="Fotografía" />
-      <ImageView fx:id="ivFoto" fitHeight="80.0" fitWidth="80.0" layoutX="36.0" layoutY="310.0" pickOnBounds="true" preserveRatio="true" style="-fx-border-color: black;" />
-      <Button layoutX="130.0" layoutY="330.0" mnemonicParsing="false" onAction="#clicSubirFoto" text="Cargar..." />
+      <Label layoutX="33.0" layoutY="317.0" text="Fotografía" />
+      <ImageView fx:id="ivFoto" fitHeight="80.0" fitWidth="80.0" layoutX="34.0" layoutY="348.0" pickOnBounds="true" preserveRatio="true" style="-fx-border-color: black;" />
+      <Button layoutX="120.0" layoutY="383.0" mnemonicParsing="false" onAction="#clicSubirFoto" text="Cargar..." />
       
       <Button layoutX="450.0" layoutY="430.0" mnemonicParsing="false" onAction="#clicCancelar" style="-fx-background-color: #d1a3a4;" text="Cancelar" />
       <Button layoutX="550.0" layoutY="430.0" mnemonicParsing="false" onAction="#clicGuardar" style="-fx-background-color: #d1a3a4;" text="Registrar" />
