@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane fx:id="bpPrincipal" prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clienteescritorio.FXMLMenuPrincipalController">
+   <left>
+      <VBox prefHeight="700.0" prefWidth="200.0" style="-fx-background-color: #DDDDDD;" BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="lbNombrePersonal" text="Nombre Personal" textFill="#5e5e5e">
+               <font><Font name="System Bold" size="16.0" /></font>
+            </Label>
+            <Button mnemonicParsing="false" onAction="#btnColaboradores" prefHeight="50.0" prefWidth="200.0" text="Colaboradores" />
+            <Button mnemonicParsing="false" onAction="#btnUnidades" prefHeight="50.0" prefWidth="200.0" text="Unidades" />
+            <Button mnemonicParsing="false" onAction="#btnSucursales" prefHeight="50.0" prefWidth="200.0" text="Sucursales" />
+            <Button mnemonicParsing="false" onAction="#btnClientes" prefHeight="50.0" prefWidth="200.0" text="Clientes" />
+            <Button mnemonicParsing="false" onAction="#btnEnvios" prefHeight="50.0" prefWidth="200.0" text="Envíos y Paquetes" />
+            <Pane VBox.vgrow="ALWAYS" />
+            <Button mnemonicParsing="false" onAction="#btnCerrarSesion" prefHeight="50.0" prefWidth="200.0" text="Cerrar Sesión" />
+         </children>
+      </VBox>
+   </left>
+   <center>
+      <StackPane fx:id="pnlContenido" />
+   </center>
+</BorderPane>
