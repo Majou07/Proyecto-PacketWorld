@@ -1,26 +1,80 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMLController.java to edit this template
- */
 package clienteescritorio;
 
+import clienteescritorio.utilidad.Utilidades;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
-/**
- * FXML Controller class
- *
- * @author Maria Jose
- */
 public class FXMLUnidadesController implements Initializable {
 
-    /**
-     * Initializes the controller class.
-     */
+    @FXML private TextField tfBusqueda;
+    @FXML private TableView<Unidad> tvUnidades;
+    @FXML private TableColumn colMarca;
+    @FXML private TableColumn colModelo;
+    @FXML private TableColumn colAnio;
+    @FXML private TableColumn colVin;
+    @FXML private TableColumn colNii;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        configurarTabla();
+        cargarDatos();
     }    
+
+    private void configurarTabla() {
+        colMarca.setCellValueFactory(new PropertyValueFactory("marca"));
+        colModelo.setCellValueFactory(new PropertyValueFactory("modelo"));
+        colAnio.setCellValueFactory(new PropertyValueFactory("anio"));
+        colVin.setCellValueFactory(new PropertyValueFactory("vin"));
+        colNii.setCellValueFactory(new PropertyValueFactory("nii"));
+    }
     
+    private void cargarDatos() {
+    }
+
+    @FXML
+    private void clicRegistrar(ActionEvent event) {
+        irFormulario(null);
+    }
+
+    @FXML
+    private void clicEditar(ActionEvent event) {
+        Unidad seleccionada = tvUnidades.getSelectionModel().getSelectedItem();
+        if(seleccionada != null){
+            irFormulario(seleccionada);
+        } else {
+             Utilidades.mostrarAlertaSimple("Selección", "Selecciona una unidad", Alert.AlertType.WARNING);
+        }
+    }
+
+    @FXML
+    private void clicDarBaja(ActionEvent event) {
+    }
+    
+    private void irFormulario(Unidad unidad) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLFormularioUnidad.fxml"));
+            Parent root = loader.load();
+            FXMLFormularioUnidadController controller = loader.getController();
+            controller.inicializarValores(unidad);
+            
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+            cargarDatos();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 }

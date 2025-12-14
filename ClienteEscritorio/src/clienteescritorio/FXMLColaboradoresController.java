@@ -1,26 +1,80 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMLController.java to edit this template
- */
 package clienteescritorio;
 
+import clienteescritorio.utilidad.Utilidades;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
-/**
- * FXML Controller class
- *
- * @author Maria Jose
- */
 public class FXMLColaboradoresController implements Initializable {
 
-    /**
-     * Initializes the controller class.
-     */
+    @FXML private TextField tfBusqueda;
+    @FXML private TableView<Colaborador> tvColaboradores; 
+    @FXML private TableColumn colNoPersonal;
+    @FXML private TableColumn colNombre;
+    @FXML private TableColumn colPaterno;
+    @FXML private TableColumn colMaterno;
+    @FXML private TableColumn colRol;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        configurarTabla();
+        cargarDatos();
     }    
+
+    private void configurarTabla() {
+        colNoPersonal.setCellValueFactory(new PropertyValueFactory("numeroPersonal"));
+        colNombre.setCellValueFactory(new PropertyValueFactory("nombre"));
+        colPaterno.setCellValueFactory(new PropertyValueFactory("apellidoPaterno"));
+        colMaterno.setCellValueFactory(new PropertyValueFactory("apellidoMaterno"));
+        colRol.setCellValueFactory(new PropertyValueFactory("rol"));
+    }
     
+    private void cargarDatos() {
+    }
+
+    @FXML
+    private void clicRegistrar(ActionEvent event) {
+        irFormulario(null);
+    }
+
+    @FXML
+    private void clicEditar(ActionEvent event) {
+        Colaborador seleccionado = tvColaboradores.getSelectionModel().getSelectedItem();
+        if(seleccionado != null){
+            irFormulario(seleccionado);
+        } else {
+             Utilidades.mostrarAlertaSimple("Selección", "Selecciona un colaborador", Alert.AlertType.WARNING);
+        }
+    }
+
+    @FXML
+    private void clicEliminar(ActionEvent event) {
+    }
+    
+    private void irFormulario(Colaborador colaborador) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLFormularioColaborador.fxml"));
+            Parent root = loader.load();
+            FXMLFormularioColaboradorController controller = loader.getController();
+            controller.inicializarValores(colaborador); 
+            
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+            cargarDatos(); 
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 }

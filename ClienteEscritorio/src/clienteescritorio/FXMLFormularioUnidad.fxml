@@ -1,35 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clienteescritorio.FXMLFormularioUnidadController">
+<AnchorPane id="AnchorPane" prefHeight="350.0" prefWidth="650.0" style="-fx-background-radius: 10; -fx-background-color: white; -fx-border-color: black; -fx-border-radius: 10;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clienteescritorio.FXMLFormularioUnidadController">
    <children>
-      <Label fx:id="lbTitulo" layoutX="30.0" layoutY="20.0" text="Registro de Unidad">
-         <font><Font size="20.0" /></font>
+      <Label fx:id="lbTitulo" layoutX="36.0" layoutY="28.0" text="Registro de Unidad">
+         <font>
+            <Font size="22.0" />
+         </font>
       </Label>
       
-      <TextField fx:id="tfMarca" layoutX="27.0" layoutY="86.0" prefWidth="200.0" />
-      <Label layoutX="30.0" layoutY="60.0" text="Marca" />
+      <Label layoutX="37.0" layoutY="76.0" text="Marca" />
+      <TextField fx:id="tfMarca" layoutX="36.0" layoutY="100.0" prefWidth="180.0" style="-fx-background-color: #e0e0e0;" />
       
-      <TextField fx:id="tfModelo" layoutX="249.0" layoutY="85.0" prefWidth="200.0" />
-      <Label layoutX="250.0" layoutY="60.0" text="Modelo" />
+      <Label layoutX="237.0" layoutY="76.0" text="Modelo" />
+      <TextField fx:id="tfModelo" layoutX="236.0" layoutY="100.0" prefWidth="180.0" style="-fx-background-color: #e0e0e0;" />
       
-      <TextField fx:id="tfAnio" layoutX="472.0" layoutY="82.0" prefWidth="100.0" />
-      <Label layoutX="470.0" layoutY="60.0" text="Año" />
+      <Label layoutX="437.0" layoutY="76.0" text="Año" />
+      <TextField fx:id="tfAnio" layoutX="436.0" layoutY="100.0" prefWidth="100.0" style="-fx-background-color: #e0e0e0;" />
       
-      <TextField fx:id="tfVIN" layoutX="29.0" layoutY="192.0" prefHeight="11.0" prefWidth="169.0" />
-      <Label layoutX="29.0" layoutY="166.0" text="VIN" />
+      <Label layoutX="38.0" layoutY="154.0" prefHeight="27.0" prefWidth="327.0" text="VIN (Número de Identificador Vehicular)" />
+      <TextField fx:id="tfVin" layoutX="34.0" layoutY="183.0" prefHeight="39.0" prefWidth="321.0" style="-fx-background-color: #e0e0e0;" />
       
-      <ComboBox fx:id="cbTipoUnidad" layoutX="237.0" layoutY="192.0" prefWidth="200.0" />
-      <Label layoutX="231.0" layoutY="155.0" text="Tipo de Unidad" />
+      <Label layoutX="394.0" layoutY="154.0" text="Tipo de Unidad" />
+      <ComboBox fx:id="cbTipo" layoutX="390.0" layoutY="183.0" prefWidth="180.0" style="-fx-background-color: #e0e0e0;" />
       
-      <TextField fx:id="tfNII" layoutX="462.0" layoutY="189.0" prefWidth="100.0" promptText="Auto" />
-      <Label layoutX="465.0" layoutY="156.0" text="NII" />
+      <Label layoutX="41.0" layoutY="241.0" text="No. Identificación Interno" />
+      <TextField fx:id="tfNii" disable="true" layoutX="39.0" layoutY="274.0" prefWidth="180.0" promptText="Auto-generado" style="-fx-background-color: #e0e0e0;" />
       
-      <Button layoutX="350.0" layoutY="300.0" mnemonicParsing="false" onAction="#btnCancelar" text="Cancelar" />
-      <Button layoutX="450.0" layoutY="300.0" mnemonicParsing="false" onAction="#btnGuardar" text="Registrar" />
+      <Button layoutX="386.0" layoutY="269.0" mnemonicParsing="false" onAction="#clicCancelar" style="-fx-background-color: #d1a3a4;" text="Cancelar" />
+      <Button layoutX="486.0" layoutY="269.0" mnemonicParsing="false" onAction="#clicGuardar" style="-fx-background-color: #d1a3a4;" text="Registrar" />
    </children>
 </AnchorPane>

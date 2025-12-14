@@ -1,26 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
 <BorderPane fx:id="bpPrincipal" prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clienteescritorio.FXMLMenuPrincipalController">
    <left>
-      <VBox prefHeight="700.0" prefWidth="200.0" style="-fx-background-color: #DDDDDD;" BorderPane.alignment="CENTER">
+      <VBox prefHeight="700.0" prefWidth="220.0" style="-fx-background-color: #d3d3d3;" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="lbNombrePersonal" text="Nombre Personal" textFill="#5e5e5e">
-               <font><Font name="System Bold" size="16.0" /></font>
+            <Label fx:id="lbNombreUsuario" text="Nombre de Personal">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="30.0" left="20.0" top="30.0" />
+               </VBox.margin>
             </Label>
-            <Button mnemonicParsing="false" onAction="#btnColaboradores" prefHeight="50.0" prefWidth="200.0" text="Colaboradores" />
-            <Button mnemonicParsing="false" onAction="#btnUnidades" prefHeight="50.0" prefWidth="200.0" text="Unidades" />
-            <Button mnemonicParsing="false" onAction="#btnSucursales" prefHeight="50.0" prefWidth="200.0" text="Sucursales" />
-            <Button mnemonicParsing="false" onAction="#btnClientes" prefHeight="50.0" prefWidth="200.0" text="Clientes" />
-            <Button mnemonicParsing="false" onAction="#btnEnvios" prefHeight="50.0" prefWidth="200.0" text="Envíos y Paquetes" />
-            <Pane VBox.vgrow="ALWAYS" />
-            <Button mnemonicParsing="false" onAction="#btnCerrarSesion" prefHeight="50.0" prefWidth="200.0" text="Cerrar Sesión" />
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#clicColaboradores" prefHeight="50.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Colaboradores">
+               <padding>
+                  <Insets left="30.0" />
+               </padding>
+               <font><Font size="14.0" /></font>
+            </Button>
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#clicUnidades" prefHeight="50.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Unidades">
+               <padding>
+                  <Insets left="30.0" />
+               </padding>
+               <font><Font size="14.0" /></font>
+            </Button>
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#clicSucursales" prefHeight="50.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Sucursales">
+               <padding>
+                  <Insets left="30.0" />
+               </padding>
+               <font><Font size="14.0" /></font>
+            </Button>
+             <Pane VBox.vgrow="ALWAYS" />
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#clicCerrarSesion" prefHeight="50.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Cerrar Sesión">
+               <padding>
+                  <Insets left="30.0" />
+               </padding>
+               <VBox.margin>
+                  <Insets bottom="20.0" />
+               </VBox.margin>
+            </Button>
          </children>
       </VBox>
    </left>
    <center>
-      <StackPane fx:id="pnlContenido" />
+      <StackPane fx:id="pnlContenido" prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER" />
    </center>
 </BorderPane>

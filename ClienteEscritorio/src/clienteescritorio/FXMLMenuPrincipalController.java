@@ -10,15 +10,20 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 
 public class FXMLMenuPrincipalController implements Initializable {
 
-    @FXML private BorderPane bpPrincipal;
-    @FXML private Label lbNombrePersonal;
+    @FXML
+    private BorderPane bpPrincipal;
+    @FXML
+    private Label lbNombreUsuario;
+    @FXML
+    private StackPane pnlContenido;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        cargarPantalla("FXMLColaboradores"); 
+        cargarPantalla("FXMLColaboradores"); // Pantalla por defecto
     }    
 
     private void cargarPantalla(String nombreFXML) {
@@ -30,11 +35,23 @@ public class FXMLMenuPrincipalController implements Initializable {
         }
     }
 
-    @FXML private void btnColaboradores(ActionEvent event) { cargarPantalla("FXMLColaboradores"); }
-    @FXML private void btnUnidades(ActionEvent event) { cargarPantalla("FXMLUnidades"); }
-    @FXML private void btnSucursales(ActionEvent event) { cargarPantalla("FXMLSucursales"); }
-    @FXML private void btnClientes(ActionEvent event) { cargarPantalla("FXMLClientes"); }
-    @FXML private void btnEnvios(ActionEvent event) { cargarPantalla("FXMLEnvios"); }
-    @FXML private void btnCerrarSesion(ActionEvent event) { 
+    @FXML
+    private void clicColaboradores(ActionEvent event) {
+        cargarPantalla("FXMLColaboradores");
+    }
+
+    @FXML
+    private void clicUnidades(ActionEvent event) {
+        cargarPantalla("FXMLUnidades");
+    }
+    
+    @FXML
+    private void clicSucursales(ActionEvent event) {
+        cargarPantalla("FXMLSucursales");
+    }
+
+    @FXML
+    private void clicCerrarSesion(ActionEvent event) {
+        // Lógica para cerrar ventana y volver al login
     }
 }
