@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clienteescritorio.FXMLColaboradoresController">
+   <children>
+      <Label layoutX="30.0" layoutY="30.0" text="COLABORADORES">
+         <font><Font size="24.0" /></font>
+      </Label>
+      <TextField fx:id="tfBusqueda" layoutX="30.0" layoutY="80.0" prefWidth="400.0" promptText="Nombre, no. personal o rol" />
+      <Button layoutX="440.0" layoutY="80.0" mnemonicParsing="false" onAction="#btnBuscar" text="Buscar" />
+      
+      <TableView fx:id="tvColaboradores" layoutX="30.0" layoutY="130.0" prefHeight="500.0" prefWidth="600.0">
+        <columns>
+          <TableColumn fx:id="colNoPersonal" prefWidth="100.0" text="No. Personal" />
+          <TableColumn fx:id="colNombre" prefWidth="150.0" text="Nombre" />
+          <TableColumn fx:id="colRol" prefWidth="100.0" text="Rol" />
+          <TableColumn fx:id="colSucursal" prefWidth="100.0" text="Sucursal" />
+          <TableColumn fx:id="colCorreo" prefWidth="150.0" text="Correo" />
+        </columns>
+      </TableView>
+      
+      <VBox layoutX="650.0" layoutY="130.0" spacing="20.0">
+         <children>
+            <Button mnemonicParsing="false" onAction="#btnRegistrar" prefWidth="120.0" text="Registrar" />
+            <Button mnemonicParsing="false" onAction="#btnEditar" prefWidth="120.0" text="Editar" />
+            <Button mnemonicParsing="false" onAction="#btnEliminar" prefWidth="120.0" text="Eliminar" />
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
