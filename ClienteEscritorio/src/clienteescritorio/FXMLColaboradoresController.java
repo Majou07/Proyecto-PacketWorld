@@ -1,5 +1,6 @@
 package clienteescritorio;
 
+import clienteescritorio.pojo.Colaborador;
 import clienteescritorio.utilidad.Utilidades;
 import java.io.IOException;
 import java.net.URL;
