@@ -31,5 +31,11 @@ public class EnvioWS {
         }
     }
     
-   
+    @Path("actualizar-estatus")
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Respuesta actualizarEstatus(@FormParam("idEnvio") int idEnvio, @FormParam("idEstatus") int idEstatus, @FormParam("comentario") String comentario, @FormParam("idColaborador") int idColaborador) {
+        return EnvioImp.actualizarEstatus(idEnvio, idEstatus, comentario, idColaborador);
+    }
 }

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cliente">
+    <select id="obtener-todos" resultType="pojo.Cliente">
+        SELECT id_cliente AS idCliente, nombre, apellido_paterno AS apellidoPaterno, 
+               apellido_materno AS apellidoMaterno, calle, numero, colonia, 
+               codigo_postal AS codigoPostal, telefono, correo_electronico AS correoElectronico
+        FROM cliente
+    </select>
+
+    <insert id="registrar" parameterType="pojo.Cliente">
+        INSERT INTO cliente (nombre, apellido_paterno, apellido_materno, calle, numero, colonia, codigo_postal, telefono, correo_electronico)
+        VALUES (#{nombre}, #{apellidoPaterno}, #{apellidoMaterno}, #{calle}, #{numero}, #{colonia}, #{codigoPostal}, #{telefono}, #{correoElectronico})
+    </insert>
+
+    <update id="editar" parameterType="pojo.Cliente">
+        UPDATE cliente SET nombre=#{nombre}, apellido_paterno=#{apellidoPaterno}, apellido_materno=#{apellidoMaterno},
+               calle=#{calle}, numero=#{numero}, colonia=#{colonia}, codigo_postal=#{codigoPostal}, telefono=#{telefono}, correo_electronico=#{correoElectronico}
+        WHERE id_cliente = #{idCliente}
+    </update>
+
+    <delete id="eliminar" parameterType="int">
+        DELETE FROM cliente WHERE id_cliente = #{idCliente}
+    </delete>
+</mapper>
