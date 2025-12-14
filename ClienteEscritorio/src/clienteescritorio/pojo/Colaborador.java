@@ -5,25 +5,37 @@ public class Colaborador {
     private String nombre;
     private String apellidoPaterno;
     private String apellidoMaterno;
+    private String curp;
+    private String correoElectronico; 
     private String numeroPersonal;
+    private String contrasena;
+    private int idRol;
     private String rol;
+    private String codigoSucursal;
     private String sucursal;
-    private String correo;
-    
+    private byte[] foto;
+    private String fotoBase64;
+
     public Colaborador() {
     }
 
-    public Colaborador(int idColaborador, String nombre, String apellidoPaterno, String apellidoMaterno, 
-            String numeroPersonal, String rol, String sucursal, String correo) {
+    public Colaborador(int idColaborador, String nombre, String apellidoPaterno, String apellidoMaterno, String curp, String correoElectronico, String numeroPersonal, String contrasena, int idRol, String rol, String codigoSucursal, String sucursal, byte[] foto, String fotoBase64) {
         this.idColaborador = idColaborador;
         this.nombre = nombre;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
+        this.curp = curp;
+        this.correoElectronico = correoElectronico;
         this.numeroPersonal = numeroPersonal;
+        this.contrasena = contrasena;
+        this.idRol = idRol;
         this.rol = rol;
+        this.codigoSucursal = codigoSucursal;
         this.sucursal = sucursal;
-        this.correo = correo;
+        this.foto = foto;
+        this.fotoBase64 = fotoBase64;
     }
+    
     
 
     public int getIdColaborador() { 
@@ -33,7 +45,7 @@ public class Colaborador {
     public void setIdColaborador(int idColaborador) { 
         this.idColaborador = idColaborador; 
     }
-    
+
     public String getNombre() { 
         return nombre; 
     }
@@ -41,7 +53,7 @@ public class Colaborador {
     public void setNombre(String nombre) { 
         this.nombre = nombre; 
     }
-    
+
     public String getApellidoPaterno() { 
         return apellidoPaterno; 
     }
@@ -49,7 +61,7 @@ public class Colaborador {
     public void setApellidoPaterno(String apellidoPaterno) { 
         this.apellidoPaterno = apellidoPaterno; 
     }
-    
+
     public String getApellidoMaterno() { 
         return apellidoMaterno; 
     }
@@ -57,7 +69,23 @@ public class Colaborador {
     public void setApellidoMaterno(String apellidoMaterno) { 
         this.apellidoMaterno = apellidoMaterno; 
     }
+
+    public String getCurp() { 
+        return curp; 
+    }
     
+    public void setCurp(String curp) { 
+        this.curp = curp; 
+    }
+
+    public String getCorreoElectronico() { 
+        return correoElectronico; 
+    }
+    
+    public void setCorreoElectronico(String correoElectronico) { 
+        this.correoElectronico = correoElectronico; 
+    }
+
     public String getNumeroPersonal() { 
         return numeroPersonal; 
     }
@@ -65,7 +93,23 @@ public class Colaborador {
     public void setNumeroPersonal(String numeroPersonal) { 
         this.numeroPersonal = numeroPersonal; 
     }
+
+    public String getContrasena() { 
+        return contrasena; 
+    }
     
+    public void setContrasena(String contrasena) { 
+        this.contrasena = contrasena; 
+    }
+
+    public int getIdRol() { 
+        return idRol; 
+    }
+    
+    public void setIdRol(int idRol) { 
+        this.idRol = idRol; 
+    }
+
     public String getRol() { 
         return rol; 
     }
@@ -73,7 +117,15 @@ public class Colaborador {
     public void setRol(String rol) { 
         this.rol = rol; 
     }
+
+    public String getCodigoSucursal() { 
+        return codigoSucursal; 
+    }
     
+    public void setCodigoSucursal(String codigoSucursal) { 
+        this.codigoSucursal = codigoSucursal; 
+    }
+
     public String getSucursal() { 
         return sucursal; 
     }
@@ -81,17 +133,26 @@ public class Colaborador {
     public void setSucursal(String sucursal) { 
         this.sucursal = sucursal; 
     }
-    
-    public String getCorreo() { 
-        return correo; 
+
+    public byte[] getFoto() { 
+        return foto; 
     }
     
-    public void setCorreo(String correo) { 
-        this.correo = correo; 
+    public void setFoto(byte[] foto) { 
+        this.foto = foto; 
+    }
+
+    public String getFotoBase64() { 
+        return fotoBase64; 
+    }
+    
+    public void setFotoBase64(String fotoBase64) { 
+        this.fotoBase64 = fotoBase64; 
     }
     
     @Override
-    public String toString() { 
-        return nombre + " " + apellidoPaterno; 
+    public String toString() {
+        return nombre + " " + apellidoPaterno;
     }
 }
+

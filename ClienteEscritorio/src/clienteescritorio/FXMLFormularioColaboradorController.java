@@ -1,18 +1,39 @@
 package clienteescritorio;
 
+import clienteescritorio.dominio.Catalogolmp;
+import clienteescritorio.dominio.ColaboradorImp;
+import clienteescritorio.dominio.SucursalImp;
+import clienteescritorio.dto.Respuesta;
 import clienteescritorio.pojo.Colaborador;
+import clienteescritorio.pojo.Rol;
+import clienteescritorio.pojo.Sucursal;
+import clienteescritorio.utilidad.Utilidades;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
 import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javax.imageio.ImageIO;
 
 public class FXMLFormularioColaboradorController implements Initializable {
-    
-    @FXML private Label lbTitulo; 
+
+    @FXML private Label lbTitulo;
     @FXML private TextField tfNombre;
     @FXML private TextField tfPaterno;
     @FXML private TextField tfMaterno;
@@ -20,38 +41,202 @@ public class FXMLFormularioColaboradorController implements Initializable {
     @FXML private TextField tfCorreo;
     @FXML private TextField tfNoPersonal;
     @FXML private PasswordField pfContrasena;
-    @FXML private ComboBox cbRol;
-    @FXML private ComboBox cbSucursal;
+    @FXML private ComboBox<Rol> cbRol;
+    @FXML private ComboBox<Sucursal> cbSucursal;
     @FXML private ImageView ivFoto;
 
     private Colaborador colaboradorEdicion;
+    private File archivoFoto;
+    private ObservableList<Rol> roles;
+    private ObservableList<Sucursal> sucursales;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        cargarRoles();
+        cargarSucursales();
     }    
     
+    // Lógica para recibir datos al dar click en "Editar" en la tabla anterior
     public void inicializarValores(Colaborador colaborador){
         this.colaboradorEdicion = colaborador;
         if(colaborador != null){
             lbTitulo.setText("Actualizar Colaborador");
+            
+            // Rellenar campos de texto
             tfNombre.setText(colaborador.getNombre());
-            // Llenar resto de campos...
+            tfPaterno.setText(colaborador.getApellidoPaterno());
+            tfMaterno.setText(colaborador.getApellidoMaterno());
+            tfCurp.setText(colaborador.getCurp());
+            tfCorreo.setText(colaborador.getCorreoElectronico());
+            tfNoPersonal.setText(colaborador.getNumeroPersonal());
+            pfContrasena.setText(colaborador.getContrasena()); // Opcional: mostrar o dejar vacío
+            
+            // Seleccionar en Combos
+            seleccionarRol(colaborador.getIdRol());
+            seleccionarSucursal(colaborador.getCodigoSucursal());
+            
+            // Regla de Negocio: No se puede editar No. Personal ni Rol 
+            tfNoPersonal.setDisable(true);
+            cbRol.setDisable(true);
+            
+            // Mostrar Foto desde Base64
+            if(colaborador.getFotoBase64() != null && !colaborador.getFotoBase64().isEmpty()){
+                mostrarFotoServidor(colaborador.getFotoBase64());
+            }
+        }
+    }
+
+    // --- CARGA DE COMBOS (CATÁLOGOS) ---
+    private void cargarRoles() {
+        roles = FXCollections.observableArrayList();
+        HashMap<String, Object> respuesta = Catalogolmp.obtenerRoles(); // Asumiendo implementación similar a ProfesorImp
+        if(!(boolean)respuesta.get("error")){
+            roles.addAll((List<Rol>)respuesta.get("roles"));
+            cbRol.setItems(roles);
+        }
+    }
+
+    private void cargarSucursales() {
+        sucursales = FXCollections.observableArrayList();
+        HashMap<String, Object> respuesta = SucursalImp.obtenerSucursales(); // Asumiendo implementación
+        if(!(boolean)respuesta.get("error")){
+            sucursales.addAll((List<Sucursal>)respuesta.get("sucursales"));
+            cbSucursal.setItems(sucursales);
+        }
+    }
+
+    // --- LÓGICA DE FOTO ---
+    @FXML
+    private void clicSubirFoto(ActionEvent event) {
+        FileChooser dialogo = new FileChooser();
+        dialogo.setTitle("Selecciona una foto");
+        FileChooser.ExtensionFilter filtroImg = new FileChooser.ExtensionFilter("Archivos de imagen (*.jpg, *.png)", "*.jpg", "*.png");
+        dialogo.getExtensionFilters().add(filtroImg);
+        
+        archivoFoto = dialogo.showOpenDialog(tfNombre.getScene().getWindow());
+        
+        if(archivoFoto != null){
+            try {
+                BufferedImage bufferImg = ImageIO.read(archivoFoto);
+                Image imagen = SwingFXUtils.toFXImage(bufferImg, null);
+                ivFoto.setImage(imagen);
+            } catch (IOException e) {
+                Utilidades.mostrarAlertaSimple("Error", "No se pudo cargar la imagen seleccionada", Alert.AlertType.ERROR);
+            }
+        }
+    }
+    
+    private void mostrarFotoServidor(String base64) {
+        try {
+            byte[] fotoBytes = Base64.getDecoder().decode(base64.replaceAll("\\n", ""));
+            ByteArrayInputStream stream = new ByteArrayInputStream(fotoBytes);
+            Image imagen = new Image(stream);
+            ivFoto.setImage(imagen);
+        } catch (Exception e) {
+            System.out.println("Error al decodificar imagen: " + e.getMessage());
+        }
+    }
+
+    // --- GUARDADO ---
+    @FXML
+    private void clicGuardar(ActionEvent event) {
+        if(validarCampos()){
+            Colaborador colaborador = new Colaborador();
+            colaborador.setNombre(tfNombre.getText());
+            colaborador.setApellidoPaterno(tfPaterno.getText());
+            colaborador.setApellidoMaterno(tfMaterno.getText());
+            colaborador.setCurp(tfCurp.getText());
+            colaborador.setCorreoElectronico(tfCorreo.getText());
+            colaborador.setNumeroPersonal(tfNoPersonal.getText());
+            colaborador.setContrasena(pfContrasena.getText());
+            
+            // Obtener IDs de combos
+            if(cbRol.getSelectionModel().getSelectedItem() != null)
+                colaborador.setIdRol(cbRol.getSelectionModel().getSelectedItem().getIdRol());
+            
+            if(cbSucursal.getSelectionModel().getSelectedItem() != null)
+                colaborador.setCodigoSucursal(cbSucursal.getSelectionModel().getSelectedItem().getCodigoSucursal());
+            
+            // Procesar foto a bytes para enviar
+            if(archivoFoto != null){
+                try {
+                    byte[] bytesFoto = Files.readAllBytes(archivoFoto.toPath());
+                    colaborador.setFoto(bytesFoto);
+                } catch (IOException ex) {
+                    Utilidades.mostrarAlertaSimple("Error", "Error al procesar la foto para envío", Alert.AlertType.ERROR);
+                    return;
+                }
+            } else if (colaboradorEdicion != null) {
+                // Si estamos editando y no cambiamos foto, mantener la anterior (o manejar null en backend)
+                // Dependiendo de tu API, a veces es mejor no enviar nada si no cambió.
+            }
+
+            if(colaboradorEdicion == null){
+                registrarColaborador(colaborador);
+            } else {
+                colaborador.setIdColaborador(colaboradorEdicion.getIdColaborador());
+                actualizarColaborador(colaborador);
+            }
+        }
+    }
+    
+    private void registrarColaborador(Colaborador colaborador){
+        Respuesta respuesta = ColaboradorImp.registrar(colaborador);
+        if(!respuesta.isError()){
+            Utilidades.mostrarAlertaSimple("Éxito", respuesta.getMensaje(), Alert.AlertType.INFORMATION);
+            cerrarVentana();
+        } else {
+            Utilidades.mostrarAlertaSimple("Error", respuesta.getMensaje(), Alert.AlertType.ERROR);
+        }
+    }
+    
+    private void actualizarColaborador(Colaborador colaborador){
+        Respuesta respuesta = ColaboradorImp.editar(colaborador);
+        if(!respuesta.isError()){
+            Utilidades.mostrarAlertaSimple("Éxito", respuesta.getMensaje(), Alert.AlertType.INFORMATION);
+            cerrarVentana();
+        } else {
+            Utilidades.mostrarAlertaSimple("Error", respuesta.getMensaje(), Alert.AlertType.ERROR);
+        }
+    }
+
+    private boolean validarCampos() {
+        // Validaciones básicas requeridas
+        if(tfNombre.getText().isEmpty() || tfPaterno.getText().isEmpty() || 
+           tfCurp.getText().isEmpty() || tfNoPersonal.getText().isEmpty() || 
+           pfContrasena.getText().isEmpty() || cbRol.getSelectionModel().getSelectedItem() == null ||
+           cbSucursal.getSelectionModel().getSelectedItem() == null){
+            
+            Utilidades.mostrarAlertaSimple("Campos Vacíos", "Por favor llena todos los campos obligatorios", Alert.AlertType.WARNING);
+            return false;
+        }
+        return true;
+    }
+    
+    // --- UTILIDADES INTERNAS PARA SELECCIÓN ---
+    private void seleccionarRol(int idRol) {
+        for(Rol r : cbRol.getItems()){
+            if(r.getIdRol() == idRol){
+                cbRol.getSelectionModel().select(r);
+                break;
+            }
+        }
+    }
+    
+    private void seleccionarSucursal(String codigoSucursal) {
+        for(Sucursal s : cbSucursal.getItems()){
+            if(s.getCodigoSucursal().equals(codigoSucursal)){
+                cbSucursal.getSelectionModel().select(s);
+                break;
+            }
         }
     }
 
     @FXML
-    private void clicSubirFoto(ActionEvent event) {
-        // Logica foto
-    }
-
-    @FXML
-    private void clicGuardar(ActionEvent event) {
-        cerrarVentana();
-    }
-    
-    @FXML
     private void clicCancelar(ActionEvent event) {
-        cerrarVentana();
+        if(Utilidades.mostrarAlertaConfirmacion("Cancelar", "¿Deseas salir sin guardar los cambios?")){
+            cerrarVentana();
+        }
     }
     
     private void cerrarVentana(){
