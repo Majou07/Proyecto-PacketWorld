@@ -1,6 +1,6 @@
 package clienteescritorio;
 
-import clienteescritorio.dominio.Catalogolmp;
+import clienteescritorio.dominio.CatalogoImp;
 import clienteescritorio.dominio.ColaboradorImp;
 import clienteescritorio.dominio.SucursalImp;
 import clienteescritorio.dto.Respuesta;
@@ -89,7 +89,7 @@ public class FXMLFormularioColaboradorController implements Initializable {
     // --- CARGA DE COMBOS (CATÁLOGOS) ---
     private void cargarRoles() {
         roles = FXCollections.observableArrayList();
-        HashMap<String, Object> respuesta = Catalogolmp.obtenerRoles(); // Asumiendo implementación similar a ProfesorImp
+        HashMap<String, Object> respuesta = CatalogoImp.obtenerRoles(); // Asumiendo implementación similar a ProfesorImp
         if(!(boolean)respuesta.get("error")){
             roles.addAll((List<Rol>)respuesta.get("roles"));
             cbRol.setItems(roles);
