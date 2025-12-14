@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="envio">
+
+  <insert id="crear" parameterType="pojo.Envio">
+    INSERT INTO envio
+    (numero_guia,destinatario_nombre,destinatario_ap_paterno,
+     destinatario_ap_materno,destino_calle,destino_numero,
+     destino_colonia,destino_codigo_postal,destino_ciudad,
+     destino_estado,id_cliente_remitente,codigo_sucursal_origen,id_estatus_envio)
+    VALUES
+    (#{numeroGuia},#{destinatarioNombre},#{destinatarioApPaterno},
+     #{destinatarioApMaterno},#{destinoCalle},#{destinoNumero},
+     #{destinoColonia},#{destinoCodigoPostal},#{destinoCiudad},
+     #{destinoEstado},#{idCliente},#{codigoSucursal},1);
+  </insert>
+
+  <select id="consultar" parameterType="String" resultType="pojo.Envio">
+    SELECT * FROM envio WHERE numero_guia=#{numeroGuia};
+  </select>
+
+  <update id="actualizar" parameterType="pojo.Envio">
+    UPDATE envio SET
+      destino_calle=#{destinoCalle},
+      destino_numero=#{destinoNumero},
+      destino_colonia=#{destinoColonia},
+      destino_codigo_postal=#{destinoCodigoPostal},
+      destino_ciudad=#{destinoCiudad},
+      destino_estado=#{destinoEstado}
+    WHERE id_envio=#{idEnvio};
+  </update>
+
+  <update id="asignar-conductor" parameterType="map">
+    UPDATE envio SET id_conductor_asignado=#{idConductor}
+    WHERE id_envio=#{idEnvio};
+  </update>
+</mapper>
+
+
