@@ -1,6 +1,7 @@
 package clienteescritorio;
 
 import clienteescritorio.utilidad.Utilidades;
+import clienteescritorio.pojo.Unidad;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
