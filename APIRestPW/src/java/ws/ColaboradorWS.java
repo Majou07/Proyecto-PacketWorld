@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package ws;
 
 import com.google.gson.Gson;
@@ -21,10 +17,7 @@ import static javax.ws.rs.client.Entity.json;
 import javax.ws.rs.core.MediaType;
 import pojo.Colaborador;
 
-/**
- *
- * @author Bruno
- */
+
 
 @Path("colaborador")
 public class ColaboradorWS {

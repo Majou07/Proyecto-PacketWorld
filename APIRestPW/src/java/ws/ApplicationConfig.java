@@ -1,16 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package ws;
 
 import java.util.Set;
 import javax.ws.rs.core.Application;
 
-/**
- *
- * @author Bruno
- */
+
 @javax.ws.rs.ApplicationPath("api")
 public class ApplicationConfig extends Application {
 

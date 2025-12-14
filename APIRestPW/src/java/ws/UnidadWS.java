@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package ws;
 
 import com.google.gson.Gson;
@@ -22,10 +19,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import pojo.Unidad;
 
-/**
- *
- * @author Bruno
- */
+
 @Path("unidad")
 public class UnidadWS {
     @Path("obtener-todas")

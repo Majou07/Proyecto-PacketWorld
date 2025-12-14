@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package dominio;
 
 import dto.Respuesta;
@@ -11,10 +8,7 @@ import org.apache.ibatis.session.SqlSession;
 import pojo.Sucursal;
 import utilidades.Constantes;
 
-/**
- *
- * @author Bruno
- */
+
 public class SucursalImp {
     
     public static List<Sucursal>obtenerSucursales(){
