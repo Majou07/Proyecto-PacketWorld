@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dominio;
 
 import dto.RSAutenticacionColaborador;
@@ -11,10 +7,6 @@ import modelo.mybatis.MyBatisUtil;
 import org.apache.ibatis.session.SqlSession;
 import pojo.Colaborador;
 
-/**
- *
- * @author Bruno
- */
 public class AutenticacionImp {
     
      public static RSAutenticacionColaborador autenticarAdministracion(String numeroPersonal, String contrasena){
