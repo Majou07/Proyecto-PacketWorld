@@ -1,6 +1,5 @@
 package clienteescritorio;
 
-import clienteescritorio.dominio.CatalogoImp;
 import clienteescritorio.dominio.ColaboradorImp;
 import clienteescritorio.dominio.SucursalImp;
 import clienteescritorio.dto.Respuesta;
@@ -56,40 +55,34 @@ public class FXMLFormularioColaboradorController implements Initializable {
         cargarSucursales();
     }    
     
-    // Lógica para recibir datos al dar click en "Editar" en la tabla anterior
     public void inicializarValores(Colaborador colaborador){
         this.colaboradorEdicion = colaborador;
         if(colaborador != null){
             lbTitulo.setText("Actualizar Colaborador");
             
-            // Rellenar campos de texto
             tfNombre.setText(colaborador.getNombre());
             tfPaterno.setText(colaborador.getApellidoPaterno());
             tfMaterno.setText(colaborador.getApellidoMaterno());
             tfCurp.setText(colaborador.getCurp());
             tfCorreo.setText(colaborador.getCorreoElectronico());
             tfNoPersonal.setText(colaborador.getNumeroPersonal());
-            pfContrasena.setText(colaborador.getContrasena()); // Opcional: mostrar o dejar vacío
+            pfContrasena.setText(colaborador.getContrasena()); 
             
-            // Seleccionar en Combos
             seleccionarRol(colaborador.getIdRol());
             seleccionarSucursal(colaborador.getCodigoSucursal());
             
-            // Regla de Negocio: No se puede editar No. Personal ni Rol 
             tfNoPersonal.setDisable(true);
             cbRol.setDisable(true);
             
-            // Mostrar Foto desde Base64
             if(colaborador.getFotoBase64() != null && !colaborador.getFotoBase64().isEmpty()){
                 mostrarFotoServidor(colaborador.getFotoBase64());
             }
         }
     }
 
-    // --- CARGA DE COMBOS (CATÁLOGOS) ---
     private void cargarRoles() {
         roles = FXCollections.observableArrayList();
-        HashMap<String, Object> respuesta = CatalogoImp.obtenerRoles(); // Asumiendo implementación similar a ProfesorImp
+        HashMap<String, Object> respuesta = ColaboradorImp.obtenerRoles(); 
         if(!(boolean)respuesta.get("error")){
             roles.addAll((List<Rol>)respuesta.get("roles"));
             cbRol.setItems(roles);
@@ -98,14 +91,13 @@ public class FXMLFormularioColaboradorController implements Initializable {
 
     private void cargarSucursales() {
         sucursales = FXCollections.observableArrayList();
-        HashMap<String, Object> respuesta = SucursalImp.obtenerSucursales(); // Asumiendo implementación
+        HashMap<String, Object> respuesta = SucursalImp.obtenerSucursales(); 
         if(!(boolean)respuesta.get("error")){
             sucursales.addAll((List<Sucursal>)respuesta.get("sucursales"));
             cbSucursal.setItems(sucursales);
         }
     }
 
-    // --- LÓGICA DE FOTO ---
     @FXML
     private void clicSubirFoto(ActionEvent event) {
         FileChooser dialogo = new FileChooser();
@@ -137,7 +129,6 @@ public class FXMLFormularioColaboradorController implements Initializable {
         }
     }
 
-    // --- GUARDADO ---
     @FXML
     private void clicGuardar(ActionEvent event) {
         if(validarCampos()){
@@ -150,14 +141,12 @@ public class FXMLFormularioColaboradorController implements Initializable {
             colaborador.setNumeroPersonal(tfNoPersonal.getText());
             colaborador.setContrasena(pfContrasena.getText());
             
-            // Obtener IDs de combos
             if(cbRol.getSelectionModel().getSelectedItem() != null)
                 colaborador.setIdRol(cbRol.getSelectionModel().getSelectedItem().getIdRol());
             
             if(cbSucursal.getSelectionModel().getSelectedItem() != null)
                 colaborador.setCodigoSucursal(cbSucursal.getSelectionModel().getSelectedItem().getCodigoSucursal());
             
-            // Procesar foto a bytes para enviar
             if(archivoFoto != null){
                 try {
                     byte[] bytesFoto = Files.readAllBytes(archivoFoto.toPath());
@@ -167,8 +156,6 @@ public class FXMLFormularioColaboradorController implements Initializable {
                     return;
                 }
             } else if (colaboradorEdicion != null) {
-                // Si estamos editando y no cambiamos foto, mantener la anterior (o manejar null en backend)
-                // Dependiendo de tu API, a veces es mejor no enviar nada si no cambió.
             }
 
             if(colaboradorEdicion == null){
@@ -201,7 +188,6 @@ public class FXMLFormularioColaboradorController implements Initializable {
     }
 
     private boolean validarCampos() {
-        // Validaciones básicas requeridas
         if(tfNombre.getText().isEmpty() || tfPaterno.getText().isEmpty() || 
            tfCurp.getText().isEmpty() || tfNoPersonal.getText().isEmpty() || 
            pfContrasena.getText().isEmpty() || cbRol.getSelectionModel().getSelectedItem() == null ||
@@ -213,7 +199,6 @@ public class FXMLFormularioColaboradorController implements Initializable {
         return true;
     }
     
-    // --- UTILIDADES INTERNAS PARA SELECCIÓN ---
     private void seleccionarRol(int idRol) {
         for(Rol r : cbRol.getItems()){
             if(r.getIdRol() == idRol){

@@ -16,4 +16,7 @@ public class Constantes {
     public static final String METODO_GET = "GET";
     public static final String METODO_PUT = "PUT";
     public static final String METODO_DELETE = "DELETE";
+    
+    public static final String APPLICATION_JSON = "application/json";
+    public static final String APPLICATION_FORM = "application/x-www-form-urlencoded";
 }

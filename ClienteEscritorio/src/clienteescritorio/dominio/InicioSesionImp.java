@@ -11,6 +11,9 @@ public class InicioSesionImp {
     
     public static RSAutenticacionColaborador verificarCredenciales(
         String noPersonal, String password) {
+        
+        System.out.println(">>> ENTRÓ A verificarCredenciales <<<");
+
 
     RSAutenticacionColaborador respuesta = new RSAutenticacionColaborador();
 

@@ -33,7 +33,6 @@ public class FXMLInicioSesionController implements Initializable {
         if(noPersonal.isEmpty() || password.isEmpty()){
             Utilidades.mostrarAlertaSimple("Campos vacíos", "Por favor ingresa tus credenciales", Alert.AlertType.WARNING);
         } else {
-            // Llamada a la implementación corregida
             RSAutenticacionColaborador respuesta = InicioSesionImp.verificarCredenciales(noPersonal, password);
             
             if(!respuesta.isError()){
