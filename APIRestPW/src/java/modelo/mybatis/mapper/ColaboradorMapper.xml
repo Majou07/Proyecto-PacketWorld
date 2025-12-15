@@ -101,7 +101,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     FROM colaborador c
     INNER JOIN rol r ON r.idrol = c.idrol
         WHERE c.idrol = #{idRol};
-
+    </select>
+    
+    
+    <select id="obtener-roles" resultType="pojo.Rol">
+        SELECT idrol AS idRol, nombre_rol AS nombreRol FROM rol
     </select>
     
    

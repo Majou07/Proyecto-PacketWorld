@@ -165,6 +165,23 @@ public class ColaboradorImp {
         return lista;
     }
     
+    
+    public static List<pojo.Rol> obtenerRoles() {
+        List<pojo.Rol> roles = null;
+        SqlSession conexionBD = MyBatisUtil.getSession();
+        if (conexionBD != null) {
+            try {
+                roles = conexionBD.selectList("colaborador.obtener-roles");
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                conexionBD.close();
+            }
+        }
+        return roles;
+    }
+    
+    
     public static Respuesta guardarFoto(int idColaborador, byte[] foto){
     Respuesta respuesta = new Respuesta();
     respuesta.setError(true);

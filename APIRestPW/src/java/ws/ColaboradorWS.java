@@ -102,6 +102,13 @@ public class ColaboradorWS {
         throw new BadRequestException("Rol inválido");
     }
     
+    @Path("obtener-roles")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<pojo.Rol> obtenerRoles() {
+        return ColaboradorImp.obtenerRoles(); 
+    }
+    
     @Path("subir-foto/{idColaborador}")
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
