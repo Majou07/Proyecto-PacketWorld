@@ -11,13 +11,14 @@ import javax.ws.rs.core.MediaType;
 
  @Path ("autenticacion")
 public class AutenticacionWS {
-     @Path("administracion")
+     
+    @Path("/administracion")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     public RSAutenticacionColaborador autenticarColaborador(
             @FormParam("numeroPersonal")String numeroPersonal,
             @FormParam("contrasena")String contrasena){
-        //TODO validación de campos y llamada a la capa de implementación
+        
         if(numeroPersonal != null && !numeroPersonal.isEmpty()&& 
                 (contrasena !=null && !contrasena.isEmpty())){
             RSAutenticacionColaborador respuesta = AutenticacionImp.autenticarAdministracion(numeroPersonal,contrasena);
@@ -25,7 +26,6 @@ public class AutenticacionWS {
         }else{
             throw new BadRequestException();
         }
-        //return null;
     }
      
    

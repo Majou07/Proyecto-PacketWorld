@@ -2,7 +2,6 @@ package pojo;
 
 
 public class Colaborador {
-    // Campos de la tabla 'colaborador'
     private int idColaborador;
     private String numeroPersonal;
     private String nombre;
@@ -13,13 +12,13 @@ public class Colaborador {
     private String contrasena; 
     private byte[] foto;
     private String fotografia;
-    private String numeroLicencia; // Solo para conductores
+    private String numeroLicencia; 
     private int idRol;
     private String rol;
     
    
     private String codigoSucursal;
-    private Integer idUnidadAsignada; // Puede ser null
+    private Integer idUnidadAsignada; 
     
     
     
