@@ -40,6 +40,13 @@ public class ConexionAPI {
         RespuestaHTTP respuesta = new RespuestaHTTP();
         try {
             URL url = new URL(urlString);
+            // --- DEBUG: IMPRIMIR EN CONSOLA ---
+            System.out.println("----------------------------------------");
+            System.out.println("Intentando conectar a: " + url);
+            System.out.println("Método: " + metodo);
+            System.out.println("Parámetros: " + parametros);
+            System.out.println("----------------------------------------");
+            // ----------------------------------
             HttpURLConnection conexion = (HttpURLConnection) url.openConnection();
             conexion.setRequestMethod(metodo);
             conexion.setRequestProperty("Content-Type", contentType);
@@ -64,4 +71,42 @@ public class ConexionAPI {
         }
         return respuesta;
     }
+    
+    public static RespuestaHTTP peticionPOST(String urlString, String parametros) {
+    RespuestaHTTP respuesta = new RespuestaHTTP();
+    try {
+        URL url = new URL(urlString);
+        HttpURLConnection conexion = (HttpURLConnection) url.openConnection();
+        conexion.setRequestMethod(Constantes.METODO_POST);
+        conexion.setDoOutput(true);
+        conexion.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
+        OutputStream os = conexion.getOutputStream();
+        os.write(parametros.getBytes());
+        os.flush();
+        os.close();
+
+        int codigo = conexion.getResponseCode();
+        respuesta.setCodigo(codigo);
+
+        if (codigo == HttpURLConnection.HTTP_OK) {
+            respuesta.setContenido(
+                clienteescritorio.utilidad.Utilidades.streamToString(
+                    conexion.getInputStream()
+                )
+            );
+            } else {
+                respuesta.setContenido(
+                    clienteescritorio.utilidad.Utilidades.streamToString(
+                        conexion.getErrorStream()
+                    )
+                );
+            }
+        } catch (Exception e) {
+            respuesta.setCodigo(Constantes.ERROR_PETICION);
+            respuesta.setContenido(e.getMessage());
+        }
+        return respuesta;
+        }
+
 }
