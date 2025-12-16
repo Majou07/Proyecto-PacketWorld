@@ -1,10 +1,15 @@
 package clienteescritorio;
 
+import clienteescritorio.dominio.ColaboradorImp;
 import clienteescritorio.pojo.Colaborador;
 import clienteescritorio.utilidad.Utilidades;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
 import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -41,7 +46,25 @@ public class FXMLColaboradoresController implements Initializable {
     }
     
     private void cargarDatos() {
+        try {
+            HashMap<String, Object> respuesta = ColaboradorImp.obtenerColaboradores();
+            
+            if (!(boolean) respuesta.get("error")) {
+                List<Colaborador> listaWS = (List<Colaborador>) respuesta.get("colaboradores");
+                ObservableList<Colaborador> listaTabla = FXCollections.observableArrayList(listaWS);
+                tvColaboradores.setItems(listaTabla);
+            } else {
+                Utilidades.mostrarAlertaSimple("Error", 
+                        (String) respuesta.get("mensaje"), 
+                        Alert.AlertType.ERROR);
+            }
+        } catch (Exception e) {
+            Utilidades.mostrarAlertaSimple("Error de conexión", 
+                    "No se pudo conectar con el servidor.", 
+                    Alert.AlertType.ERROR);
+        }
     }
+    
 
     @FXML
     private void clicRegistrar(ActionEvent event) {
