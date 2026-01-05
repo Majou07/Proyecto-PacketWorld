@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
@@ -21,6 +22,9 @@
             <TableColumn fx:id="colPaterno" prefWidth="110.0" text="A. Paterno" />
             <TableColumn fx:id="colMaterno" prefWidth="110.0" text="A. Materno" />
             <TableColumn fx:id="colRol" prefWidth="108.0" text="Rol" />
+            <TableColumn fx:id="colSucursal" prefWidth="108.0" text="Sucursal" />
+            <TableColumn fx:id="colNumeroLicencia" prefWidth="108.0" text="No. Licencia" />
+            <TableColumn fx:id="colUnidadAsignada" prefWidth="108.0" text="Unidad asignada" />
         </columns>
       </TableView>
       <VBox layoutX="620.0" layoutY="140.0" spacing="15.0">

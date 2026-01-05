@@ -48,5 +48,7 @@
       
       <Button layoutX="450.0" layoutY="430.0" mnemonicParsing="false" onAction="#clicCancelar" style="-fx-background-color: #d1a3a4;" text="Cancelar" />
       <Button layoutX="550.0" layoutY="430.0" mnemonicParsing="false" onAction="#clicGuardar" style="-fx-background-color: #d1a3a4;" text="Registrar" />
+      <Label layoutX="259.0" layoutY="317.0" text="No. de Licencia" />
+      <TextField fx:id="tfNumeroLicencia" layoutX="259.0" layoutY="348.0" prefWidth="200.0" disable="true" style="-fx-background-color: #e0e0e0;" />
    </children>
 </AnchorPane>

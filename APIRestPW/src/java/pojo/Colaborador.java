@@ -18,6 +18,7 @@ public class Colaborador {
     
    
     private String codigoSucursal;
+    private String sucursal;
     private Integer idUnidadAsignada; 
     
     
@@ -143,6 +144,15 @@ public class Colaborador {
     public void setCodigoSucursal(String codigoSucursal) {
         this.codigoSucursal = codigoSucursal;
     }
+
+    public String getSucursal() {
+        return sucursal;
+    }
+
+    public void setSucursal(String sucursal) {
+        this.sucursal = sucursal;
+    }
+    
 
     public Integer getIdUnidadAsignada() {
         return idUnidadAsignada;

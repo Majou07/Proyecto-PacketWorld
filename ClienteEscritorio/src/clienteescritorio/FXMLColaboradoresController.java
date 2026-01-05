@@ -1,10 +1,16 @@
 package clienteescritorio;
 
+import clienteescritorio.dominio.ColaboradorImp;
 import clienteescritorio.pojo.Colaborador;
+import clienteescritorio.utilidad.Constantes;
 import clienteescritorio.utilidad.Utilidades;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
 import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -25,11 +31,23 @@ public class FXMLColaboradoresController implements Initializable {
     @FXML private TableColumn colPaterno;
     @FXML private TableColumn colMaterno;
     @FXML private TableColumn colRol;
+    @FXML
+    private TableColumn colSucursal;
+    @FXML
+    private TableColumn colNumeroLicencia;
+    @FXML
+    private TableColumn colUnidadAsignada;
+    
+    private ObservableList<Colaborador> colaboradores;
+    
+    
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         configurarTabla();
         cargarDatos();
+        System.out.println("Colaboradores: " + colaboradores.size());
+
     }    
 
     private void configurarTabla() {
@@ -38,9 +56,27 @@ public class FXMLColaboradoresController implements Initializable {
         colPaterno.setCellValueFactory(new PropertyValueFactory("apellidoPaterno"));
         colMaterno.setCellValueFactory(new PropertyValueFactory("apellidoMaterno"));
         colRol.setCellValueFactory(new PropertyValueFactory("rol"));
+        colSucursal.setCellValueFactory(new PropertyValueFactory("sucursal"));
+        colNumeroLicencia.setCellValueFactory(new PropertyValueFactory("numeroLicencia"));
+        colUnidadAsignada.setCellValueFactory(new PropertyValueFactory("idUnidadAsignada"));
     }
     
     private void cargarDatos() {
+        HashMap<String, Object> respuesta = ColaboradorImp.obtenerColaboradores();
+        boolean esError = (boolean) respuesta.get(Constantes.KEY_ERROR);
+        
+        if(!esError){
+            
+            List<Colaborador> colaboradoresAPI = (List<Colaborador>) respuesta.get("colaboradores");
+            //Patron de diseño observable
+            colaboradores = FXCollections.observableArrayList();
+            colaboradores.addAll(colaboradoresAPI);
+            tvColaboradores.setItems(colaboradores);
+        }else{
+            Utilidades.mostrarAlertaSimple("Error al cargar", 
+                    " "+respuesta.get("mensaje"), Alert.AlertType.ERROR);
+        }
+        
     }
 
     @FXML

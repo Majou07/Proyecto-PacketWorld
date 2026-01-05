@@ -108,5 +108,36 @@ public class ConexionAPI {
         }
         return respuesta;
         }
+    
+    public static RespuestaHTTP peticionBodyBytes(String urlString, String metodo, byte[] datos, String contentType) {
+    RespuestaHTTP respuesta = new RespuestaHTTP();
+    try {
+        URL url = new URL(urlString);
+        HttpURLConnection conexion = (HttpURLConnection) url.openConnection();
+        conexion.setRequestMethod(metodo);
+        conexion.setRequestProperty("Content-Type", contentType);
+        conexion.setDoOutput(true);
+
+        OutputStream os = conexion.getOutputStream();
+        os.write(datos);
+        os.flush();
+        os.close();
+
+        int codigo = conexion.getResponseCode();
+        respuesta.setCodigo(codigo);
+
+        if (codigo == HttpURLConnection.HTTP_OK) {
+            respuesta.setContenido(Utilidades.streamToString(conexion.getInputStream()));
+        } else {
+            respuesta.setContenido(Utilidades.streamToString(conexion.getErrorStream()));
+        }
+
+    } catch (Exception e) {
+        respuesta.setCodigo(Constantes.ERROR_PETICION);
+        respuesta.setContenido(e.getMessage());
+    }
+    return respuesta;
+}
+
 
 }

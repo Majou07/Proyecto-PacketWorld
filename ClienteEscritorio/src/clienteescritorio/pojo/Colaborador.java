@@ -14,12 +14,14 @@ public class Colaborador {
     private String codigoSucursal;
     private String sucursal;
     private byte[] foto;
-    private String fotoBase64;
+    private String fotografia;
+      private String numeroLicencia; 
+    private Integer idUnidadAsignada; 
 
     public Colaborador() {
     }
 
-    public Colaborador(int idColaborador, String nombre, String apellidoPaterno, String apellidoMaterno, String curp, String correoElectronico, String numeroPersonal, String contrasena, int idRol, String rol, String codigoSucursal, String sucursal, byte[] foto, String fotoBase64) {
+    public Colaborador(int idColaborador, String nombre, String apellidoPaterno, String apellidoMaterno, String curp, String correoElectronico, String numeroPersonal, String contrasena, int idRol, String rol, String codigoSucursal, String sucursal, byte[] foto, String fotografia) {
         this.idColaborador = idColaborador;
         this.nombre = nombre;
         this.apellidoPaterno = apellidoPaterno;
@@ -33,7 +35,7 @@ public class Colaborador {
         this.codigoSucursal = codigoSucursal;
         this.sucursal = sucursal;
         this.foto = foto;
-        this.fotoBase64 = fotoBase64;
+        this.fotografia = fotografia;
     }
     
     
@@ -142,13 +144,32 @@ public class Colaborador {
         this.foto = foto; 
     }
 
-    public String getFotoBase64() { 
-        return fotoBase64; 
+    public String getFotografia() { 
+        return fotografia; 
     }
     
-    public void setFotoBase64(String fotoBase64) { 
-        this.fotoBase64 = fotoBase64; 
+    public void setFotografia(String fotografia) { 
+        this.fotografia = fotografia; 
     }
+
+    public String getNumeroLicencia() {
+        return numeroLicencia;
+    }
+
+    public void setNumeroLicencia(String numeroLicencia) {
+        this.numeroLicencia = numeroLicencia;
+    }
+    
+
+    public Integer getIdUnidadAsignada() {
+        return idUnidadAsignada;
+    }
+
+    public void setIdUnidadAsignada(Integer idUnidadAsignada) {
+        this.idUnidadAsignada = idUnidadAsignada;
+    }
+    
+    
     
     @Override
     public String toString() {

@@ -39,20 +39,31 @@ public class FXMLFormularioColaboradorController implements Initializable {
     @FXML private TextField tfCurp;
     @FXML private TextField tfCorreo;
     @FXML private TextField tfNoPersonal;
+    @FXML private TextField tfNumeroLicencia;
     @FXML private PasswordField pfContrasena;
     @FXML private ComboBox<Rol> cbRol;
     @FXML private ComboBox<Sucursal> cbSucursal;
     @FXML private ImageView ivFoto;
+    
 
     private Colaborador colaboradorEdicion;
     private File archivoFoto;
     private ObservableList<Rol> roles;
     private ObservableList<Sucursal> sucursales;
+    
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         cargarRoles();
         cargarSucursales();
+        
+        cbRol.setOnAction(e -> {
+    boolean esConductor = cbRol.getValue() != null
+            && cbRol.getValue().getNombreRol().equalsIgnoreCase("Conductor");
+
+    tfNumeroLicencia.setDisable(!esConductor);
+    if (!esConductor) tfNumeroLicencia.clear();
+});
     }    
     
     public void inicializarValores(Colaborador colaborador){
@@ -74,8 +85,8 @@ public class FXMLFormularioColaboradorController implements Initializable {
             tfNoPersonal.setDisable(true);
             cbRol.setDisable(true);
             
-            if(colaborador.getFotoBase64() != null && !colaborador.getFotoBase64().isEmpty()){
-                mostrarFotoServidor(colaborador.getFotoBase64());
+            if(colaborador.getFotografia() != null && !colaborador.getFotografia().isEmpty()){
+            mostrarFotoServidor(colaborador.getFotografia());
             }
         }
     }
@@ -147,6 +158,10 @@ public class FXMLFormularioColaboradorController implements Initializable {
             if(cbSucursal.getSelectionModel().getSelectedItem() != null)
                 colaborador.setCodigoSucursal(cbSucursal.getSelectionModel().getSelectedItem().getCodigoSucursal());
             
+            if (!tfNumeroLicencia.isDisabled()) {
+             colaborador.setNumeroLicencia(tfNumeroLicencia.getText());
+            }
+            
             if(archivoFoto != null){
                 try {
                     byte[] bytesFoto = Files.readAllBytes(archivoFoto.toPath());
@@ -169,6 +184,7 @@ public class FXMLFormularioColaboradorController implements Initializable {
     
     private void registrarColaborador(Colaborador colaborador){
         Respuesta respuesta = ColaboradorImp.registrar(colaborador);
+        
         if(!respuesta.isError()){
             Utilidades.mostrarAlertaSimple("Éxito", respuesta.getMensaje(), Alert.AlertType.INFORMATION);
             cerrarVentana();
@@ -196,6 +212,18 @@ public class FXMLFormularioColaboradorController implements Initializable {
             Utilidades.mostrarAlertaSimple("Campos Vacíos", "Por favor llena todos los campos obligatorios", Alert.AlertType.WARNING);
             return false;
         }
+        // Validación específica para Conductores
+    if(cbRol.getValue().getNombreRol().equalsIgnoreCase("Conductor")
+            && tfNumeroLicencia.getText().isEmpty()) {
+
+        Utilidades.mostrarAlertaSimple(
+            "Número de licencia",
+            "El número de licencia es obligatorio para conductores",
+            Alert.AlertType.WARNING
+        );
+        return false;
+    }
+        
         return true;
     }
     

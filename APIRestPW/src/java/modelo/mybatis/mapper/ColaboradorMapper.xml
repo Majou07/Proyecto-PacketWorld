@@ -14,12 +14,33 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         c.numero_personal AS numeroPersonal,
         c.curp AS curp,
         c.correo_electronico AS correoElectronico,
+        c.numero_licencia AS numeroLicencia,
         c.id_unidad_asignada AS idUnidadAsignada,
+        c.codigo_sucursal AS codigoSucursal,
+        s.nombre_corto AS sucursal,
         c.idrol AS idRol,
         r.nombre_rol AS rol
     FROM colaborador c
     INNER JOIN rol r ON r.idrol = c.idrol
+    INNER JOIN sucursal s ON s.codigo_sucursal = c.codigo_sucursal
+
     </select>
+    
+    <!--validaciones antes de realizar el registro-->
+    
+    <select id="existe-curp" parameterType="string" resultType="int">
+    SELECT COUNT(*) FROM colaborador WHERE curp = #{curp}
+    </select>
+
+    <select id="existe-correo" parameterType="string" resultType="int">
+    SELECT COUNT(*) FROM colaborador WHERE correo_electronico = #{correoElectronico}
+    </select>
+
+    <select id="existe-numero-personal" parameterType="string" resultType="int">
+    SELECT COUNT(*) FROM colaborador WHERE numero_personal = #{numeroPersonal}
+    </select>
+    
+    
 
     <insert id="registrar" parameterType="pojo.Colaborador">
         INSERT INTO colaborador (numero_personal,nombre,apellido_paterno,apellido_materno,curp,correo_electronico,contrasena,

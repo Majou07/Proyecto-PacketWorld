@@ -85,4 +85,29 @@ public class ColaboradorImp {
         }
         return respuesta;
     }
+    
+    public static Respuesta subirFoto(Integer idColaborador, byte[] foto) {
+    Respuesta respuesta = new Respuesta();
+    String URL = Constantes.URL_WS + "colaborador/subir-foto/" + idColaborador;
+
+    RespuestaHTTP respuestaAPI = ConexionAPI.peticionBodyBytes(
+            URL,
+            Constantes.METODO_PUT,
+            foto,
+            "application/octet-stream"
+    );
+
+    if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+        Gson gson = new Gson();
+        respuesta = gson.fromJson(respuestaAPI.getContenido(), Respuesta.class);
+    } else {
+        respuesta.setError(true);
+        respuesta.setMensaje("Error al subir la fotografía.");
+    }
+    return respuesta;
+}
+
+
+    
+    
 }

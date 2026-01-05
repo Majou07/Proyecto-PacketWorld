@@ -33,6 +33,41 @@ public class ColaboradorImp {
         if(conexionBD !=null){
             try{
                 
+            // 1. Validar CURP
+            int curpExiste = conexionBD.selectOne("colaborador.existe-curp", colaborador.getCurp());
+            if (curpExiste > 0) {
+                respuesta.setError(true);
+                respuesta.setMensaje("La CURP ya se encuentra registrada");
+                return respuesta;
+            }
+
+            // 2. Validar correo
+            int correoExiste = conexionBD.selectOne("colaborador.existe-correo", colaborador.getCorreoElectronico());
+            if (correoExiste > 0) {
+                respuesta.setError(true);
+                respuesta.setMensaje("El correo electrónico ya está registrado");
+                return respuesta;
+            }
+
+            // 3. Validar número de personal
+            int numeroExiste = conexionBD.selectOne(
+                "colaborador.existe-numero-personal",
+                colaborador.getNumeroPersonal()
+            );
+            if (numeroExiste > 0) {
+                respuesta.setError(true);
+                respuesta.setMensaje("El número de personal ya está registrado");
+                return respuesta;
+            }
+
+            // 4. Validar licencia solo si es conductor
+            if (colaborador.getIdRol() == 2) { // 2 = Conductor
+                if (colaborador.getNumeroLicencia() == null || colaborador.getNumeroLicencia().trim().isEmpty()) {
+                    respuesta.setError(true);
+                    respuesta.setMensaje("El número de licencia es obligatorio para conductores");
+                    return respuesta;
+                }
+            } 
                 //si no existe registrar
                 int filasAfectadas = conexionBD.insert("colaborador.registrar",colaborador);
                 conexionBD.commit();
@@ -40,7 +75,7 @@ public class ColaboradorImp {
                     respuesta.setError(false);
                     respuesta.setMensaje("Registro del colaborador " + colaborador.getNombre() +  ", agregado correctamente...");
                 }else{
-                    respuesta.setError(false);
+                    respuesta.setError(true);
                     respuesta.setMensaje("Lo sentimos la informacion no pudo ser guardada, por favor verifique los datos");
                 }
         }catch(Exception e){
