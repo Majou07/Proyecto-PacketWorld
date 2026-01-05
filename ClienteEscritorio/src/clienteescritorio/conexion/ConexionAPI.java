@@ -40,7 +40,6 @@ public class ConexionAPI {
         RespuestaHTTP respuesta = new RespuestaHTTP();
         try {
             URL url = new URL(urlString);
-            // --- DEBUG: IMPRIMIR EN CONSOLA ---
             System.out.println("----------------------------------------");
             System.out.println("Intentando conectar a: " + url);
             System.out.println("Método: " + metodo);
@@ -72,34 +71,36 @@ public class ConexionAPI {
         return respuesta;
     }
     
-    public static RespuestaHTTP peticionPOST(String urlString, String parametros) {
-    RespuestaHTTP respuesta = new RespuestaHTTP();
-    try {
-        URL url = new URL(urlString);
-        HttpURLConnection conexion = (HttpURLConnection) url.openConnection();
-        conexion.setRequestMethod(Constantes.METODO_POST);
-        conexion.setDoOutput(true);
-        conexion.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        public static RespuestaHTTP peticionPOST(String urlString, String parametros) {
+        System.out.println(">>> ENTRÓ A peticionPOST <<<");
+        System.out.println("URL: " + urlString);
+        System.out.println("PARAMS: " + parametros);
 
-        OutputStream os = conexion.getOutputStream();
-        os.write(parametros.getBytes());
-        os.flush();
-        os.close();
-
-        int codigo = conexion.getResponseCode();
-        respuesta.setCodigo(codigo);
-
-        if (codigo == HttpURLConnection.HTTP_OK) {
-            respuesta.setContenido(
-                clienteescritorio.utilidad.Utilidades.streamToString(
-                    conexion.getInputStream()
-                )
+        RespuestaHTTP respuesta = new RespuestaHTTP();
+        try {
+            URL url = new URL(urlString);
+            HttpURLConnection conexion = (HttpURLConnection) url.openConnection();
+            conexion.setRequestMethod(Constantes.METODO_POST);
+            conexion.setDoOutput(true);
+            conexion.setRequestProperty(
+                "Content-Type", "application/x-www-form-urlencoded"
             );
+
+            OutputStream os = conexion.getOutputStream();
+            os.write(parametros.getBytes());
+            os.flush();
+            os.close();
+
+            int codigo = conexion.getResponseCode();
+            respuesta.setCodigo(codigo);
+
+            if (codigo == HttpURLConnection.HTTP_OK) {
+                respuesta.setContenido(
+                    Utilidades.streamToString(conexion.getInputStream())
+                );
             } else {
                 respuesta.setContenido(
-                    clienteescritorio.utilidad.Utilidades.streamToString(
-                        conexion.getErrorStream()
-                    )
+                    Utilidades.streamToString(conexion.getErrorStream())
                 );
             }
         } catch (Exception e) {
@@ -109,35 +110,36 @@ public class ConexionAPI {
         return respuesta;
         }
     
-    public static RespuestaHTTP peticionBodyBytes(String urlString, String metodo, byte[] datos, String contentType) {
-    RespuestaHTTP respuesta = new RespuestaHTTP();
-    try {
-        URL url = new URL(urlString);
-        HttpURLConnection conexion = (HttpURLConnection) url.openConnection();
-        conexion.setRequestMethod(metodo);
-        conexion.setRequestProperty("Content-Type", contentType);
-        conexion.setDoOutput(true);
+        public static RespuestaHTTP peticionBodyBytes(String urlString, String metodo, byte[] datos, String contentType) {
+        RespuestaHTTP respuesta = new RespuestaHTTP();
+        try {
+            URL url = new URL(urlString);
+            HttpURLConnection conexion = (HttpURLConnection) url.openConnection();
+            conexion.setRequestMethod(metodo);
+            conexion.setRequestProperty("Content-Type", contentType);
+            conexion.setDoOutput(true);
 
-        OutputStream os = conexion.getOutputStream();
-        os.write(datos);
-        os.flush();
-        os.close();
+            OutputStream os = conexion.getOutputStream();
+            os.write(datos);
+            os.flush();
+            os.close();
 
-        int codigo = conexion.getResponseCode();
-        respuesta.setCodigo(codigo);
+            int codigo = conexion.getResponseCode();
+            respuesta.setCodigo(codigo);
 
-        if (codigo == HttpURLConnection.HTTP_OK) {
-            respuesta.setContenido(Utilidades.streamToString(conexion.getInputStream()));
-        } else {
-            respuesta.setContenido(Utilidades.streamToString(conexion.getErrorStream()));
+            if (codigo == HttpURLConnection.HTTP_OK) {
+                respuesta.setContenido(Utilidades.streamToString(conexion.getInputStream()));
+            } else {
+                respuesta.setContenido(Utilidades.streamToString(conexion.getErrorStream()));
+            }
+
+        } catch (Exception e) {
+            respuesta.setCodigo(Constantes.ERROR_PETICION);
+            respuesta.setContenido(e.getMessage());
         }
+        return respuesta;
 
-    } catch (Exception e) {
-        respuesta.setCodigo(Constantes.ERROR_PETICION);
-        respuesta.setContenido(e.getMessage());
     }
-    return respuesta;
-}
 
 
 }
