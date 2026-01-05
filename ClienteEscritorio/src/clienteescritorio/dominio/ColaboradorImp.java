@@ -10,6 +10,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -68,6 +70,38 @@ public class ColaboradorImp {
         return respuesta;
     }
     
+     public static Respuesta eliminar(int idColaborador){
+        Respuesta respuesta = new Respuesta();
+        String URL = Constantes.URL_WS +"colaborador/eliminar/"+idColaborador;
+        RespuestaHTTP respuestaAPI = ConexionAPI.peticionSinBody(URL, Constantes.METODO_DELETE);
+        if(respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK){
+            Gson gson = new Gson();
+            respuesta = gson.fromJson(respuestaAPI.getContenido(),Respuesta.class);
+        }else{
+              respuesta.setError(true);
+          switch(respuestaAPI.getCodigo()){
+                case Constantes.ERROR_MALFORMED_URL:
+                respuesta.setMensaje(Constantes.MSJ_ERROR_URL);
+                break;
+                
+                case Constantes.ERROR_PETICION:
+                    respuesta.setMensaje(Constantes.MSJ_ERROR_PETICION);
+                    break;
+                case HttpURLConnection.HTTP_BAD_REQUEST:
+                    respuesta.setMensaje("Campos en formato incorrecto,"+
+                            "por favor verifica la informacion enviada");
+                    break;
+                default:
+                    respuesta.setMensaje("Lo sentimos hay problemas para obtener la información"
+                            + "en este momento por favor intentelo mas tarde");
+                    
+        }
+          
+            
+        }   
+        return respuesta;
+    }
+    
     public static HashMap<String, Object> obtenerRoles() {
         HashMap<String, Object> respuesta = new LinkedHashMap<>();
         String URL = Constantes.URL_WS + "colaborador/obtener-roles"; 
@@ -106,8 +140,105 @@ public class ColaboradorImp {
     }
     return respuesta;
 }
+    public static Colaborador obtenerFoto(Integer idColaborador) {
+    String URL = Constantes.URL_WS + "colaborador/obtener-foto/" + idColaborador;
+    RespuestaHTTP respuestaAPI = ConexionAPI.peticionGET(URL);
 
+    //  Evitar NPE si el contenido es nulo o vacío
+    if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK 
+        && respuestaAPI.getContenido() != null 
+        && !respuestaAPI.getContenido().isEmpty()) {
+        
+        Gson gson = new Gson();
+        return gson.fromJson(respuestaAPI.getContenido(), Colaborador.class);
+    }
+    return null; // si no hay foto, devuelve null
+}
 
     
+    public static HashMap<String, Object> buscarPorNumeroPersonal(String numeroPersonal) {
+    HashMap<String, Object> respuesta = new LinkedHashMap<>();
+    String URL = Constantes.URL_WS + "colaborador/buscar/numero/" + numeroPersonal;
+    RespuestaHTTP respuestaAPI = ConexionAPI.peticionGET(URL);
+
+    if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+        Gson gson = new Gson();
+        Type tipoLista = new TypeToken<List<Colaborador>>(){}.getType();
+        List<Colaborador> lista = gson.fromJson(respuestaAPI.getContenido(), tipoLista);
+        respuesta.put(Constantes.KEY_ERROR, false);
+        respuesta.put("colaboradores", lista);
+    } else {
+        respuesta.put(Constantes.KEY_ERROR, true);
+        respuesta.put(Constantes.KEY_MENSAJE, "Error al buscar colaborador por número personal.");
+    }
+    return respuesta;
+}
+
+    public static HashMap<String, Object> buscarPorRol(int idRol) {
+    HashMap<String, Object> respuesta = new LinkedHashMap<>();
+    String URL = Constantes.URL_WS + "colaborador/buscar/rol/" + idRol;
+    RespuestaHTTP respuestaAPI = ConexionAPI.peticionGET(URL);
+
+    if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+        Gson gson = new Gson();
+        Type tipoLista = new TypeToken<List<Colaborador>>(){}.getType();
+        List<Colaborador> lista = gson.fromJson(respuestaAPI.getContenido(), tipoLista);
+        respuesta.put(Constantes.KEY_ERROR, false);
+        respuesta.put("colaboradores", lista);
+    } else {
+        respuesta.put(Constantes.KEY_ERROR, true);
+        respuesta.put(Constantes.KEY_MENSAJE, "Error al buscar colaboradores por rol.");
+    }
+    return respuesta;
+}
     
+  public static HashMap<String, Object> buscarPorNombre(String filtro) {
+    HashMap<String, Object> respuesta = new LinkedHashMap<>();
+
+    try {
+        // Codificar el filtro
+        String filtroEncoded = URLEncoder.encode(filtro, "UTF-8");
+        String URL = Constantes.URL_WS + "colaborador/buscar/nombre/" + filtroEncoded;
+
+        // Log de la URL que se está llamando
+        System.out.println("[buscarPorNombre] URL: " + URL);
+
+        RespuestaHTTP respuestaAPI = ConexionAPI.peticionGET(URL);
+
+        // Logs de depuración
+        System.out.println("[buscarPorNombre] Código HTTP: " + respuestaAPI.getCodigo());
+        System.out.println("[buscarPorNombre] Contenido recibido: " + respuestaAPI.getContenido());
+
+        if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+            Gson gson = new Gson();
+            Type tipoLista = new TypeToken<List<Colaborador>>(){}.getType();
+            List<Colaborador> lista = gson.fromJson(respuestaAPI.getContenido(), tipoLista);
+
+            // Log de la lista parseada
+            System.out.println("[buscarPorNombre] Lista parseada, tamaño: " + (lista != null ? lista.size() : 0));
+
+            respuesta.put(Constantes.KEY_ERROR, false);
+            respuesta.put("colaboradores", lista);
+        } else {
+            respuesta.put(Constantes.KEY_ERROR, true);
+            respuesta.put(Constantes.KEY_MENSAJE, "Error al buscar colaboradores por nombre.");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+        respuesta.put(Constantes.KEY_ERROR, true);
+        respuesta.put(Constantes.KEY_MENSAJE, "Error al codificar o procesar la búsqueda por nombre.");
+    }
+
+    return respuesta;
+}
+
+
+
+
+
+   
+
+
+
+
 }

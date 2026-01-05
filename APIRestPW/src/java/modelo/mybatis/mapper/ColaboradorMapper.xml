@@ -69,8 +69,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
     
     
-     <select id="obtener-por-nombre" parameterType="string" resultType="pojo.Colaborador" >
-       SELECT 
+     <select id="obtener-por-nombre" parameterType="string" resultType="pojo.Colaborador">
+    SELECT 
         c.id_colaborador AS idColaborador,
         c.nombre AS nombre,
         c.apellido_paterno AS apellidoPaterno,
@@ -81,12 +81,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         c.id_unidad_asignada AS idUnidadAsignada,
         c.idrol AS idRol,
         r.nombre_rol AS rol
-    FROM colaborador c
-    INNER JOIN rol r ON r.idrol = c.idrol
-       WHERE nombre LIKE CONCAT('%', #{filtro}, '%')
-       OR apellido_paterno LIKE CONCAT('%', #{filtro}, '%')
-       OR apellido_materno LIKE CONCAT('%', #{filtro}, '%');
+        FROM colaborador c
+        INNER JOIN rol r ON r.idrol = c.idrol
+        WHERE CONCAT_WS(' ', c.nombre, c.apellido_paterno, c.apellido_materno) COLLATE utf8_general_ci LIKE CONCAT('%', #{filtro}, '%')
+       OR c.nombre COLLATE utf8_general_ci LIKE CONCAT('%', #{filtro}, '%')
+       OR c.apellido_paterno COLLATE utf8_general_ci LIKE CONCAT('%', #{filtro}, '%')
+       OR c.apellido_materno COLLATE utf8_general_ci LIKE CONCAT('%', #{filtro}, '%');
     </select>
+
     
      <select id="obtener-por-noPersonal" parameterType="string" resultType="pojo.Colaborador" >
        SELECT 

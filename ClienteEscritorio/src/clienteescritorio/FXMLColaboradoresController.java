@@ -1,7 +1,9 @@
 package clienteescritorio;
 
 import clienteescritorio.dominio.ColaboradorImp;
+import clienteescritorio.dto.Respuesta;
 import clienteescritorio.pojo.Colaborador;
+import clienteescritorio.pojo.Rol;
 import clienteescritorio.utilidad.Constantes;
 import clienteescritorio.utilidad.Utilidades;
 import java.io.IOException;
@@ -34,14 +36,22 @@ public class FXMLColaboradoresController implements Initializable {
     @FXML private TableColumn colSucursal;
     @FXML private TableColumn colNumeroLicencia;
     @FXML private TableColumn colUnidadAsignada;
+    @FXML private ComboBox<String> cbFiltro;
     
     private ObservableList<Colaborador> colaboradores;
+    @FXML
+    private Button btBuscar;
+   
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         configurarTabla();
         cargarDatos();
         System.out.println("Colaboradores: " + colaboradores.size());
+        
+        cbFiltro.setItems(FXCollections.observableArrayList( 
+                "Nombre", "Número de Personal", "Rol" )); 
+        cbFiltro.getSelectionModel().selectFirst(); // opción por defecto
     }    
 
     private void configurarTabla() {
@@ -86,9 +96,30 @@ public class FXMLColaboradoresController implements Initializable {
         }
     }
 
-    @FXML
-    private void clicEliminar(ActionEvent event) {
+   @FXML
+private void clicEliminar(ActionEvent event) {
+    Colaborador seleccionado = tvColaboradores.getSelectionModel().getSelectedItem();
+    if(seleccionado != null){
+        // Confirmación antes de eliminar
+        boolean confirmar = Utilidades.mostrarAlertaConfirmacion(
+            "Eliminar colaborador",
+            "¿Estás seguro de eliminar al colaborador " + seleccionado.getNombre() + "?"
+        );
+
+        if(confirmar){
+            Respuesta respuesta = ColaboradorImp.eliminar(seleccionado.getIdColaborador());
+            if(!respuesta.isError()){
+                Utilidades.mostrarAlertaSimple("Éxito", respuesta.getMensaje(), Alert.AlertType.INFORMATION);
+                cargarDatos(); //  refresca la tabla después de eliminar
+            } else {
+                Utilidades.mostrarAlertaSimple("Error", respuesta.getMensaje(), Alert.AlertType.ERROR);
+            }
+        }
+    } else {
+        Utilidades.mostrarAlertaSimple("Selección", "Selecciona un colaborador", Alert.AlertType.WARNING);
     }
+}
+
     
     private void irFormulario(Colaborador colaborador) {
         try {
@@ -106,4 +137,88 @@ public class FXMLColaboradoresController implements Initializable {
             ex.printStackTrace();
         }
     }
+
+  @FXML
+private void clicBuscar(ActionEvent event) {
+    String filtro = tfBusqueda.getText().trim();
+    String criterio = cbFiltro.getValue();
+
+    // Si el campo está vacío, recargar toda la tabla
+    if(filtro.isEmpty()){
+        cargarDatos(); 
+        return;
+    }
+
+    HashMap<String, Object> respuesta = null;
+
+    switch (criterio) {
+        case "Nombre":
+            respuesta = ColaboradorImp.buscarPorNombre(filtro);
+            break;
+
+        case "Número de Personal":
+            respuesta = ColaboradorImp.buscarPorNumeroPersonal(filtro);
+            break;
+
+        case "Rol":
+            int idRol = obtenerIdRolPorNombre(filtro);
+            if(idRol > 0){
+                respuesta = ColaboradorImp.buscarPorRol(idRol);
+            } else {
+                Utilidades.mostrarAlertaSimple("Rol inválido", 
+                        "No se reconoce el rol ingresado", 
+                        Alert.AlertType.WARNING);
+                return;
+            }
+            break;
+    }
+
+    if(respuesta != null && !(boolean) respuesta.get(Constantes.KEY_ERROR)){
+        List<Colaborador> resultados = (List<Colaborador>) respuesta.get("colaboradores");
+
+        if(resultados == null || resultados.isEmpty()){
+            // Mensaje específico según el criterio
+            switch (criterio) {
+                case "Nombre":
+                    Utilidades.mostrarAlertaSimple("Sin resultados", 
+                            "No se encontraron colaboradores con ese nombre o apellidos", 
+                            Alert.AlertType.INFORMATION);
+                    break;
+                case "Número de Personal":
+                    Utilidades.mostrarAlertaSimple("Sin resultados", 
+                            "No existe ningún colaborador con ese número de personal", 
+                            Alert.AlertType.INFORMATION);
+                    break;
+                case "Rol":
+                    Utilidades.mostrarAlertaSimple("Sin resultados", 
+                            "No se encontraron colaboradores con ese rol", 
+                            Alert.AlertType.INFORMATION);
+                    break;
+            }
+            //  Ya no limpiamos la tabla, se queda como estaba
+        } else {
+            colaboradores = FXCollections.observableArrayList(resultados);
+            tvColaboradores.setItems(colaboradores);
+        }
+    } else {
+        Utilidades.mostrarAlertaSimple("Error", 
+                (respuesta != null ? (String) respuesta.get(Constantes.KEY_MENSAJE) : "Error desconocido"), 
+                Alert.AlertType.ERROR);
+    }
+}
+
+
+    private int obtenerIdRolPorNombre(String nombreRol){
+    HashMap<String, Object> respuesta = ColaboradorImp.obtenerRoles();
+    if(!(boolean) respuesta.get(Constantes.KEY_ERROR)){
+        List<Rol> roles = (List<Rol>) respuesta.get("roles");
+        for(Rol r : roles){
+            if(r.getNombreRol().equalsIgnoreCase(nombreRol)){
+                return r.getIdRol();
+            }
+        }
+    }
+    return -1;
+}
+
 }

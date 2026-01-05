@@ -1,5 +1,6 @@
 package clienteescritorio;
 
+import clienteescritorio.utilidad.Utilidades;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -8,9 +9,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
 public class FXMLMenuPrincipalController implements Initializable {
 
@@ -52,6 +55,24 @@ public class FXMLMenuPrincipalController implements Initializable {
 
     @FXML
     private void clicCerrarSesion(ActionEvent event) {
-        // Lógica para cerrar ventana y volver al login
+    try {
+        // Cargar el formulario de inicio de sesión
+        Parent loginRoot = FXMLLoader.load(getClass().getResource("FXMLInicioSesion.fxml"));
+
+        // Crear nueva escena y mostrarla
+        Stage loginStage = new Stage();
+        loginStage.setTitle("Inicio de Sesión");
+        loginStage.setScene(new javafx.scene.Scene(loginRoot));
+        loginStage.show();
+
+        // Cerrar la ventana actual (menú principal)
+        Stage actualStage = (Stage) bpPrincipal.getScene().getWindow();
+        actualStage.close();
+
+    } catch (IOException ex) {
+        ex.printStackTrace();
+        Utilidades.mostrarAlertaSimple("Error", "No se pudo cargar el formulario de inicio de sesión", Alert.AlertType.ERROR);
     }
+}
+
 }

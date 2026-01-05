@@ -85,9 +85,18 @@ public class FXMLFormularioColaboradorController implements Initializable {
             tfNoPersonal.setDisable(true);
             cbRol.setDisable(true);
             
-            if(colaborador.getFotografia() != null && !colaborador.getFotografia().isEmpty()){
-            mostrarFotoServidor(colaborador.getFotografia());
+            if(cbRol.getValue() !=null && cbRol.getValue().getNombreRol().equalsIgnoreCase("Conductor")){
+            tfNumeroLicencia.setDisable(false);
+            tfNumeroLicencia.setText(colaborador.getNumeroLicencia() != null ? colaborador.getNumeroLicencia(): "");
+            
+        }else{
+                tfNumeroLicencia.setDisable(true);
+                tfNumeroLicencia.clear();
             }
+            
+            
+            
+            cargarFotoServidor(colaborador.getIdColaborador());
         }
     }
 
@@ -140,68 +149,147 @@ public class FXMLFormularioColaboradorController implements Initializable {
         }
     }
 
-    @FXML
-    private void clicGuardar(ActionEvent event) {
-        if(validarCampos()){
-            Colaborador colaborador = new Colaborador();
-            colaborador.setNombre(tfNombre.getText());
-            colaborador.setApellidoPaterno(tfPaterno.getText());
-            colaborador.setApellidoMaterno(tfMaterno.getText());
-            colaborador.setCurp(tfCurp.getText());
-            colaborador.setCorreoElectronico(tfCorreo.getText());
-            colaborador.setNumeroPersonal(tfNoPersonal.getText());
-            colaborador.setContrasena(pfContrasena.getText());
-            
-            if(cbRol.getSelectionModel().getSelectedItem() != null)
-                colaborador.setIdRol(cbRol.getSelectionModel().getSelectedItem().getIdRol());
-            
-            if(cbSucursal.getSelectionModel().getSelectedItem() != null)
-                colaborador.setCodigoSucursal(cbSucursal.getSelectionModel().getSelectedItem().getCodigoSucursal());
-            
-            if (!tfNumeroLicencia.isDisabled()) {
-             colaborador.setNumeroLicencia(tfNumeroLicencia.getText());
-            }
-            
-            if(archivoFoto != null){
-                try {
-                    byte[] bytesFoto = Files.readAllBytes(archivoFoto.toPath());
-                    colaborador.setFoto(bytesFoto);
-                } catch (IOException ex) {
-                    Utilidades.mostrarAlertaSimple("Error", "Error al procesar la foto para envío", Alert.AlertType.ERROR);
-                    return;
-                }
-            } else if (colaboradorEdicion != null) {
-            }
+   @FXML
+private void clicGuardar(ActionEvent event) {
+    if (!validarCampos()) return;
 
-            if(colaboradorEdicion == null){
-                registrarColaborador(colaborador);
-            } else {
-                colaborador.setIdColaborador(colaboradorEdicion.getIdColaborador());
-                actualizarColaborador(colaborador);
-            }
+    // Crear objeto colaborador con los datos del formulario
+    Colaborador colaborador = new Colaborador();
+    colaborador.setNombre(tfNombre.getText());
+    colaborador.setApellidoPaterno(tfPaterno.getText());
+    colaborador.setApellidoMaterno(tfMaterno.getText());
+    colaborador.setCurp(tfCurp.getText());
+    colaborador.setCorreoElectronico(tfCorreo.getText());
+    colaborador.setNumeroPersonal(tfNoPersonal.getText());
+    colaborador.setContrasena(pfContrasena.getText());
+
+    if(cbRol.getSelectionModel().getSelectedItem() != null)
+        colaborador.setIdRol(cbRol.getSelectionModel().getSelectedItem().getIdRol());
+
+    if(cbSucursal.getSelectionModel().getSelectedItem() != null)
+        colaborador.setCodigoSucursal(cbSucursal.getSelectionModel().getSelectedItem().getCodigoSucursal());
+
+    if (!tfNumeroLicencia.isDisabled())
+        colaborador.setNumeroLicencia(tfNumeroLicencia.getText());
+
+    // ================= Foto =================
+    // Solo asignar foto si se seleccionó un archivo nuevo
+    if (archivoFoto != null) {
+        try {
+            byte[] bytesFoto = Files.readAllBytes(archivoFoto.toPath());
+            colaborador.setFoto(bytesFoto);
+        } catch (IOException ex) {
+            Utilidades.mostrarAlertaSimple("Error", "Error al procesar la foto para envío", Alert.AlertType.ERROR);
+            return;
         }
     }
+
+    // ================= Registro o actualización =================
+    if (colaboradorEdicion == null) {
+        // Registrar colaborador
+        Respuesta respuesta = ColaboradorImp.registrar(colaborador);
+        if (!respuesta.isError()) {
+            // Obtener ID del colaborador recién creado
+            HashMap<String, Object> resultado = ColaboradorImp.buscarPorNumeroPersonal(colaborador.getNumeroPersonal());
+            if (!(boolean) resultado.get("error")) {
+                List<Colaborador> lista = (List<Colaborador>) resultado.get("colaboradores");
+                if (!lista.isEmpty()) {
+                    int id = lista.get(0).getIdColaborador();
+                    colaborador.setIdColaborador(id);
+
+                    // Subir foto si existe
+                    if (colaborador.getFoto() != null) {
+                        Respuesta respFoto = ColaboradorImp.subirFoto(id, colaborador.getFoto());
+                        if (respFoto.isError()) {
+                            Utilidades.mostrarAlertaSimple("Advertencia", "Colaborador registrado pero la foto no se pudo subir", Alert.AlertType.WARNING);
+                        }
+                    }
+                }
+            }
+            Utilidades.mostrarAlertaSimple("Éxito", respuesta.getMensaje(), Alert.AlertType.INFORMATION);
+            cerrarVentana();
+        } else {
+            Utilidades.mostrarAlertaSimple("Error", respuesta.getMensaje(), Alert.AlertType.ERROR);
+        }
+
+    } else {
+        // Actualizar colaborador existente
+        colaborador.setIdColaborador(colaboradorEdicion.getIdColaborador());
+        Respuesta respuesta = ColaboradorImp.editar(colaborador);
+        if (!respuesta.isError()) {
+            // Subir foto solo si se seleccionó una nueva
+            if (archivoFoto != null && colaborador.getFoto() != null) {
+                Respuesta respFoto = ColaboradorImp.subirFoto(colaborador.getIdColaborador(), colaborador.getFoto());
+                if (respFoto.isError()) {
+                    Utilidades.mostrarAlertaSimple("Advertencia", "Colaborador actualizado pero la foto no se pudo subir", Alert.AlertType.WARNING);
+                }
+            }
+            Utilidades.mostrarAlertaSimple("Éxito", respuesta.getMensaje(), Alert.AlertType.INFORMATION);
+            cerrarVentana();
+        } else {
+            Utilidades.mostrarAlertaSimple("Error", respuesta.getMensaje(), Alert.AlertType.ERROR);
+        }
+    }
+}
+
+    
     
     private void registrarColaborador(Colaborador colaborador){
-        Respuesta respuesta = ColaboradorImp.registrar(colaborador);
-        
-        if(!respuesta.isError()){
-            Utilidades.mostrarAlertaSimple("Éxito", respuesta.getMensaje(), Alert.AlertType.INFORMATION);
-            cerrarVentana();
-        } else {
-            Utilidades.mostrarAlertaSimple("Error", respuesta.getMensaje(), Alert.AlertType.ERROR);
+    Respuesta respuesta = ColaboradorImp.registrar(colaborador);
+    if(!respuesta.isError()){
+        // Recuperar el colaborador recién creado
+        HashMap<String, Object> resultado = ColaboradorImp.buscarPorNumeroPersonal(colaborador.getNumeroPersonal());
+        if(!(boolean)resultado.get("error")){
+            List<Colaborador> lista = (List<Colaborador>)resultado.get("colaboradores");
+            if(!lista.isEmpty()){
+                int id = lista.get(0).getIdColaborador();
+                colaborador.setIdColaborador(id);
+
+                // Subir foto si existe
+                if(colaborador.getFoto() != null){
+                    Respuesta respFoto = ColaboradorImp.subirFoto(id, colaborador.getFoto());
+                    if(respFoto.isError()){
+                        Utilidades.mostrarAlertaSimple("Advertencia", "Colaborador registrado pero la foto no se pudo subir", Alert.AlertType.WARNING);
+                    }
+                }
+            }
         }
+        Utilidades.mostrarAlertaSimple("Éxito", respuesta.getMensaje(), Alert.AlertType.INFORMATION);
+        cerrarVentana();
+    } else {
+        Utilidades.mostrarAlertaSimple("Error", respuesta.getMensaje(), Alert.AlertType.ERROR);
     }
+}
+
+
+private void actualizarColaborador(Colaborador colaborador){
+    Respuesta respuesta = ColaboradorImp.editar(colaborador);
+    if(!respuesta.isError()){
+        //  Subir foto si existe
+        if(colaborador.getFoto() != null){
+            Respuesta respFoto = ColaboradorImp.subirFoto(colaborador.getIdColaborador(), colaborador.getFoto());
+            if(respFoto.isError()){
+                Utilidades.mostrarAlertaSimple("Advertencia", "Colaborador actualizado pero la foto no se pudo subir", Alert.AlertType.WARNING);
+            }
+        }
+        Utilidades.mostrarAlertaSimple("Éxito", respuesta.getMensaje(), Alert.AlertType.INFORMATION);
+        cerrarVentana();
+    } else {
+        Utilidades.mostrarAlertaSimple("Error", respuesta.getMensaje(), Alert.AlertType.ERROR);
+    }
+}
+
+// Nuevo método para cargar foto desde servidor
+private void cargarFotoServidor(int idColaborador){
+    Colaborador c = ColaboradorImp.obtenerFoto(idColaborador);
+    if(c != null && c.getFotografia() != null){
+        mostrarFotoServidor(c.getFotografia());
+    } else {
+        ivFoto.setImage(null); // no hay foto, no rompe
+    }
+}
+
     
-    private void actualizarColaborador(Colaborador colaborador){
-        Respuesta respuesta = ColaboradorImp.editar(colaborador);
-        if(!respuesta.isError()){
-            Utilidades.mostrarAlertaSimple("Éxito", respuesta.getMensaje(), Alert.AlertType.INFORMATION);
-            cerrarVentana();
-        } else {
-            Utilidades.mostrarAlertaSimple("Error", respuesta.getMensaje(), Alert.AlertType.ERROR);
-        }
-    }
 
     private boolean validarCampos() {
         if(tfNombre.getText().isEmpty() || tfPaterno.getText().isEmpty() || 
