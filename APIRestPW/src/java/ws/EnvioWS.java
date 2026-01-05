@@ -51,8 +51,7 @@ public class EnvioWS {
     public List<Object[]> obtenerEnviosPorConductor(
             @PathParam("idColaborador") int idColaborador) {
 
-        EntityManager em = Persistence.createEntityManagerFactory("APIRestPWPU")
-                .createEntityManager();
+        EntityManager em = Persistence.createEntityManagerFactory("APIRestPWPU").createEntityManager();
 
         try {
             return em.createQuery(

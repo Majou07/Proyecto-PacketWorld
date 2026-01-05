@@ -39,5 +39,4 @@ public class EnvioStatus {
         this.comentario = comentario;
     }
 
- 
 }
