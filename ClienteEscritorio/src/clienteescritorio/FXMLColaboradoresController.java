@@ -31,23 +31,17 @@ public class FXMLColaboradoresController implements Initializable {
     @FXML private TableColumn colPaterno;
     @FXML private TableColumn colMaterno;
     @FXML private TableColumn colRol;
-    @FXML
-    private TableColumn colSucursal;
-    @FXML
-    private TableColumn colNumeroLicencia;
-    @FXML
-    private TableColumn colUnidadAsignada;
+    @FXML private TableColumn colSucursal;
+    @FXML private TableColumn colNumeroLicencia;
+    @FXML private TableColumn colUnidadAsignada;
     
     private ObservableList<Colaborador> colaboradores;
-    
-    
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         configurarTabla();
         cargarDatos();
         System.out.println("Colaboradores: " + colaboradores.size());
-
     }    
 
     private void configurarTabla() {
@@ -64,19 +58,17 @@ public class FXMLColaboradoresController implements Initializable {
     private void cargarDatos() {
         HashMap<String, Object> respuesta = ColaboradorImp.obtenerColaboradores();
         boolean esError = (boolean) respuesta.get(Constantes.KEY_ERROR);
-        
+
         if(!esError){
-            
             List<Colaborador> colaboradoresAPI = (List<Colaborador>) respuesta.get("colaboradores");
-            //Patron de diseño observable
+            // Patrón de diseño observable
             colaboradores = FXCollections.observableArrayList();
             colaboradores.addAll(colaboradoresAPI);
             tvColaboradores.setItems(colaboradores);
-        }else{
+        } else {
             Utilidades.mostrarAlertaSimple("Error al cargar", 
-                    " "+respuesta.get("mensaje"), Alert.AlertType.ERROR);
+                    " " + respuesta.get("mensaje"), Alert.AlertType.ERROR);
         }
-        
     }
 
     @FXML
@@ -90,7 +82,7 @@ public class FXMLColaboradoresController implements Initializable {
         if(seleccionado != null){
             irFormulario(seleccionado);
         } else {
-             Utilidades.mostrarAlertaSimple("Selección", "Selecciona un colaborador", Alert.AlertType.WARNING);
+            Utilidades.mostrarAlertaSimple("Selección", "Selecciona un colaborador", Alert.AlertType.WARNING);
         }
     }
 
