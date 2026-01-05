@@ -33,8 +33,4 @@ public class EnvioStatus {
         this.idColaborador = idColaborador;
     }
     
-
-    
-    
-    
 }
