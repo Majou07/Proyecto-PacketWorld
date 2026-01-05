@@ -3,6 +3,8 @@ import com.google.gson.Gson;
 import dominio.EnvioImp;
 import dto.Respuesta;
 import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import pojo.Envio;
@@ -38,4 +40,23 @@ public class EnvioWS {
     public Respuesta actualizarEstatus(@FormParam("idEnvio") int idEnvio, @FormParam("idEstatus") int idEstatus, @FormParam("comentario") String comentario, @FormParam("idColaborador") int idColaborador) {
         return EnvioImp.actualizarEstatus(idEnvio, idEstatus, comentario, idColaborador);
     }
+    
+    
+    @Path("conductor/{idConductor}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Envio> obtenerEnviosPorConductor(
+            @PathParam("idConductor") int idConductor) {
+
+        EntityManager em = Persistence.createEntityManagerFactory("APIRestPWPU")
+                                      .createEntityManager();
+
+        try {
+            return em.createQuery("SELECT e FROM Envio e WHERE e.conductor.idColaborador = :id", Envio.class).setParameter("id", idConductor)
+                .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
 }
