@@ -2,7 +2,9 @@
 package dominio;
 
 import dto.Respuesta;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import modelo.mybatis.MyBatisUtil;
 import org.apache.ibatis.session.SqlSession;
 import pojo.Colaborador;
@@ -217,6 +219,30 @@ public class ColaboradorImp {
     }
     
     
+    public static Respuesta asignarUnidad(int idColaborador, Integer idUnidad) {
+    Respuesta resp = new Respuesta();
+    SqlSession conexionBD = MyBatisUtil.getSession();
+    if (conexionBD != null) {
+        try {
+            Map<String, Object> params = new HashMap<>();
+            params.put("idColaborador", idColaborador);
+            params.put("idUnidad", idUnidad);
+            int filas = conexionBD.update("colaborador.asignar-unidad", params);
+            conexionBD.commit();
+            if (filas > 0) {
+                resp.setError(false);
+                resp.setMensaje("Unidad asignada correctamente");
+            }
+        } catch (Exception e) {
+            resp.setError(true);
+            resp.setMensaje(e.getMessage());
+            
+            } finally { conexionBD.close(); }
+        }
+        return resp;
+    }
+    
+    
     public static Respuesta guardarFoto(int idColaborador, byte[] foto){
     Respuesta respuesta = new Respuesta();
     respuesta.setError(true);
@@ -235,28 +261,31 @@ public class ColaboradorImp {
                 respuesta.setMensaje("Lo sentimos :( la fotografi no ha sido guardada");
             }
             conexionBD.close();
-        }catch(Exception e){
-            respuesta.setMensaje(e.getMessage());
+            }catch(Exception e){
+                respuesta.setMensaje(e.getMessage());
             
+            }
+        }else{
+            respuesta.setMensaje(Constantes.MSJ_ERROR_BD);
         }
-    }else{
-        respuesta.setMensaje(Constantes.MSJ_ERROR_BD);
+           return respuesta;
     }
-        return respuesta;
-}
-public static Colaborador obtenerFoto(int idColaborador){
-    Colaborador colaborador = null;
-    SqlSession conexionBD = MyBatisUtil.getSession();
-    if(conexionBD != null){
-        try{
-            colaborador = conexionBD.selectOne("colaborador.obtener-foto",idColaborador);
-            conexionBD.close();
-        }catch(Exception e){
-            e.printStackTrace();
+    
+  
+    
+    public static Colaborador obtenerFoto(int idColaborador){
+        Colaborador colaborador = null;
+        SqlSession conexionBD = MyBatisUtil.getSession();
+        if(conexionBD != null){
+            try{
+                colaborador = conexionBD.selectOne("colaborador.obtener-foto",idColaborador);
+                conexionBD.close();
+            }catch(Exception e){
+                e.printStackTrace();
+            }
         }
+        return colaborador;
     }
-    return colaborador;
-}
     
     
 }
