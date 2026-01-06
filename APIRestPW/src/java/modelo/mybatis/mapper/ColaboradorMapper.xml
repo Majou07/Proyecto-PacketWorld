@@ -141,6 +141,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT id_colaborador, TO_BASE64(fotografia) as fotografia FROM colaborador WHERE id_colaborador = #{idColaborador}
     </select>
     
+    
+    <update id="asignar-unidad" parameterType="map">
+        UPDATE colaborador SET id_unidad_asignada = #{idUnidad} 
+        WHERE id_colaborador = #{idColaborador}
+    </update>
    
 
 </mapper>
