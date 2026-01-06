@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
@@ -21,6 +22,9 @@
             <TableColumn fx:id="colAnio" prefWidth="80.0" text="Año" />
             <TableColumn fx:id="colVin" prefWidth="140.0" text="VIN" />
             <TableColumn fx:id="colNii" prefWidth="108.0" text="NII" />
+            <TableColumn fx:id="colTipoUnidad" prefWidth="108.0" text="Tipo de unidad" />
+            <TableColumn fx:id="colEstatusUnidad" prefWidth="108.0" text="Estado de unidad" />
+            <TableColumn fx:id="colMotivoBaja" prefWidth="108.0" text="Motivo de baja" />
          </columns>
       </TableView>
       <VBox layoutX="620.0" layoutY="140.0" spacing="15.0">
@@ -30,5 +34,7 @@
             <Button mnemonicParsing="false" onAction="#clicDarBaja" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #f0f0f0;" text="Dar de baja" />
          </children>
       </VBox>
+      <Button fx:id="btBusqueda" layoutX="449.0" layoutY="88.0" mnemonicParsing="false" onAction="#clicBuscar" text="Buscar" />
+      <ComboBox fx:id="cbFiltro" layoutX="551.0" layoutY="88.0" prefWidth="150.0" />
    </children>
 </AnchorPane>

@@ -4,6 +4,7 @@ import clienteescritorio.conexion.ConexionAPI;
 import clienteescritorio.dto.BajaUnidadDTO;
 import clienteescritorio.dto.Respuesta;
 import clienteescritorio.pojo.RespuestaHTTP;
+import clienteescritorio.pojo.TipoUnidad;
 import clienteescritorio.pojo.Unidad;
 import clienteescritorio.utilidad.Constantes;
 import com.google.gson.Gson;
@@ -64,21 +65,62 @@ public class UnidadImp {
         return respuesta;
     }
     
-    public static Respuesta darBaja(int idUnidad, String motivo) {
-        Respuesta respuesta = new Respuesta();
-        String URL = Constantes.URL_WS + "unidad/dar-baja/" + idUnidad;
-        Gson gson = new Gson();
-        BajaUnidadDTO dto = new BajaUnidadDTO();
-        dto.setMotivoBaja(motivo);
-        String json = gson.toJson(dto);
+    public static HashMap<String, Object> obtenerTipos() {
+        HashMap<String, Object> respuesta = new LinkedHashMap<>();
+        String URL = Constantes.URL_WS + "unidad/obtener-tipos"; 
+        RespuestaHTTP respuestaAPI = ConexionAPI.peticionGET(URL);
         
-        RespuestaHTTP respuestaAPI = ConexionAPI.peticionBody(URL, Constantes.METODO_PUT, json, "application/json");
         if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
-            respuesta = gson.fromJson(respuestaAPI.getContenido(), Respuesta.class);
+            Gson gson = new Gson();
+            Type tipoLista = new TypeToken<List<TipoUnidad>>(){}.getType();
+            List<TipoUnidad> tipos = gson.fromJson(respuestaAPI.getContenido(), tipoLista);
+            respuesta.put(Constantes.KEY_ERROR, false);
+            respuesta.put("tipos", tipos);
         } else {
-            respuesta.setError(true);
-            respuesta.setMensaje("Error al dar de baja");
+            respuesta.put(Constantes.KEY_ERROR, true);
+            respuesta.put(Constantes.KEY_MENSAJE, "Error al cargar los tipos de unidad.");
         }
         return respuesta;
     }
+    
+    public static Respuesta darBaja(int idUnidad, String motivo) {
+    Respuesta respuesta = new Respuesta();
+    String URL = Constantes.URL_WS + "unidad/dar-baja/" + idUnidad;
+
+    // enviar directamente el motivo como texto plano
+    RespuestaHTTP respuestaAPI = ConexionAPI.peticionBody(
+        URL, Constantes.METODO_PUT, motivo, "text/plain");
+
+    if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+        Gson gson = new Gson();
+        respuesta = gson.fromJson(respuestaAPI.getContenido(), Respuesta.class);
+    } else {
+        respuesta.setError(true);
+        respuesta.setMensaje("Error al dar de baja");
+    }
+    return respuesta;
+}
+    
+   public static HashMap<String, Object> buscarUnidades(String vin, String marca, String nii) {
+    HashMap<String, Object> respuesta = new HashMap<>();
+    String url = Constantes.URL_WS + "unidad/buscar?vin=" + (vin != null ? vin : "")
+                                        + "&marca=" + (marca != null ? marca : "")
+                                        + "&nii=" + (nii != null ? nii : "");
+
+    RespuestaHTTP respuestaAPI = ConexionAPI.peticionGET(url);
+
+    if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+        Gson gson = new Gson();
+        Type listType = new TypeToken<List<Unidad>>(){}.getType();
+        List<Unidad> unidades = gson.fromJson(respuestaAPI.getContenido(), listType);
+        respuesta.put("error", false);
+        respuesta.put("unidades", unidades);
+    } else {
+        respuesta.put("error", true);
+        respuesta.put("mensaje", "Error al buscar unidades");
+    }
+    return respuesta;
+}
+
+
 }

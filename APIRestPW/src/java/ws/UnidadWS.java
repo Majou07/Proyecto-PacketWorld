@@ -60,20 +60,22 @@ public class UnidadWS {
         
     }
     
-    @Path("dar-baja/{idUnidad}")
-    @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Respuesta darBajaUnidad(
-        @PathParam("idUnidad") int idUnidad,
-        BajaUnidadDTO dto) {
+   @Path("dar-baja/{idUnidad}")
+@PUT
+@Consumes(MediaType.TEXT_PLAIN)
+@Produces(MediaType.APPLICATION_JSON)
+public Respuesta darBajaUnidad(
+    @PathParam("idUnidad") int idUnidad,
+    String motivoBaja) {
 
     try {
-        return UnidadImp.darBajaUnidad(idUnidad, dto.getMotivoBaja());
+        //ahora usamos directamente el String recibido
+        return UnidadImp.darBajaUnidad(idUnidad, motivoBaja);
     } catch (Exception e) {
         throw new BadRequestException(e.getMessage());
     }
 }
+
     
 @GET
 @Path("buscar")
@@ -84,6 +86,13 @@ public List<Unidad> buscarUnidad(
         @QueryParam("nii") String nii) {
     return UnidadImp.buscarUnidad(vin, marca, nii);
 }
+
+@Path("obtener-tipos")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<pojo.TipoUnidad> obtenerTipos() {
+        return UnidadImp.obtenerTipos(); 
+    }
     
     
     

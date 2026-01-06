@@ -167,6 +167,21 @@ public class UnidadImp {
 
     return unidades;
 }
+    
+     public static List<pojo.TipoUnidad> obtenerTipos() {
+        List<pojo.TipoUnidad> tipos = null;
+        SqlSession conexionBD = MyBatisUtil.getSession();
+        if (conexionBD != null) {
+            try {
+                tipos = conexionBD.selectList("unidad.obtener-tipos-unidad");
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                conexionBD.close();
+            }
+        }
+        return tipos;
+    }
 
     
 }

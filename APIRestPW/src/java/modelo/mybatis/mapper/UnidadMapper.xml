@@ -25,9 +25,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             ON u.id_tipo_unidad = tu.id_tipo_unidad
         INNER JOIN estatus_unidad eu
             ON u.id_estatus_unidad = eu.id_estatus_unidad
-        
-
-    
+           
     </select>
     
     <insert id="registrar" parameterType="pojo.Unidad">
@@ -59,6 +57,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         marca = #{marca},
         modelo = #{modelo},
         anio = #{anio},
+        nii = #{nii},
         id_tipo_unidad = #{idTipoUnidad},
         id_estatus_unidad = #{idEstatusUnidad},
         motivo_baja = #{motivoBaja}
@@ -103,6 +102,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </if>
     </where>
 </select>
+
+<select id="obtener-tipos-unidad" resultType="pojo.TipoUnidad"> 
+    SELECT id_tipo_unidad AS idTipoUnidad, 
+    nombre AS nombre 
+    FROM tipo_unidad 
+</select>
+
+
+
 
 
 </mapper>
