@@ -223,22 +223,26 @@ public class ColaboradorImp {
             respuesta.put(Constantes.KEY_ERROR, true);
             respuesta.put(Constantes.KEY_MENSAJE, "Error al buscar colaboradores por nombre.");
         }
-    } catch (Exception e) {
-        e.printStackTrace();
-        respuesta.put(Constantes.KEY_ERROR, true);
-        respuesta.put(Constantes.KEY_MENSAJE, "Error al codificar o procesar la búsqueda por nombre.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            respuesta.put(Constantes.KEY_ERROR, true);
+            respuesta.put(Constantes.KEY_MENSAJE, "Error al codificar o procesar la búsqueda por nombre.");
+        }
+
+        return respuesta;
     }
-
-    return respuesta;
-}
-
-
-
-
-
-   
-
-
-
-
+  
+  
+  
+  public static Respuesta asignarVehiculo(int idColaborador, Integer idUnidad) {
+    String url = Constantes.URL_WS + "colaborador/asignar-unidad";
+    String params = "idColaborador=" + idColaborador + "&idUnidad=" + idUnidad;
+    RespuestaHTTP respuestaAPI = ConexionAPI.peticionPOST(url, params); 
+    
+        if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+            return new Gson().fromJson(respuestaAPI.getContenido(), Respuesta.class);
+        }
+        
+        return new Respuesta(true, "Error de comunicación");
+    }
 }
