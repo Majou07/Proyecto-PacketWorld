@@ -40,4 +40,25 @@ public class EnvioImp {
         respuesta.setMensaje("Estatus actualizado correctamente");
         return respuesta;
     }
+    
+    
+    public static Respuesta asignarConductor(int idEnvio, int idConductor) {
+    Respuesta respuesta = new Respuesta();
+    // Definir la URL hacia el nuevo endpoint de la API
+    String url = Constantes.URL_WS + "envio/asignar-conductor";
+    String parametros = "idEnvio=" + idEnvio + "&idConductor=" + idConductor;
+    
+    // Realiza la petición POST 
+    RespuestaHTTP respuestaAPI = ConexionAPI.peticionPOST(url, parametros);
+    
+        if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+            Gson gson = new Gson();
+            respuesta = gson.fromJson(respuestaAPI.getContenido(), Respuesta.class);
+        } else {
+            respuesta.setError(true);
+            respuesta.setMensaje("No se pudo conectar con el servidor para asignar el conductor.");
+        }
+        return respuesta;
+    }
+    
 }
