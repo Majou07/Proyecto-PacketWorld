@@ -19,6 +19,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         INNER JOIN estatus_envio est ON e.id_estatus_envio = est.id_estatus_envio
     </select>
     
+    <select id="obtener-historial" resultType="pojo.HistorialEstatus">
+        SELECT h.id_historial AS idHistorial, e.nombre AS estatus, h.fecha_hora_cambio AS fechaCambio,h.comentario AS observaciones
+        FROM historial_estatus h
+        INNER JOIN estatus_envio e ON h.id_estatus_envio = e.id_estatus_envio
+        WHERE h.id_envio = #{idEnvio}
+    </select>
+    
     <insert id="registrar" parameterType="pojo.Envio" useGeneratedKeys="true" keyProperty="idEnvio">
         INSERT INTO envio (numero_guia, destinatario_nombre, destinatario_ap_paterno, destinatario_ap_materno,
                            destino_calle, destino_numero, destino_colonia, destino_codigo_postal, destino_ciudad, destino_estado,
@@ -32,6 +39,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     INSERT INTO historial_estatus (id_envio, id_colaborador_actualiza, id_estatus_envio, comentario)
     VALUES (#{idEnvio}, #{idColaborador}, #{idEstatus}, #{comentario})
     </insert>
+    
+    
     
 
     <update id="actualizar-estatus" parameterType="map">

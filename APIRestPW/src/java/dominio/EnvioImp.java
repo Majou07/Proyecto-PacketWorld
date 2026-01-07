@@ -1,5 +1,7 @@
 package dominio;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import dto.Respuesta;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +10,7 @@ import java.util.UUID;
 import modelo.mybatis.MyBatisUtil;
 import org.apache.ibatis.session.SqlSession;
 import pojo.Envio;
+import pojo.HistorialEstatus;
 import utilidades.Constantes;
 
 public class EnvioImp {
@@ -132,4 +135,70 @@ public class EnvioImp {
     }
     
     
+    private static String llamarApiExterna(String urlString) throws Exception {
+    StringBuilder resultado = new StringBuilder();
+    java.net.URL url = new java.net.URL(urlString);
+    java.net.HttpURLConnection conexion = (java.net.HttpURLConnection) url.openConnection();
+    conexion.setRequestMethod("GET"); 
+
+        try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                new java.io.InputStreamReader(conexion.getInputStream()))) {
+            String linea;
+            while ((linea = reader.readLine()) != null) {
+                resultado.append(linea);
+            }
+        }
+        return resultado.toString();
+    }
+    
+    
+    
+    public static Double calcularCostoEnvio(String cpOrigen, String cpDestino, int numeroPaquetes) {
+    try {
+        // Obtener distancia desde API externa
+        String urlDistancia = "http://sublimas.com.mx:8080/calculadora/api/envios/distancia/" + cpOrigen + "," + cpDestino;
+        String jsonRespuesta = llamarApiExterna(urlDistancia); 
+        JsonObject resp = new Gson().fromJson(jsonRespuesta, JsonObject.class);
+        double distancia = resp.get("distanciaKM").getAsDouble();
+
+        // Determina el costo por kilómetro 
+        double costoKM = 0.50; // Más de 2000 km
+        if (distancia <= 200) costoKM = 4.00;
+        else if (distancia <= 500) costoKM = 3.00;
+        else if (distancia <= 1000) costoKM = 2.00;
+        else if (distancia <= 2000) costoKM = 1.00;
+
+        
+        // Determina el costo adicional por paquetes
+        double costoAdicional = 150.00; // 5 o más
+        switch (numeroPaquetes) {
+            case 1: costoAdicional = 0.00; break;
+            case 2: costoAdicional = 50.00; break;
+            case 3: costoAdicional = 80.00; break;
+            case 4: costoAdicional = 110.00; break;
+        }
+
+        return (distancia * costoKM) + costoAdicional;
+
+        } catch (Exception e) {
+            return 0.0;
+        }
+    }
+    
+    
+    
+    public static List<HistorialEstatus> obtenerHistorial(int idEnvio) {
+    List<HistorialEstatus> historial = null;
+    SqlSession conexionBD = MyBatisUtil.getSession();
+    if (conexionBD != null) {
+        try {
+            historial = conexionBD.selectList("envio.obtener-historial", idEnvio);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            conexionBD.close();
+        }
+    }
+    return historial;
+}
 }

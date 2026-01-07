@@ -11,6 +11,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import pojo.Envio;
+import pojo.HistorialEstatus;
 
 @Path("envio")
 public class EnvioWS {
@@ -89,6 +90,13 @@ public class EnvioWS {
         } finally {
             em.close();
         }
+    }
+    
+    @GET
+    @Path("historial/{idEnvio}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<HistorialEstatus> obtenerHistorial(@PathParam("idEnvio") int idEnvio) {
+        return EnvioImp.obtenerHistorial(idEnvio);
     }
 
 }
