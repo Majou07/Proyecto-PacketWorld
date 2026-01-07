@@ -27,6 +27,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 #{destinoCalle}, #{destinoNumero}, #{destinoColonia}, #{destinoCodigoPostal}, #{destinoCiudad}, #{destinoEstado},
                 #{costoTotal}, #{idClienteRemitente}, #{codigoSucursalOrigen}, 1)
     </insert>
+    
+    <insert id="registrar-historial" parameterType="map">
+    INSERT INTO historial_estatus (id_envio, id_colaborador_actualiza, id_estatus_envio, comentario)
+    VALUES (#{idEnvio}, #{idColaborador}, #{idEstatus}, #{comentario})
+    </insert>
+    
 
     <update id="actualizar-estatus" parameterType="map">
         UPDATE envio SET id_estatus_envio = #{idEstatus} WHERE id_envio = #{idEnvio}

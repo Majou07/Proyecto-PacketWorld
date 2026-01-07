@@ -33,7 +33,7 @@ public class EnvioImp {
 
         if (conexionBD != null) {
             try {
-                // Generar número de guía único 
+                // Genera número de guía único 
                 String guia = UUID.randomUUID().toString().replace("-", "").substring(0, 10).toUpperCase();
                 envio.setNumeroGuia(guia);
 
@@ -73,10 +73,10 @@ public class EnvioImp {
             params.put("idColaborador", idColaborador);
             params.put("comentario", comentario);
 
-            // 1. Actualizar el estatus principal del envío
+            // 1. Actualiza el estatus principal del envío
             int filasEnvio = conexionBD.update("envio.actualizar-estatus", params);
             
-            // 2. Insertar en el historial (Lógica nueva)
+            // 2. Insertamos en el historial 
             int filasHistorial = conexionBD.insert("envio.registrar-historial", params);
 
             if (filasEnvio > 0 && filasHistorial > 0) {
