@@ -12,41 +12,35 @@
       <VBox prefHeight="700.0" prefWidth="220.0" style="-fx-background-color: #d3d3d3;" BorderPane.alignment="CENTER">
          <children>
             <Label fx:id="lbNombreUsuario" text="Nombre de Personal">
-               <font>
-                  <Font name="System Bold" size="16.0" />
-               </font>
-               <VBox.margin>
-                  <Insets bottom="30.0" left="20.0" top="30.0" />
-               </VBox.margin>
+                <font><Font name="System Bold" size="16.0" /></font>
+                <VBox.margin><Insets bottom="30.0" left="20.0" top="30.0" /></VBox.margin>
             </Label>
-            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#clicColaboradores" prefHeight="50.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Colaboradores">
-               <padding>
-                  <Insets left="30.0" />
-               </padding>
-               <font><Font size="14.0" /></font>
+            <Button alignment="BASELINE_LEFT" onAction="#clicColaboradores" prefHeight="50.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Colaboradores">
+                <padding><Insets left="30.0" /></padding>
+                <font><Font size="14.0" /></font>
             </Button>
-            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#clicUnidades" prefHeight="50.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Unidades">
-               <padding>
-                  <Insets left="30.0" />
-               </padding>
-               <font><Font size="14.0" /></font>
+            <Button alignment="BASELINE_LEFT" onAction="#clicUnidades" prefHeight="50.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Unidades">
+                <padding><Insets left="30.0" /></padding>
+                <font><Font size="14.0" /></font>
             </Button>
-            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#clicSucursales" prefHeight="50.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Sucursales">
-               <padding>
-                  <Insets left="30.0" />
-               </padding>
-               <font><Font size="14.0" /></font>
+            <Button alignment="BASELINE_LEFT" onAction="#clicSucursales" prefHeight="50.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Sucursales">
+                <padding><Insets left="30.0" /></padding>
+                <font><Font size="14.0" /></font>
             </Button>
-             <Pane VBox.vgrow="ALWAYS" />
-            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#clicCerrarSesion" prefHeight="50.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Cerrar Sesión">
-               <padding>
-                  <Insets left="30.0" />
-               </padding>
-               <VBox.margin>
-                  <Insets bottom="20.0" />
-               </VBox.margin>
+            <Button alignment="BASELINE_LEFT" onAction="#clicClientes" prefHeight="50.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Clientes">
+                <padding><Insets left="30.0" /></padding>
+                <font><Font size="14.0" /></font>
             </Button>
-         </children>
+            <Button alignment="BASELINE_LEFT" onAction="#clicEnvios" prefHeight="50.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Envíos">
+                <padding><Insets left="30.0" /></padding>
+                <font><Font size="14.0" /></font>
+            </Button>
+            <Pane VBox.vgrow="ALWAYS" />
+            <Button alignment="BASELINE_LEFT" onAction="#clicCerrarSesion" prefHeight="50.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Cerrar Sesión">
+                <padding><Insets left="30.0" /></padding>
+                <VBox.margin><Insets bottom="20.0" /></VBox.margin>
+            </Button>
+        </children>
       </VBox>
    </left>
    <center>

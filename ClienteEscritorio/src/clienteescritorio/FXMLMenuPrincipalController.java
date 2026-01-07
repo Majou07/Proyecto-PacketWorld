@@ -62,6 +62,7 @@ public class FXMLMenuPrincipalController implements Initializable {
     private void clicEnvios(ActionEvent event) {
         cargarPantalla("FXMLEnvios");
     }
+    
 
     @FXML
     private void clicCerrarSesion(ActionEvent event) {

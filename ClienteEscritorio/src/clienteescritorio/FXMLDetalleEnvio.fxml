@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clienteescritorio.FXMLDetalleEnvioController">
+   <children>
+      <Label layoutX="30.0" layoutY="20.0" text="DETALLE DEL ENVÍO">
+         <font><Font name="System Bold" size="22.0" /></font>
+      </Label>
+      <Label fx:id="lbGuia" layoutX="30.0" layoutY="60.0" text="No. Guía: " />
+      
+      <Separator layoutX="30.0" layoutY="90.0" prefWidth="840.0" />
+      
+      <Label layoutX="30.0" layoutY="100.0" text="Paquetes Contenidos:" font="$x1">
+         <font><Font name="System Bold" size="14.0" /></font>
+      </Label>
+      <TableView fx:id="tvPaquetes" layoutX="30.0" layoutY="130.0" prefHeight="150.0" prefWidth="840.0">
+        <columns>
+          <TableColumn fx:id="colDescripcion" prefWidth="400.0" text="Descripción" />
+          <TableColumn fx:id="colPeso" prefWidth="100.0" text="Peso (kg)" />
+          <TableColumn fx:id="colDimensiones" prefWidth="320.0" text="Dimensiones (Al x An x Pr)" />
+        </columns>
+      </TableView>
+
+      <Label layoutX="30.0" layoutY="300.0" text="Historial de Estatus:">
+         <font><Font name="System Bold" size="14.0" /></font>
+      </Label>
+      <TableView fx:id="tvHistorial" layoutX="30.0" layoutY="330.0" prefHeight="200.0" prefWidth="840.0">
+        <columns>
+          <TableColumn fx:id="colEstatus" prefWidth="150.0" text="Estatus" />
+          <TableColumn fx:id="colFecha" prefWidth="200.0" text="Fecha/Hora" />
+          <TableColumn fx:id="colColaborador" prefWidth="200.0" text="Realizado por" />
+          <TableColumn fx:id="colComentario" prefWidth="270.0" text="Comentario" />
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>

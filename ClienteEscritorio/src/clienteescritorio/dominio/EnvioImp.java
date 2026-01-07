@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import clienteescritorio.dto.Respuesta; 
+import clienteescritorio.pojo.HistorialEstatus;
 
 public class EnvioImp {
     public static HashMap<String, Object> obtenerEnvios() {
@@ -76,4 +77,25 @@ public class EnvioImp {
         return respuesta;
     }
     
+    
+    
+    public static HashMap<String, Object> obtenerHistorial(int idEnvio) {
+    HashMap<String, Object> respuesta = new LinkedHashMap<>();
+    String url = Constantes.URL_WS + "envio/historial/" + idEnvio;
+    
+    RespuestaHTTP respuestaAPI = ConexionAPI.peticionGET(url);
+    
+    if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+        Gson gson = new Gson();
+        java.lang.reflect.Type tipoLista = new TypeToken<List<HistorialEstatus>>(){}.getType();
+        List<HistorialEstatus> historial = gson.fromJson(respuestaAPI.getContenido(), tipoLista);
+        
+        respuesta.put(Constantes.KEY_ERROR, false);
+        respuesta.put("historial", historial);
+    } else {
+        respuesta.put(Constantes.KEY_ERROR, true);
+        respuesta.put(Constantes.KEY_MENSAJE, "Error al cargar el historial de cambios de estatus.");
+        }
+        return respuesta;
+    }
 }

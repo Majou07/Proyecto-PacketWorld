@@ -106,4 +106,24 @@ public class FXMLEnviosController implements Initializable {
             Utilidades.mostrarAlertaSimple("Selección", "Selecciona un envío", Alert.AlertType.WARNING);
         }
     }
+    
+    
+    @FXML
+    private void clicVerDetalles(ActionEvent event) {
+        Envio seleccionado = tvEnvios.getSelectionModel().getSelectedItem();
+        if (seleccionado != null) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLDetalleEnvio.fxml"));
+                Parent root = loader.load();
+
+                FXMLDetalleEnvioController controller = loader.getController();
+                controller.inicializarDetalles(seleccionado); 
+
+                Stage stage = new Stage();
+                stage.setScene(new Scene(root));
+                stage.setTitle("Detalle del Envío: " + seleccionado.getNumeroGuia());
+                stage.show();
+            } catch (IOException ex) { ex.printStackTrace(); }
+        }
+    }
 }
