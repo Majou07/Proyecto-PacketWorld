@@ -21,4 +21,19 @@ public class ClienteWS {
     public Respuesta registrar(String json) {
         return ClienteImp.registrar(new Gson().fromJson(json, Cliente.class));
     }
+    
+    @PUT
+    @Path("editar")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Respuesta editar(String json) {
+        return ClienteImp.editar(new Gson().fromJson(json, Cliente.class));
+    }
+
+    @DELETE
+    @Path("eliminar/{idCliente}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Respuesta eliminar(@PathParam("idCliente") int idCliente) {
+        return ClienteImp.eliminar(idCliente);
+    }
 }
