@@ -26,7 +26,7 @@ public class FXMLMenuPrincipalController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        cargarPantalla("FXMLColaboradores"); // Pantalla por defecto
+        cargarPantalla("FXMLColaboradores"); 
     }    
 
     private void cargarPantalla(String nombreFXML) {
@@ -52,20 +52,30 @@ public class FXMLMenuPrincipalController implements Initializable {
     private void clicSucursales(ActionEvent event) {
         cargarPantalla("FXMLSucursales");
     }
+    
+    @FXML
+    private void clicClientes(ActionEvent event) {
+        cargarPantalla("FXMLClientes"); 
+    }
+
+    @FXML
+    private void clicEnvios(ActionEvent event) {
+        cargarPantalla("FXMLEnvios");
+    }
 
     @FXML
     private void clicCerrarSesion(ActionEvent event) {
     try {
-        // Cargar el formulario de inicio de sesión
+        // Carga el formulario de inicio de sesión
         Parent loginRoot = FXMLLoader.load(getClass().getResource("FXMLInicioSesion.fxml"));
 
-        // Crear nueva escena y mostrarla
+        // Crea nueva escena y la muestra
         Stage loginStage = new Stage();
         loginStage.setTitle("Inicio de Sesión");
         loginStage.setScene(new javafx.scene.Scene(loginRoot));
         loginStage.show();
 
-        // Cerrar la ventana actual (menú principal)
+        // Cierra la ventana actual (menú principal)
         Stage actualStage = (Stage) bpPrincipal.getScene().getWindow();
         actualStage.close();
 

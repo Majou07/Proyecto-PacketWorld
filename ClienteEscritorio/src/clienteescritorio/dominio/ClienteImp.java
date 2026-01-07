@@ -38,6 +38,7 @@ public class ClienteImp {
         String URL = Constantes.URL_WS + "cliente/registrar";
         Gson gson = new Gson();
         String json = gson.toJson(cliente);
+        // Usamos POST para registrar
         RespuestaHTTP respuestaAPI = ConexionAPI.peticionBody(URL, Constantes.METODO_POST, json, "application/json");
         
         if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
@@ -48,5 +49,31 @@ public class ClienteImp {
         }
         return respuesta;
     }
+
+    // --- NUEVO MÉTODO EDITAR ---
+    public static Respuesta editar(Cliente cliente) {
+        Respuesta respuesta = new Respuesta();
+        String URL = Constantes.URL_WS + "cliente/editar";
+        Gson gson = new Gson();
+        String json = gson.toJson(cliente);
+        // Usamos PUT para editar según el estándar RESTful solicitado
+        RespuestaHTTP respuestaAPI = ConexionAPI.peticionBody(URL, Constantes.METODO_PUT, json, "application/json");
+        
+        if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+            respuesta = gson.fromJson(respuestaAPI.getContenido(), Respuesta.class);
+        } else {
+            respuesta.setError(true);
+            respuesta.setMensaje("Error al actualizar cliente");
+        }
+        return respuesta;
+    }
     
+    public static Respuesta eliminar(int idCliente) {
+        String url = Constantes.URL_WS + "cliente/eliminar/" + idCliente;
+        RespuestaHTTP respuestaAPI = ConexionAPI.peticionSinBody(url, Constantes.METODO_DELETE);
+        if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+            return new Gson().fromJson(respuestaAPI.getContenido(), Respuesta.class);
+        }
+        return new Respuesta(true, "Error de comunicación con el servidor");
+    }
 }
