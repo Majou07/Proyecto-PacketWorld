@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="450.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clienteescritorio.FXMLFormularioClienteController">
+   <children>
+      <Label fx:id="lbTitulo" layoutX="30.0" layoutY="20.0" text="Registro de Cliente">
+         <font><Font name="System Bold" size="22.0" /></font>
+      </Label>
+      <GridPane layoutX="30.0" layoutY="70.0" prefWidth="540.0" hgap="10" vgap="10">
+        <columnConstraints>
+          <ColumnConstraints prefWidth="170.0" />
+          <ColumnConstraints prefWidth="170.0" />
+          <ColumnConstraints prefWidth="170.0" />
+        </columnConstraints>
+        <children>
+           <Label text="Nombre" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+           <TextField fx:id="tfNombre" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+           
+           <Label text="Apellido Paterno" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+           <TextField fx:id="tfPaterno" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+           
+           <Label text="Apellido Materno" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+           <TextField fx:id="tfMaterno" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+           
+           <Label text="Calle" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+           <TextField fx:id="tfCalle" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+           
+           <Label text="Número" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+           <TextField fx:id="tfNumero" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+           
+           <Label text="Colonia" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
+           <TextField fx:id="tfColonia" GridPane.rowIndex="3" GridPane.columnIndex="2"/>
+
+           <Label text="Teléfono" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+           <TextField fx:id="tfTelefono" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+           
+           <Label text="C.P." GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+           <TextField fx:id="tfCP" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+           
+           <Label text="Correo" GridPane.rowIndex="4" GridPane.columnIndex="2"/>
+           <TextField fx:id="tfCorreo" GridPane.rowIndex="5" GridPane.columnIndex="2"/>
+        </children>
+      </GridPane>
+      <Button layoutX="470.0" layoutY="380.0" onAction="#clicGuardar" text="Guardar" prefWidth="100.0"/>
+      <Button layoutX="360.0" layoutY="380.0" onAction="#clicCancelar" text="Cancelar" prefWidth="100.0"/>
+   </children>
+</AnchorPane>
