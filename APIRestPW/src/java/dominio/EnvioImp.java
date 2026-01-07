@@ -63,37 +63,36 @@ public class EnvioImp {
     }
 
     public static Respuesta actualizarEstatus(int idEnvio, int idEstatus, String comentario, int idColaborador) {
-        Respuesta respuesta = new Respuesta();
-        SqlSession conexionBD = MyBatisUtil.getSession();
+    Respuesta respuesta = new Respuesta();
+    SqlSession conexionBD = MyBatisUtil.getSession();
+    if (conexionBD != null) {
+        try {
+            Map<String, Object> params = new HashMap<>();
+            params.put("idEnvio", idEnvio);
+            params.put("idEstatus", idEstatus);
+            params.put("idColaborador", idColaborador);
+            params.put("comentario", comentario);
 
-        if (conexionBD != null) {
-            try {
-                Map<String, Object> params = new HashMap<>();
-                params.put("idEnvio", idEnvio);
-                params.put("idEstatus", idEstatus);
-                
-                // 1. Actualizar el estatus en la tabla envio
-                int filasAfectadas = conexionBD.update("envio.actualizar-estatus", params);
+            // 1. Actualizar el estatus principal del envío
+            int filasEnvio = conexionBD.update("envio.actualizar-estatus", params);
+            
+            // 2. Insertar en el historial (Lógica nueva)
+            int filasHistorial = conexionBD.insert("envio.registrar-historial", params);
 
-                if (filasAfectadas > 0) {
-
-                    conexionBD.commit();
-                    respuesta.setError(false);
-                    respuesta.setMensaje("Estatus actualizado correctamente.");
-                } else {
-                    respuesta.setError(true);
-                    respuesta.setMensaje("No se encontró el envío para actualizar.");
-                }
+            if (filasEnvio > 0 && filasHistorial > 0) {
+                conexionBD.commit();
+                respuesta.setError(false);
+                respuesta.setMensaje("Estatus e historial actualizados correctamente.");
+            } else {
+                conexionBD.rollback();
+                respuesta.setError(true);
+                respuesta.setMensaje("No se pudo completar la operación.");
+            }
             } catch (Exception e) {
                 conexionBD.rollback();
                 respuesta.setError(true);
                 respuesta.setMensaje(e.getMessage());
-            } finally {
-                conexionBD.close();
-            }
-        } else {
-            respuesta.setError(true);
-            respuesta.setMensaje(Constantes.MSJ_ERROR_BD);
+            } finally { conexionBD.close(); }
         }
         return respuesta;
     }
@@ -131,4 +130,6 @@ public class EnvioImp {
         }
         return respuesta;
     }
+    
+    
 }
