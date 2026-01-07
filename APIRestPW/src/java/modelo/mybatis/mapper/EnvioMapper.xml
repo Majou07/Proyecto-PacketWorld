@@ -32,6 +32,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         UPDATE envio SET id_estatus_envio = #{idEstatus} WHERE id_envio = #{idEnvio}
     </update>
 
+    <update id="asignar-conductor" parameterType="map">
+        UPDATE envio SET id_conductor_asignado = #{idConductor} 
+        WHERE id_envio = #{idEnvio}
+    </update>
   
 </mapper>
 

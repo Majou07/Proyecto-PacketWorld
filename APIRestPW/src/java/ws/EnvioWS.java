@@ -66,7 +66,15 @@ public class EnvioWS {
         }
     }
 
-    
+    @Path("asignar-conductor")
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Respuesta asignarConductor(@FormParam("idEnvio") int idEnvio, 
+                @FormParam("idConductor") int idConductor) {
+        return EnvioImp.asignarConductor(idEnvio, idConductor);
+    }
+
     @Path("{guia}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
