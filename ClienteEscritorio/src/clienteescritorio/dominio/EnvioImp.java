@@ -61,4 +61,19 @@ public class EnvioImp {
         return respuesta;
     }
     
+    public static Respuesta registrar(Envio envio) {
+    Respuesta respuesta = new Respuesta();
+    String url = Constantes.URL_WS + "envio/registrar";
+    String json = new Gson().toJson(envio);
+    RespuestaHTTP respuestaAPI = ConexionAPI.peticionBody(url, Constantes.METODO_POST, json, "application/json");
+    
+    if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+        respuesta = new Gson().fromJson(respuestaAPI.getContenido(), Respuesta.class);
+    } else {
+        respuesta.setError(true);
+        respuesta.setMensaje("Error al conectar con el servidor.");
+        }
+        return respuesta;
+    }
+    
 }
