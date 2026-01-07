@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="200.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clienteescritorio.FXMLAsignarUnidadController">
+   <children>
+      <Label layoutX="30.0" layoutY="25.0" text="Asignar Vehículo a Conductor">
+         <font><Font name="System Bold" size="18.0" /></font>
+      </Label>
+      <Label fx:id="lbConductor" layoutX="30.0" layoutY="60.0" text="Conductor: " />
+      <ComboBox fx:id="cbUnidades" layoutX="30.0" layoutY="100.0" prefWidth="340.0" promptText="Seleccione una unidad disponible" />
+      <Button layoutX="250.0" layoutY="150.0" mnemonicParsing="false" onAction="#clicGuardar" text="Asignar" />
+      <Button layoutX="160.0" layoutY="150.0" mnemonicParsing="false" onAction="#clicCancelar" text="Cancelar" />
+   </children>
+</AnchorPane>

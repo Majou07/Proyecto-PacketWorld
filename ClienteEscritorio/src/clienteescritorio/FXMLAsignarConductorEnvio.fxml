@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="200.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clienteescritorio.FXMLAsignarConductorEnvioController">
+   <children>
+      <Label layoutX="30.0" layoutY="25.0" text="Asignar Conductor a Envío">
+         <font><Font name="System Bold" size="18.0" /></font>
+      </Label>
+      <Label fx:id="lbGuia" layoutX="30.0" layoutY="60.0" text="No. Guía: " />
+      <ComboBox fx:id="cbConductores" layoutX="30.0" layoutY="100.0" prefWidth="390.0" promptText="Seleccione un conductor con vehículo asignado" />
+      <Button layoutX="340.0" layoutY="150.0" mnemonicParsing="false" onAction="#clicAsignar" text="Confirmar" />
+      <Button layoutX="260.0" layoutY="150.0" mnemonicParsing="false" onAction="#clicCancelar" text="Cancelar" />
+   </children>
+</AnchorPane>
