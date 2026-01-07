@@ -62,11 +62,24 @@ public class SucursalWS {
     @Path("dar-baja/{codigoSucursal}")
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
-    public Respuesta darBajaUnidad(
+    public Respuesta darBajaSucursal(
         @PathParam("codigoSucursal") String codigoSucursal ) {
 
     try {
         return SucursalImp.darBajaSucursal(codigoSucursal);
+    } catch (Exception e) {
+        throw new BadRequestException(e.getMessage());
+    }
+}
+    
+    @Path("reactivar/{codigoSucursal}")
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    public Respuesta reactivarSucursal(
+        @PathParam("codigoSucursal") String codigoSucursal ) {
+
+    try {
+        return SucursalImp.reactivarSucursal(codigoSucursal);
     } catch (Exception e) {
         throw new BadRequestException(e.getMessage());
     }

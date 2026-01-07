@@ -57,11 +57,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     WHERE codigo_sucursal = #{codigoSucursal}
 </update>
 
-<update id="dar-baja" parameterType="string">
+<update id="dar-baja" parameterType="map">
     UPDATE sucursal
     SET estatus = 'inactiva'
     WHERE codigo_sucursal = #{codigoSucursal}
 </update>
+
+<update id="reactivar" parameterType="map">
+    UPDATE sucursal
+    SET estatus = 'activa'
+    WHERE codigo_sucursal = #{codigoSucursal}
+</update>
+
 
     
     

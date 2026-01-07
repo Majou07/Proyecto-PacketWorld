@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="650.0" prefWidth="780.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clienteescritorio.FXMLSucursalesController">
+   <children>
+      <Label layoutX="34.0" layoutY="69.0" text="TABLA DE SUCURSALES">
+         <font>
+            <Font name="System Bold" size="24.0" />
+         </font>
+      </Label>
+      <TableView fx:id="tvSucursales" layoutX="34.0" layoutY="140.0" prefHeight="480.0" prefWidth="550.0">
+         <columns>
+            <TableColumn fx:id="colCodigo" prefWidth="100.0" text="Código" />
+            <TableColumn fx:id="colNombre" prefWidth="120.0" text="Nombre corto" />
+            <TableColumn fx:id="colEstatus" prefWidth="80.0" text="Estatus" />
+            <TableColumn fx:id="colCalle" prefWidth="140.0" text="Calle" />
+            <TableColumn fx:id="colNumero" prefWidth="108.0" text="Número" />
+            <TableColumn fx:id="colColonia" prefWidth="108.0" text="Colonia" />
+            <TableColumn fx:id="colCodigoPostal" prefWidth="108.0" text="Código postal" />
+            <TableColumn fx:id="colCiudad" prefWidth="108.0" text="Ciudad" />
+            <TableColumn fx:id="colEstado" prefWidth="108.0" text="Estado" />
+         </columns>
+      </TableView>
+      <VBox layoutX="620.0" layoutY="140.0" spacing="15.0">
+         <children>
+            <Button mnemonicParsing="false" onAction="#clicRegistrar" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #f0f0f0;" text="Registrar" />
+            <Button mnemonicParsing="false" onAction="#clicEditar" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #f0f0f0;" text="Editar" />
+            <Button mnemonicParsing="false" onAction="#clicDarBaja" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #f0f0f0;" text="Dar de baja" />
+            <Button mnemonicParsing="false" onAction="#clicReactivar" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #f0f0f0;" text="Reactivar" />
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="385.0" prefWidth="700.0" style="-fx-background-radius: 10; -fx-background-color: white; -fx-border-color: black; -fx-border-radius: 10;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clienteescritorio.FXMLFormularioSucursalController">
+   <children>
+      <Label fx:id="lbTitulo" layoutX="36.0" layoutY="28.0" text="Registro de Sucursal">
+         <font>
+            <Font name="System Bold" size="22.0" />
+         </font>
+      </Label>
+      <Label layoutX="36.0" layoutY="80.0" text="Codigo" />
+      <TextField fx:id="tfCodigo" layoutX="35.0" layoutY="109.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
+      
+      <Label layoutX="256.0" layoutY="80.0" text="Nombre" />
+      <TextField fx:id="tfNombre" layoutX="255.0" layoutY="109.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
+      
+      <Label layoutX="476.0" layoutY="80.0" text="Estatus" />
+      
+      <Label layoutX="37.0" layoutY="157.0" text="Código Postal" />
+      <TextField fx:id="tfCodigoPostal" layoutX="33.0" layoutY="186.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
+      
+      <Label layoutX="257.0" layoutY="157.0" text="Calle" />
+      <TextField fx:id="tfCalle" layoutX="253.0" layoutY="186.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
+      
+      <Label layoutX="477.0" layoutY="157.0" text="Numero" />
+      <TextField fx:id="tfNumero" layoutX="473.0" layoutY="186.0" prefWidth="180.0" style="-fx-background-color: #e0e0e0;" />
+      
+      <Label layoutX="39.0" layoutY="236.0" text="Colonia" />
+      
+      <Label layoutX="259.0" layoutY="236.0" text="Ciudad" />
+      
+      <Label layoutX="479.0" layoutY="236.0" text="Estado" />
+      <ComboBox fx:id="cbEstatus" layoutX="471.0" layoutY="109.0" prefWidth="180.0" style="-fx-background-color: #e0e0e0;" />
+      
+      <Button layoutX="479.0" layoutY="338.0" mnemonicParsing="false" onAction="#clicCancelar" style="-fx-background-color: #d1a3a4;" text="Cancelar" />
+      <Button layoutX="579.0" layoutY="338.0" mnemonicParsing="false" onAction="#clicGuardar" style="-fx-background-color: #d1a3a4;" text="Registrar" />
+      <ComboBox fx:id="cbColonia" layoutX="35.0" layoutY="259.0" prefWidth="180.0" style="-fx-background-color: #e0e0e0;" />
+      <TextField fx:id="tfCiudad" layoutX="247.0" layoutY="259.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
+      <TextField fx:id="tfEstado" layoutX="473.0" layoutY="259.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
+   </children>
+</AnchorPane>

@@ -119,6 +119,37 @@ public class SucursalImp {
             respuesta.setMensaje(Constantes.MSJ_ERROR_BD);
         }
         return respuesta;
+    }
+    
+    public static Respuesta reactivarSucursal(String codigoSucursal) {
+        Respuesta respuesta = new Respuesta();
+        SqlSession conexionBD = MyBatisUtil.getSession();
+
+        if (conexionBD != null) {
+            try {
+                
+                int filasAfectadas = conexionBD.update("sucursal.reactivar", codigoSucursal);
+                conexionBD.commit();
+
+                if (filasAfectadas > 0) {
+                    respuesta.setError(false);
+                    respuesta.setMensaje("Sucursal reactivada correctamente");
+                } else {
+                    respuesta.setError(true);
+                    respuesta.setMensaje("No se encontró la sucursal");
+                }
+            } catch (Exception e) {
+                conexionBD.rollback();
+                respuesta.setError(true);
+                respuesta.setMensaje(e.getMessage());
+            } finally {
+                conexionBD.close();
+            }
+        } else {
+            respuesta.setError(true);
+            respuesta.setMensaje(Constantes.MSJ_ERROR_BD);
+        }
+        return respuesta;
     }   
     
 }
