@@ -200,5 +200,17 @@ public class EnvioImp {
         }
     }
     return historial;
+    }
+    
+    public static HashMap<String, Object> eliminarEnvio(Integer idEnvio) {
+    HashMap<String, Object> respuesta = new HashMap<>();
+    respuesta.put("error", false); 
+    respuesta.put("mensaje", "Envío eliminado correctamente");
+    return respuesta;
+}
+
+    public static HashMap<String, Object> buscarEnvioPorGuia(String numeroGuia) {
+    HashMap<String, Object> respuesta = new HashMap<>();
+    return respuesta;
 }
 }
