@@ -201,6 +201,20 @@ public class ColaboradorImp {
         }
         return lista;
     }
+    public static Colaborador obtenerPorId(int idColaborador) {
+    SqlSession session = MyBatisUtil.getSession();
+    Colaborador colaborador = null;
+    try {
+        colaborador = session.selectOne("colaborador.obtener-por-id", idColaborador);
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        session.close();
+    }
+    return colaborador;
+}
+
+    
     
     
     public static List<pojo.Rol> obtenerRoles() {

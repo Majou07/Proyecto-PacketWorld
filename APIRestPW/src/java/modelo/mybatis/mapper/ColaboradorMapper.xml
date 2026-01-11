@@ -126,6 +126,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE c.idrol = #{idRol};
     </select>
     
+    <select id="obtener-por-id" parameterType="int" resultType="pojo.Colaborador">
+    SELECT 
+        c.id_colaborador AS idColaborador,
+        c.nombre AS nombre,
+        c.apellido_paterno AS apellidoPaterno,
+        c.apellido_materno AS apellidoMaterno,
+        c.curp AS curp,
+        c.correo_electronico AS correoElectronico,
+        c.contrasena AS contrasena,
+        c.numero_licencia AS numeroLicencia
+    FROM colaborador c
+    WHERE c.id_colaborador = #{idColaborador};
+</select>
+
+    
     
     <select id="obtener-roles" resultType="pojo.Rol">
         SELECT idrol AS idRol, nombre_rol AS nombreRol FROM rol

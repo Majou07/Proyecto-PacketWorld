@@ -131,6 +131,16 @@ public class ColaboradorWS {
         throw new BadRequestException();
         
     }
+    @Path("obtener/{idColaborador}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Colaborador obtenerPorId(@PathParam("idColaborador") int idColaborador) {
+        if (idColaborador > 0) {
+        return ColaboradorImp.obtenerPorId(idColaborador);
+    }
+    throw new BadRequestException("Id inválido");
+}
+
 }
     
     
