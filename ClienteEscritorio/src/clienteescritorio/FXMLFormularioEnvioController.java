@@ -37,6 +37,19 @@ public class FXMLFormularioEnvioController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         cargarCatalogos();
+        
+        
+        cbCliente.setConverter(new javafx.util.StringConverter<Cliente>() {
+        @Override
+        public String toString(Cliente objeto) {
+            return (objeto != null) ? objeto.getNombre() + " " + objeto.getApellidoPaterno() : "";
+        }
+
+        @Override
+        public Cliente fromString(String string) {
+            return null;
+        }
+    });
     }    
 
     private void cargarCatalogos(){
