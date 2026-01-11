@@ -76,10 +76,8 @@ public class EnvioImp {
             params.put("idColaborador", idColaborador);
             params.put("comentario", comentario);
 
-            // 1. Actualiza el estatus principal del envío
             int filasEnvio = conexionBD.update("envio.actualizar-estatus", params);
             
-            // 2. Insertamos en el historial 
             int filasHistorial = conexionBD.insert("envio.registrar-historial", params);
 
             if (filasEnvio > 0 && filasHistorial > 0) {
@@ -155,7 +153,6 @@ public class EnvioImp {
     
     public static Double calcularCostoEnvio(String cpOrigen, String cpDestino, int numeroPaquetes) {
     try {
-        // Obtener distancia desde API externa
         String urlDistancia = "http://sublimas.com.mx:8080/calculadora/api/envios/distancia/" + cpOrigen + "," + cpDestino;
         String jsonRespuesta = llamarApiExterna(urlDistancia); 
         JsonObject resp = new Gson().fromJson(jsonRespuesta, JsonObject.class);
@@ -207,10 +204,40 @@ public class EnvioImp {
     respuesta.put("error", false); 
     respuesta.put("mensaje", "Envío eliminado correctamente");
     return respuesta;
-}
+    }
 
-    public static HashMap<String, Object> buscarEnvioPorGuia(String numeroGuia) {
-    HashMap<String, Object> respuesta = new HashMap<>();
-    return respuesta;
-}
+        public static HashMap<String, Object> buscarEnvioPorGuia(String numeroGuia) {
+        HashMap<String, Object> respuesta = new HashMap<>();
+        return respuesta;
+    }
+        
+        
+    public static Respuesta editarEnvio(Envio envio) {
+    Respuesta respuesta = new Respuesta();
+    SqlSession conexionBD = MyBatisUtil.getSession();
+    if (conexionBD != null) {
+        try {
+            int filasAfectadas = conexionBD.update("envio.editar", envio);
+            conexionBD.commit();
+            
+            if (filasAfectadas > 0) {
+                respuesta.setError(false);
+                respuesta.setMensaje("Información del envío actualizada correctamente.");
+            } else {
+                respuesta.setError(true);
+                respuesta.setMensaje("No se encontró el envío para actualizar.");
+            }
+            } catch (Exception e) {
+                conexionBD.rollback();
+                respuesta.setError(true);
+                respuesta.setMensaje("Error: " + e.getMessage());
+            } finally {
+                conexionBD.close();
+            }
+        } else {
+            respuesta.setError(true);
+            respuesta.setMensaje(Constantes.MSJ_ERROR_BD);
+        }
+        return respuesta;
+    }
 }

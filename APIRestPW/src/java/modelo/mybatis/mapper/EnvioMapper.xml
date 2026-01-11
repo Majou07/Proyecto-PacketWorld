@@ -51,6 +51,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         UPDATE envio SET id_conductor_asignado = #{idConductor} 
         WHERE id_envio = #{idEnvio}
     </update>
+    
+    
+    <update id="editar" parameterType="pojo.Envio">
+        UPDATE envio 
+        SET destinatario_nombre = #{destinatarioNombre}, 
+            destinatario_ap_paterno = #{destinatarioApPaterno},
+            destinatario_ap_materno = #{destinatarioApMaterno},
+            destino_calle = #{destinoCalle}, 
+            destino_numero = #{destinoNumero},
+            destino_colonia = #{destinoColonia}, 
+            destino_codigo_postal = #{destinoCodigoPostal},
+            destino_ciudad = #{destinoCiudad}, 
+            destino_estado = #{destinoEstado}
+        WHERE id_envio = #{idEnvio}
+    </update>
   
 </mapper>
 

@@ -37,6 +37,15 @@ public class EnvioWS {
         }
     }
     
+    @Path("editar")
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Respuesta editar(String json) {
+        Envio envio = new Gson().fromJson(json, Envio.class);
+        return EnvioImp.editarEnvio(envio); 
+    }
+    
     @Path("actualizar-estatus")
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
