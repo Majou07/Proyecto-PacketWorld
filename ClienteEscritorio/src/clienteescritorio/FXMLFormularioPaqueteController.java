@@ -22,18 +22,42 @@ public class FXMLFormularioPaqueteController implements Initializable {
     @FXML private TextField tfProfundidad;
     
     private int idEnvio;
+    private Paquete paqueteEdicion;
+    private boolean esEdicion = false;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) { }    
     
     public void setEnvio(int idEnvio){
         this.idEnvio = idEnvio;
+        this.esEdicion = false;
     }
+    
+    
+    public void prepararFormulario(Paquete paquete) {
+        this.paqueteEdicion = paquete;
+        this.idEnvio = paquete.getIdEnvio();
+        this.esEdicion = true;
+        
+        // Llenamos los campos con la información del paquete seleccionado
+        tfDescripcion.setText(paquete.getDescripcion());
+        tfPeso.setText(paquete.getPeso().toString());
+        tfAlto.setText(paquete.getAlto().toString());
+        tfAncho.setText(paquete.getAncho().toString());
+        tfProfundidad.setText(paquete.getProfundidad().toString());
+    }
+    
 
     @FXML
     private void clicGuardar(ActionEvent event) {
         try {
-            Paquete paquete = new Paquete();
+            if (tfDescripcion.getText().isEmpty() || tfPeso.getText().isEmpty()) {
+                Utilidades.mostrarAlertaSimple("Campos vacíos", 
+                    "Por favor, completa la descripción y el peso.", Alert.AlertType.WARNING);
+                return;
+            }
+
+            Paquete paquete = (esEdicion) ? paqueteEdicion : new Paquete();
             paquete.setIdEnvio(idEnvio);
             paquete.setDescripcion(tfDescripcion.getText());
             paquete.setPeso(Float.parseFloat(tfPeso.getText()));
@@ -41,15 +65,22 @@ public class FXMLFormularioPaqueteController implements Initializable {
             paquete.setAncho(Float.parseFloat(tfAncho.getText()));
             paquete.setProfundidad(Float.parseFloat(tfProfundidad.getText()));
             
-            Respuesta resp = PaqueteImp.registrar(paquete);
+            Respuesta resp;
+            if (esEdicion) {
+                resp = PaqueteImp.editar(paquete); 
+            } else {
+                resp = PaqueteImp.registrar(paquete);
+            }
+
             if(!resp.isError()){
-                Utilidades.mostrarAlertaSimple("Éxito", "Paquete agregado", Alert.AlertType.INFORMATION);
+                Utilidades.mostrarAlertaSimple("Éxito", resp.getMensaje(), Alert.AlertType.INFORMATION);
                 cerrarVentana();
             } else {
                 Utilidades.mostrarAlertaSimple("Error", resp.getMensaje(), Alert.AlertType.ERROR);
             }
         } catch(NumberFormatException e){
-            Utilidades.mostrarAlertaSimple("Error", "Ingresa valores numéricos válidos", Alert.AlertType.WARNING);
+            Utilidades.mostrarAlertaSimple("Error", 
+                "Ingresa valores numéricos válidos (ej. 10.5)", Alert.AlertType.WARNING);
         }
     }
 
