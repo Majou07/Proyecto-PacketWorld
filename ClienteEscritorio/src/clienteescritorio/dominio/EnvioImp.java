@@ -35,66 +35,99 @@ public class EnvioImp {
         return respuesta;
     }
 
-    public static Respuesta actualizarEstatus(int idEnvio, int idEstatus, String comentario) {
-        Respuesta respuesta = new Respuesta();
-        respuesta.setError(false);
-        respuesta.setMensaje("Estatus actualizado correctamente");
-        return respuesta;
+    public static Respuesta actualizarEstatus(int idEnvio, int idEstatus, String comentario, int idColaborador) {
+        String url = Constantes.URL_WS + "envio/actualizar-estatus";
+        String parametros = "idEnvio=" + idEnvio + "&idEstatus=" + idEstatus + 
+                            "&comentario=" + comentario + "&idColaborador=" + idColaborador;
+
+        RespuestaHTTP respuestaAPI = ConexionAPI.peticionPUT(url, parametros);
+
+        if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+            return new Gson().fromJson(respuestaAPI.getContenido(), Respuesta.class);
+        }
+        return new Respuesta(true, "Error de comunicación con el servidor.");
     }
-    
+
     
     public static Respuesta asignarConductor(int idEnvio, int idConductor) {
     Respuesta respuesta = new Respuesta();
-    // Definir la URL hacia el nuevo endpoint de la API
     String url = Constantes.URL_WS + "envio/asignar-conductor";
     String parametros = "idEnvio=" + idEnvio + "&idConductor=" + idConductor;
     
-    // Realiza la petición POST 
-    RespuestaHTTP respuestaAPI = ConexionAPI.peticionPOST(url, parametros);
-    
-        if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
-            Gson gson = new Gson();
-            respuesta = gson.fromJson(respuestaAPI.getContenido(), Respuesta.class);
-        } else {
-            respuesta.setError(true);
-            respuesta.setMensaje("No se pudo conectar con el servidor para asignar el conductor.");
-        }
-        return respuesta;
-    }
-    
-    public static Respuesta registrar(Envio envio) {
-    Respuesta respuesta = new Respuesta();
-    String url = Constantes.URL_WS + "envio/registrar";
-    String json = new Gson().toJson(envio);
-    RespuestaHTTP respuestaAPI = ConexionAPI.peticionBody(url, Constantes.METODO_POST, json, "application/json");
+    RespuestaHTTP respuestaAPI = ConexionAPI.peticionPUT(url, parametros);
     
     if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
         respuesta = new Gson().fromJson(respuestaAPI.getContenido(), Respuesta.class);
     } else {
         respuesta.setError(true);
-        respuesta.setMensaje("Error al conectar con el servidor.");
+        respuesta.setMensaje("Error al asignar el conductor.");
+    }
+    return respuesta;
+}
+    
+    public static Respuesta registrar(Envio envio) {
+        Respuesta respuesta = new Respuesta();
+        String url = Constantes.URL_WS + "envio/registrar";
+        String json = new Gson().toJson(envio);
+        RespuestaHTTP respuestaAPI = ConexionAPI.peticionBody(url, Constantes.METODO_POST, json, "application/json");
+        
+        if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+            respuesta = new Gson().fromJson(respuestaAPI.getContenido(), Respuesta.class);
+        } else {
+            respuesta.setError(true);
+            respuesta.setMensaje("Error al conectar con el servidor para registrar el envío.");
         }
         return respuesta;
     }
     
+    public static Respuesta editar(Envio envio) {
+    Respuesta respuesta = new Respuesta();
+    String url = Constantes.URL_WS + "envio/editar"; 
+    String json = new Gson().toJson(envio);
+    
+    RespuestaHTTP respuestaAPI = ConexionAPI.peticionBody(url, Constantes.METODO_PUT, json, "application/json");
+    
+    if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+        respuesta = new Gson().fromJson(respuestaAPI.getContenido(), Respuesta.class);
+    } else {
+        respuesta.setError(true);
+        respuesta.setMensaje("No se pudo actualizar la información del envío.");
+    }
+    return respuesta;
+    }
+    
+    
+    public static Envio buscarEnvioPorGuia(String guia) {
+        Envio envio = null;
+        String url = Constantes.URL_WS + "envio/" + guia;
+        RespuestaHTTP respuestaAPI = ConexionAPI.peticionGET(url);
+        
+        if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+            envio = new Gson().fromJson(respuestaAPI.getContenido(), Envio.class);
+        }
+        return envio;
+    }
+    
+    
+    public static Respuesta eliminarEnvio(int idEnvio) {
+        return actualizarEstatus(idEnvio, 6, "Eliminado desde sistema", 1);
+    }
     
     
     public static HashMap<String, Object> obtenerHistorial(int idEnvio) {
-    HashMap<String, Object> respuesta = new LinkedHashMap<>();
-    String url = Constantes.URL_WS + "envio/historial/" + idEnvio;
-    
-    RespuestaHTTP respuestaAPI = ConexionAPI.peticionGET(url);
-    
-    if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
-        Gson gson = new Gson();
-        java.lang.reflect.Type tipoLista = new TypeToken<List<HistorialEstatus>>(){}.getType();
-        List<HistorialEstatus> historial = gson.fromJson(respuestaAPI.getContenido(), tipoLista);
+        HashMap<String, Object> respuesta = new LinkedHashMap<>();
+        String url = Constantes.URL_WS + "envio/historial/" + idEnvio;
+        RespuestaHTTP respuestaAPI = ConexionAPI.peticionGET(url);
         
-        respuesta.put(Constantes.KEY_ERROR, false);
-        respuesta.put("historial", historial);
-    } else {
-        respuesta.put(Constantes.KEY_ERROR, true);
-        respuesta.put(Constantes.KEY_MENSAJE, "Error al cargar el historial de cambios de estatus.");
+        if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+            Gson gson = new Gson();
+            Type tipoLista = new TypeToken<List<HistorialEstatus>>(){}.getType();
+            List<HistorialEstatus> historial = gson.fromJson(respuestaAPI.getContenido(), tipoLista);
+            respuesta.put(Constantes.KEY_ERROR, false);
+            respuesta.put("historial", historial);
+        } else {
+            respuesta.put(Constantes.KEY_ERROR, true);
+            respuesta.put(Constantes.KEY_MENSAJE, "Error al cargar el historial.");
         }
         return respuesta;
     }
