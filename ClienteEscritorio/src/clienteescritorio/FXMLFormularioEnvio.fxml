@@ -20,13 +20,28 @@
       
       <Label layoutX="35.0" layoutY="160.0" text="Nombre Destinatario" />
       <TextField fx:id="tfNombreDest" layoutX="32.0" layoutY="186.0" prefWidth="200.0" />
+      
+      <Label layoutX="35.0" layoutY="215.0" text="Apellido Paterno Dest." />
+      <TextField fx:id="tfApPaternoDest" layoutX="32.0" layoutY="240.0" prefWidth="200.0" />
+
+      <Label layoutX="260.0" layoutY="215.0" text="Apellido Materno Dest." />
+      <TextField fx:id="tfApMaternoDest" layoutX="257.0" layoutY="240.0" prefWidth="200.0" />
+
+      <Label layoutX="480.0" layoutY="80.0" text="Número ext/int" />
+      <TextField fx:id="tfNumero" layoutX="477.0" layoutY="108.0" prefWidth="180.0" />
+      
+      <Label layoutX="260.0" layoutY="215.0" text="Colonia" />
+      <TextField fx:id="tfColonia" layoutX="257.0" layoutY="240.0" prefWidth="200.0" />
+      
       <Label layoutX="260.0" layoutY="160.0" text="Calle Destino" />
       <TextField fx:id="tfCalle" layoutX="257.0" layoutY="186.0" prefWidth="200.0" />
+      
       <Label layoutX="480.0" layoutY="160.0" text="Ciudad" />
       <TextField fx:id="tfCiudad" layoutX="477.0" layoutY="186.0" prefWidth="180.0" />
       
       <Label layoutX="37.0" layoutY="232.0" text="CP" />
       <TextField fx:id="tfCP" layoutX="35.0" layoutY="260.0" prefWidth="100.0" />
+      
       <Label layoutX="152.0" layoutY="232.0" text="Estado" />
       <TextField fx:id="tfEstado" layoutX="150.0" layoutY="260.0" prefWidth="150.0" />
       
