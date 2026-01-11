@@ -1,6 +1,7 @@
 package clienteescritorio;
 
 import clienteescritorio.dominio.EnvioImp;
+import clienteescritorio.dominio.PaqueteImp;
 import clienteescritorio.pojo.Envio;
 import clienteescritorio.pojo.Paquete;
 import clienteescritorio.utilidad.Utilidades;
@@ -24,7 +25,6 @@ import javafx.stage.Stage;
 
 public class FXMLEnviosController implements Initializable {
 
-    // Componentes de Envíos
     @FXML private TextField tfBusquedaEnvio;
     @FXML private TableView<Envio> tvEnvios;
     @FXML private TableColumn colGuia;
@@ -34,7 +34,6 @@ public class FXMLEnviosController implements Initializable {
     @FXML private TableColumn colConductor;
     @FXML private TableColumn colEstado;
     
-    // Componentes de Paquetes (Agregados para evitar errores de FXML)
     @FXML private TableView<Paquete> tvPaquetes;
     @FXML private TableColumn colDescripcion;
     @FXML private TableColumn colPeso;
@@ -49,14 +48,12 @@ public class FXMLEnviosController implements Initializable {
         configurarTabla();
         cargarEnvios();
         
-        // Listener para cargar paquetes al seleccionar un envío [Requerimiento 52 del PDF]
-        tvEnvios.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                cargarPaquetesPorEnvio(newSelection.getIdEnvio());
-            }
+        tvEnvios.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+        if (newVal != null) {
+            cargarPaquetesPorEnvio(newVal.getIdEnvio());
+        }
         });
 
-        // Doble clic para cambiar estatus [Requerimiento 42 del PDF]
         tvEnvios.setOnMouseClicked(event -> {
             if(event.getClickCount() == 2 && tvEnvios.getSelectionModel().getSelectedItem() != null){
                 abrirModalEstatus(tvEnvios.getSelectionModel().getSelectedItem());
@@ -74,7 +71,6 @@ public class FXMLEnviosController implements Initializable {
         // Paquetes
         colDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
         colPeso.setCellValueFactory(new PropertyValueFactory<>("pesoKg"));
-        // Aquí podrías crear una celda personalizada para concatenar dimensiones
         colDimensiones.setCellValueFactory(new PropertyValueFactory<>("dimensiones")); 
     }
 
@@ -89,10 +85,11 @@ public class FXMLEnviosController implements Initializable {
     }
 
     private void cargarPaquetesPorEnvio(int idEnvio) {
-        // Debes implementar este método en tu clase EnvioImp o PaqueteImp
+        List<Paquete> lista = (List<Paquete>) PaqueteImp.obtenerPaquetesPorEnvio(idEnvio);
+        paquetes = FXCollections.observableArrayList(lista);
+        tvPaquetes.setItems(paquetes);
     }
 
-    // --- MÉTODOS DE ACCIÓN (BUSCADOS POR EL FXML) ---
 
     @FXML 
     private void btnHistorial(ActionEvent event) {
@@ -101,20 +98,63 @@ public class FXMLEnviosController implements Initializable {
 
     @FXML 
     private void btnRegistrarEnvio(ActionEvent event) {
+        irFormularioEnvio(null);
     }
 
     @FXML 
     private void btnActualizarEnvio(ActionEvent event) {
+        Envio seleccionado = tvEnvios.getSelectionModel().getSelectedItem();
+        if (seleccionado != null) {
+            irFormularioEnvio(seleccionado);
+        }
     }
 
     @FXML 
     private void btnEliminarEnvio(ActionEvent event) {
+        Envio seleccionado = tvEnvios.getSelectionModel().getSelectedItem();
+        if (seleccionado != null) {
+            boolean confirmar = Utilidades.mostrarConfirmacion("Eliminar", "¿Deseas eliminar el envío " + seleccionado.getNumeroGuia() + "?");
+            if (confirmar) {
+                EnvioImp.eliminarEnvio(seleccionado.getIdEnvio());
+                cargarEnvios();
+            }
+        } else {
+            Utilidades.mostrarAlertaSimple("Selección", "Primero selecciona un envío.", Alert.AlertType.WARNING);
+        }
     }
 
     @FXML 
     private void btnAsignarConductor(ActionEvent event) {
     }
+    
+    private void irFormularioEnvio(Envio envio) {
+    try {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLFormularioEnvio.fxml"));
+        Parent root = loader.load();
+        
+        if (envio != null) {
+            FXMLFormularioEnvioController controller = loader.getController();
+            controller.prepararFormulario(envio); 
+        }
+        
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root));
+        stage.setTitle(envio == null ? "Registrar Envío" : "Actualizar Envío");
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+        
+        cargarEnvios(); 
+    } catch (IOException ex) {
+        ex.printStackTrace();
+        Utilidades.mostrarAlertaSimple("Error", "No se pudo cargar el formulario", Alert.AlertType.ERROR);
+    }
+    }
 
+    
+    
+    // --- PAQUETES ---
+    
+    
     @FXML 
     private void btnAgregarPaquete(ActionEvent event) {
         Envio envioSeleccionado = tvEnvios.getSelectionModel().getSelectedItem();
@@ -137,11 +177,31 @@ public class FXMLEnviosController implements Initializable {
 
     @FXML 
     private void btnEditarPaquete(ActionEvent event) {
+        Paquete seleccionado = tvPaquetes.getSelectionModel().getSelectedItem();
+        if (seleccionado != null) {
+        }
     }
 
     @FXML 
     private void btnEliminarPaquete(ActionEvent event) {
+        Paquete selecc = tvPaquetes.getSelectionModel().getSelectedItem();
+        if (selecc != null) {
+            if (Utilidades.mostrarConfirmacion("Eliminar", "¿Deseas quitar este paquete?")) {
+                PaqueteImp.eliminarPaquete(selecc.getIdPaquete());
+                cargarPaquetesPorEnvio(selecc.getIdEnvio()); 
+            }
+        } else {
+            Utilidades.mostrarAlertaSimple("Selección", "Elige un paquete", Alert.AlertType.WARNING);
+        }
     }
+    
+    private void configurarBusqueda() {
+    tfBusquedaEnvio.textProperty().addListener((observable, oldValue, newValue) -> {
+       
+    });
+    }
+    
+    
 
     private void abrirModalEstatus(Envio envio) {
         try {
