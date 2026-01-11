@@ -50,9 +50,28 @@ public class PaqueteImp {
         return respuesta;
     }
     
-    public static HashMap<String, Object> eliminarPaquete(Integer idPaquete) {
-    HashMap<String, Object> respuesta = new HashMap<>();
+    public static Respuesta editar(Paquete paquete) {
+    Respuesta respuesta = new Respuesta();
+    String url = Constantes.URL_WS + "paquete/editar";
+    String json = new Gson().toJson(paquete);
+    RespuestaHTTP respuestaAPI = ConexionAPI.peticionBody(url, "PUT", json, "application/json");
+    
+    if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+        respuesta = new Gson().fromJson(respuestaAPI.getContenido(), Respuesta.class);
+    } else {
+        respuesta.setError(true);
+        respuesta.setMensaje("Error al intentar actualizar el paquete.");
+    }
     return respuesta;
+    }
+    
+    public static Respuesta eliminarPaquete(int idPaquete) {
+    String URL = Constantes.URL_WS + "paquete/eliminar/" + idPaquete; 
+    RespuestaHTTP respuestaAPI = ConexionAPI.peticionSinBody(URL, "DELETE");
+    if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+        return new Gson().fromJson(respuestaAPI.getContenido(), Respuesta.class);
+    }
+    return new Respuesta(true, "Error al eliminar el paquete.");
     }
     
 }
