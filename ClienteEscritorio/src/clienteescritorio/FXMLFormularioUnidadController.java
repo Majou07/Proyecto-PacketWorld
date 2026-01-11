@@ -81,9 +81,9 @@ public class FXMLFormularioUnidadController implements Initializable {
     }
 
     @FXML
-private void clicGuardar(ActionEvent event) {
+    private void clicGuardar(ActionEvent event) {
     if (!validarCampos()) {
-        return; // Si falla la validación, no continúa
+        return; 
     }
 
     Unidad nuevaUnidad = new Unidad();
@@ -175,14 +175,13 @@ private void clicGuardar(ActionEvent event) {
         return false;
     }
 
-    // Validar VIN (mínimo 4 caracteres)
     if (tfVin.getText().length() < 4) {
         Utilidades.mostrarAlertaSimple("VIN inválido", 
             "El VIN debe tener al menos 4 caracteres.", Alert.AlertType.ERROR);
         return false;
     }
 
-    return true; // Si pasa todas las validaciones
+    return true;
 }
     private void actualizarNii() {
     String vin = tfVin.getText();
@@ -191,12 +190,14 @@ private void clicGuardar(ActionEvent event) {
 
     try {
         int nuevoAnio = Integer.parseInt(tfAnio.getText());
-        String parteVin = vin.substring(0, 4); // primeros 4 caracteres del VIN
+        String parteVin = vin.substring(0, 4); 
         String nuevoNii = nuevoAnio + "-" + parteVin;
         tfNii.setText(nuevoNii);
     } catch (NumberFormatException e) {
-        tfNii.setText(""); // limpia si el año es inválido
+        tfNii.setText(""); 
     }
+    
+    
 }
 
    
