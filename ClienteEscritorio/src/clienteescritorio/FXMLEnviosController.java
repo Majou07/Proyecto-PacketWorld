@@ -4,12 +4,14 @@ import clienteescritorio.dominio.EnvioImp;
 import clienteescritorio.dominio.PaqueteImp;
 import clienteescritorio.pojo.Envio;
 import clienteescritorio.pojo.Paquete;
+import clienteescritorio.utilidad.Constantes;
 import clienteescritorio.utilidad.Utilidades;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -27,18 +29,18 @@ public class FXMLEnviosController implements Initializable {
 
     @FXML private TextField tfBusquedaEnvio;
     @FXML private TableView<Envio> tvEnvios;
-    @FXML private TableColumn colGuia;
-    @FXML private TableColumn colCliente;
-    @FXML private TableColumn colOrigen;
-    @FXML private TableColumn colDestino;
-    @FXML private TableColumn colConductor;
-    @FXML private TableColumn colEstado;
+    @FXML private TableColumn<Envio, String> colGuia;
+    @FXML private TableColumn<Envio, String> colCliente;
+    @FXML private TableColumn<Envio, String> colOrigen;
+    @FXML private TableColumn<Envio, String> colDestino;
+    @FXML private TableColumn<Envio, String> colConductor;
+    @FXML private TableColumn<Envio, String> colEstado;
     
     @FXML private TableView<Paquete> tvPaquetes;
-    @FXML private TableColumn colDescripcion;
-    @FXML private TableColumn colPeso;
-    @FXML private TableColumn colDimensiones;
-    @FXML private TableColumn colEnvioPertence;
+    @FXML private TableColumn<Paquete, String> colDescripcion;
+    @FXML private TableColumn<Paquete, Float> colPeso;
+    @FXML private TableColumn<Paquete, String> colDimensiones;
+    @FXML private TableColumn<Paquete, Integer> colEnvioPertence;
 
     private ObservableList<Envio> envios;
     private ObservableList<Paquete> paquetes;
@@ -49,9 +51,9 @@ public class FXMLEnviosController implements Initializable {
         cargarEnvios();
         
         tvEnvios.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-        if (newVal != null) {
-            cargarPaquetesPorEnvio(newVal.getIdEnvio());
-        }
+            if (newVal != null) {
+                cargarPaquetesPorEnvio(newVal.getIdEnvio());
+            }
         });
 
         tvEnvios.setOnMouseClicked(event -> {
@@ -69,9 +71,27 @@ public class FXMLEnviosController implements Initializable {
         colEstado.setCellValueFactory(new PropertyValueFactory<>("estatusEnvio"));
         
         // Paquetes
+        
+        colDestino.setCellValueFactory(cellData -> {
+            Envio e = cellData.getValue();
+            return new SimpleStringProperty(e.getDestinoCalle() + " #" + e.getDestinoNumero());
+        });
+        colConductor.setCellValueFactory(new PropertyValueFactory<>("nombreConductor"));
+        
         colDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
-        colPeso.setCellValueFactory(new PropertyValueFactory<>("pesoKg"));
-        colDimensiones.setCellValueFactory(new PropertyValueFactory<>("dimensiones")); 
+        colPeso.setCellValueFactory(new PropertyValueFactory<>("peso"));
+        
+        colDimensiones.setCellValueFactory(cellData -> {
+            Paquete p = cellData.getValue();
+            if (p != null) {
+                String dimensiones = String.format("%.0f cm x %.0f cm x %.0f cm", 
+                                     p.getAlto(), p.getAncho(), p.getProfundidad());
+                return new SimpleStringProperty(dimensiones);
+            }
+            return new SimpleStringProperty("");
+        });
+        
+        colEnvioPertence.setCellValueFactory(new PropertyValueFactory<>("idEnvio"));
     }
 
     private void cargarEnvios() {
@@ -84,16 +104,14 @@ public class FXMLEnviosController implements Initializable {
         }
     }
 
-    private void cargarPaquetesPorEnvio(int idEnvio) {
-        List<Paquete> lista = (List<Paquete>) PaqueteImp.obtenerPaquetesPorEnvio(idEnvio);
-        paquetes = FXCollections.observableArrayList(lista);
-        tvPaquetes.setItems(paquetes);
-    }
 
 
     @FXML 
     private void btnHistorial(ActionEvent event) {
-        Utilidades.mostrarAlertaSimple("Historial", "Funcionalidad de historial en desarrollo", Alert.AlertType.INFORMATION);
+        Envio seleccionado = tvEnvios.getSelectionModel().getSelectedItem();
+        if (seleccionado != null) {
+             Utilidades.mostrarAlertaSimple("Historial", "Mostrando historial de: " + seleccionado.getNumeroGuia(), Alert.AlertType.INFORMATION);
+        }
     }
 
     @FXML 
@@ -125,7 +143,9 @@ public class FXMLEnviosController implements Initializable {
 
     @FXML 
     private void btnAsignarConductor(ActionEvent event) {
+        Utilidades.mostrarAlertaSimple("Asignar", "Selecciona un conductor de la lista", Alert.AlertType.INFORMATION);
     }
+    
     
     private void irFormularioEnvio(Envio envio) {
     try {
@@ -167,8 +187,11 @@ public class FXMLEnviosController implements Initializable {
                 
                 Stage stage = new Stage();
                 stage.setScene(new Scene(root));
+                stage.initModality(Modality.APPLICATION_MODAL);
                 stage.showAndWait();
-                // Recargar paquetes
+                
+                cargarPaquetesPorEnvio(envioSeleccionado.getIdEnvio());
+                
             } catch(Exception e) { e.printStackTrace(); }
         } else {
             Utilidades.mostrarAlertaSimple("Selección", "Selecciona un envío", Alert.AlertType.WARNING);
@@ -179,6 +202,17 @@ public class FXMLEnviosController implements Initializable {
     private void btnEditarPaquete(ActionEvent event) {
         Paquete seleccionado = tvPaquetes.getSelectionModel().getSelectedItem();
         if (seleccionado != null) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLFormularioPaquete.fxml"));
+                Parent root = loader.load();
+                FXMLFormularioPaqueteController ctrl = loader.getController();
+                ctrl.prepararFormulario(seleccionado); // Debes crear este método en el controlador del paquete
+
+                Stage stage = new Stage();
+                stage.setScene(new Scene(root));
+                stage.showAndWait();
+                cargarPaquetesPorEnvio(seleccionado.getIdEnvio());
+            } catch(IOException e) { e.printStackTrace(); }
         }
     }
 
@@ -199,6 +233,21 @@ public class FXMLEnviosController implements Initializable {
     tfBusquedaEnvio.textProperty().addListener((observable, oldValue, newValue) -> {
        
     });
+    }
+    
+    
+    private void cargarPaquetesPorEnvio(int idEnvio) {
+        HashMap<String, Object> respuesta = PaqueteImp.obtenerPaquetesPorEnvio(idEnvio);
+
+        if (!(boolean) respuesta.get(Constantes.KEY_ERROR)) {
+            List<Paquete> listaApi = (List<Paquete>) respuesta.get("paquetes");
+
+            paquetes = FXCollections.observableArrayList(listaApi);
+            tvPaquetes.setItems(paquetes);
+            tvPaquetes.refresh();
+        } else {
+            tvPaquetes.getItems().clear();
+        }
     }
     
     
