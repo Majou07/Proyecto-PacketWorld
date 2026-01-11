@@ -96,8 +96,7 @@ public class ColaboradorImp {
                             + "en este momento por favor intentelo mas tarde");
                     
         }
-          
-            
+                  
         }   
         return respuesta;
     }
@@ -144,7 +143,6 @@ public class ColaboradorImp {
     String URL = Constantes.URL_WS + "colaborador/obtener-foto/" + idColaborador;
     RespuestaHTTP respuestaAPI = ConexionAPI.peticionGET(URL);
 
-    //  Evitar NPE si el contenido es nulo o vacío
     if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK 
         && respuestaAPI.getContenido() != null 
         && !respuestaAPI.getContenido().isEmpty()) {
@@ -152,7 +150,7 @@ public class ColaboradorImp {
         Gson gson = new Gson();
         return gson.fromJson(respuestaAPI.getContenido(), Colaborador.class);
     }
-    return null; // si no hay foto, devuelve null
+    return null; 
 }
 
     

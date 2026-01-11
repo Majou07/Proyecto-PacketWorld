@@ -143,31 +143,70 @@ public class FXMLEnviosController implements Initializable {
 
     @FXML 
     private void btnAsignarConductor(ActionEvent event) {
-        Utilidades.mostrarAlertaSimple("Asignar", "Selecciona un conductor de la lista", Alert.AlertType.INFORMATION);
+        Envio seleccionado = tvEnvios.getSelectionModel().getSelectedItem();
+
+        if (seleccionado != null) {
+            HashMap<String, Object> respuestaConductor = clienteescritorio.dominio.ColaboradorImp.buscarPorRol(2);
+
+            if (!(boolean) respuestaConductor.get(clienteescritorio.utilidad.Constantes.KEY_ERROR)) {
+                List<clienteescritorio.pojo.Colaborador> conductores = (List<clienteescritorio.pojo.Colaborador>) respuestaConductor.get("colaboradores");
+
+                if (conductores != null && !conductores.isEmpty()) {
+                    ChoiceDialog<clienteescritorio.pojo.Colaborador> dialog = new ChoiceDialog<>(conductores.get(0), conductores);
+                    dialog.setTitle("Asignación de Conductor");
+                    dialog.setHeaderText("Asignar conductor al envío: " + seleccionado.getNumeroGuia());
+                    dialog.setContentText("Seleccione un conductor:");
+
+                    java.util.Optional<clienteescritorio.pojo.Colaborador> resultado = dialog.showAndWait();
+
+                    if (resultado.isPresent()) {
+                        clienteescritorio.pojo.Colaborador conductorElegido = resultado.get();
+
+                        clienteescritorio.dto.Respuesta resp = EnvioImp.asignarConductor(
+                                seleccionado.getIdEnvio(), 
+                                conductorElegido.getIdColaborador()
+                        );
+
+                        if (!resp.isError()) {
+                            Utilidades.mostrarAlertaSimple("Éxito", "Conductor asignado correctamente", Alert.AlertType.INFORMATION);
+                            cargarEnvios(); 
+                        } else {
+                            Utilidades.mostrarAlertaSimple("Error", resp.getMensaje(), Alert.AlertType.ERROR);
+                        }
+                    }
+                } else {
+                    Utilidades.mostrarAlertaSimple("Sin personal", "No se encontraron colaboradores con el rol de Conductor.", Alert.AlertType.WARNING);
+                }
+            } else {
+                Utilidades.mostrarAlertaSimple("Error", "No se pudo obtener la lista de conductores.", Alert.AlertType.ERROR);
+            }
+        } else {
+            Utilidades.mostrarAlertaSimple("Selección requerida", "Por favor, selecciona un envío de la tabla primero.", Alert.AlertType.WARNING);
+        }
     }
     
     
     private void irFormularioEnvio(Envio envio) {
-    try {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLFormularioEnvio.fxml"));
-        Parent root = loader.load();
-        
-        if (envio != null) {
-            FXMLFormularioEnvioController controller = loader.getController();
-            controller.prepararFormulario(envio); 
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLFormularioEnvio.fxml"));
+            Parent root = loader.load();
+
+            if (envio != null) {
+                FXMLFormularioEnvioController controller = loader.getController();
+                controller.prepararFormulario(envio); 
+            }
+
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle(envio == null ? "Registrar Envío" : "Actualizar Envío");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+
+            cargarEnvios(); 
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            Utilidades.mostrarAlertaSimple("Error", "No se pudo cargar el formulario", Alert.AlertType.ERROR);
         }
-        
-        Stage stage = new Stage();
-        stage.setScene(new Scene(root));
-        stage.setTitle(envio == null ? "Registrar Envío" : "Actualizar Envío");
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.showAndWait();
-        
-        cargarEnvios(); 
-    } catch (IOException ex) {
-        ex.printStackTrace();
-        Utilidades.mostrarAlertaSimple("Error", "No se pudo cargar el formulario", Alert.AlertType.ERROR);
-    }
     }
 
     

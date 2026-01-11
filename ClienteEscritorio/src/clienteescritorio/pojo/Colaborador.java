@@ -173,7 +173,7 @@ public class Colaborador {
     
     @Override
     public String toString() {
-        return nombre + " " + apellidoPaterno;
+        return this.nombre + " " + this.apellidoPaterno + " (" + this.numeroPersonal + ")";
     }
 }
 
