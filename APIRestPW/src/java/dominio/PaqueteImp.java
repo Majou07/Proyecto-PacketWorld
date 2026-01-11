@@ -42,4 +42,38 @@ public class PaqueteImp {
         
         return resp;
     }
+    
+    public static Respuesta editar(Paquete paquete) {
+    Respuesta resp = new Respuesta();
+    SqlSession conexion = MyBatisUtil.getSession();
+    if (conexion != null) {
+        try {
+            conexion.update("paquete.editar", paquete);
+            conexion.commit();
+            resp.setError(false);
+            resp.setMensaje("Paquete actualizado");
+        } catch (Exception e) {
+            resp.setError(true);
+            resp.setMensaje(e.getMessage());
+        } finally { conexion.close(); }
+    }
+    return resp;
+    } 
+
+    public static Respuesta eliminar(int idPaquete) {
+        Respuesta resp = new Respuesta();
+        SqlSession conexion = MyBatisUtil.getSession();
+        if (conexion != null) {
+            try {
+                conexion.delete("paquete.eliminar", idPaquete);
+                conexion.commit();
+                resp.setError(false);
+                resp.setMensaje("Paquete eliminado");
+            } catch (Exception e) {
+                resp.setError(true);
+                resp.setMensaje(e.getMessage());
+            } finally { conexion.close(); }
+        }
+        return resp;
+    } 
 }
