@@ -164,4 +164,34 @@ public class ConexionAPI {
         }
         return respuesta;
     }
+    
+    
+    public static RespuestaHTTP peticionPUT(String urlString, String parametros) {
+    RespuestaHTTP respuesta = new RespuestaHTTP();
+    try {
+        URL url = new URL(urlString);
+        HttpURLConnection conexion = (HttpURLConnection) url.openConnection();
+        conexion.setRequestMethod("PUT"); 
+        conexion.setDoOutput(true);
+        conexion.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
+        OutputStream os = conexion.getOutputStream();
+        os.write(parametros.getBytes());
+        os.flush();
+        os.close();
+
+        int codigo = conexion.getResponseCode();
+        respuesta.setCodigo(codigo);
+
+        if (codigo == HttpURLConnection.HTTP_OK) {
+            respuesta.setContenido(Utilidades.streamToString(conexion.getInputStream()));
+        } else {
+            respuesta.setContenido(Utilidades.streamToString(conexion.getErrorStream()));
+        }
+    } catch (Exception e) {
+        respuesta.setCodigo(Constantes.ERROR_PETICION);
+        respuesta.setContenido(e.getMessage());
+    }
+    return respuesta;
+    }
 }
