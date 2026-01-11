@@ -50,4 +50,9 @@ public class PaqueteImp {
         return respuesta;
     }
     
+    public static HashMap<String, Object> eliminarPaquete(Integer idPaquete) {
+    HashMap<String, Object> respuesta = new HashMap<>();
+    return respuesta;
+    }
+    
 }
