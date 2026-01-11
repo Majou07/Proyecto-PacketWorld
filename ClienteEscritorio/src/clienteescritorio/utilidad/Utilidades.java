@@ -12,7 +12,7 @@ import javafx.scene.control.ButtonType;
 public class Utilidades {
     
     public static String streamToString(InputStream is) {
-    if (is == null) return ""; // ✅ evita NullPointerException
+    if (is == null) return ""; 
     try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
         return br.lines().collect(Collectors.joining("\n"));
     } catch (Exception e) {
@@ -36,5 +36,15 @@ public class Utilidades {
         alerta.setContentText(contenido);
         Optional<ButtonType> resultado = alerta.showAndWait();
         return resultado.get() == ButtonType.OK;
+    }
+    
+    public static boolean mostrarConfirmacion(String titulo, String mensaje) {
+    Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
+    alerta.setTitle(titulo);
+    alerta.setHeaderText(null);
+    alerta.setContentText(mensaje);
+    
+    java.util.Optional<ButtonType> respuesta = alerta.showAndWait();
+    return (respuesta.get() == ButtonType.OK);
     }
 }
