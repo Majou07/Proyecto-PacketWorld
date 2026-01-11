@@ -272,7 +272,7 @@ public class ColaboradorImp {
                 respuesta.setError(false);
                 respuesta.setMensaje("La fotografia del colaborador (a) ha sido guardada correctamente");
             }else{
-                respuesta.setMensaje("Lo sentimos :( la fotografi no ha sido guardada");
+                respuesta.setMensaje("Lo sentimos :( la fotografia no ha sido guardada");
             }
             conexionBD.close();
             }catch(Exception e){

@@ -135,7 +135,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         c.curp AS curp,
         c.correo_electronico AS correoElectronico,
         c.contrasena AS contrasena,
-        c.numero_licencia AS numeroLicencia
+        c.numero_licencia AS numeroLicencia,
+        c.codigo_sucursal AS codigoSucursal, 
+        c.id_unidad_asignada AS idUnidadAsignada
     FROM colaborador c
     WHERE c.id_colaborador = #{idColaborador};
 </select>
