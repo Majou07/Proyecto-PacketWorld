@@ -12,6 +12,13 @@
         VALUES (#{idEnvio}, #{descripcion}, #{peso}, #{alto}, #{ancho}, #{profundidad})
     </insert>
     
+    <update id="editar" parameterType="pojo.Paquete">
+        UPDATE paquete 
+        SET descripcion = #{descripcion}, peso_kg = #{peso}, 
+            alto_cm = #{alto}, ancho_cm = #{ancho}, profundidad_cm = #{profundidad}
+        WHERE id_paquete = #{idPaquete}
+    </update>
+    
     <delete id="eliminar" parameterType="int">
         DELETE FROM paquete WHERE id_paquete = #{idPaquete}
     </delete>
