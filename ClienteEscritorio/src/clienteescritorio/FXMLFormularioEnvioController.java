@@ -33,86 +33,121 @@ public class FXMLFormularioEnvioController implements Initializable {
     @FXML private TextField tfEstado;
     private Envio envioEdicion;
     private boolean esEdicion = false;
+    
+    //Son los errores por si no rellenamos un campo
+    @FXML private Label lbErrorNombre, lbErrorApPaterno, lbErrorApMaterno, lbErrorNumero, lbErrorCP, 
+            lbErrorCliente, lbErrorSucursal, lbErrorCalle, lbErrorColonia;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         cargarCatalogos();
-        
+        configurarValidacionesDinamicas();
+        configurarAutoRellenoCP();
         
         cbCliente.setConverter(new javafx.util.StringConverter<Cliente>() {
-        @Override
-        public String toString(Cliente objeto) {
-            return (objeto != null) ? objeto.getNombre() + " " + objeto.getApellidoPaterno() : "";
-        }
-
-        @Override
-        public Cliente fromString(String string) {
-            return null;
-        }
-    });
+            @Override public String toString(Cliente o) { return (o != null) ? o.getNombre() + " " + o.getApellidoPaterno() : ""; }
+            @Override public Cliente fromString(String s) { return null; }
+        });
     }    
+    
+    
+    private void configurarValidacionesDinamicas() {
+        tfNumero.textProperty().addListener((obs, oldVal, newVal) -> {
+            //Sobre el num ext e int
+            if (!newVal.matches("\\d*")) {
+                tfNumero.setText(newVal.replaceAll("[^\\d]", ""));
+                lbErrorNumero.setVisible(true);
+            } else { lbErrorNumero.setVisible(false); }
+        });
 
-    private void cargarCatalogos(){
-        HashMap<String, Object> respClientes = ClienteImp.obtenerClientes();
-        cbCliente.setItems(FXCollections.observableArrayList((List<Cliente>)respClientes.get("clientes")));
-        
-        HashMap<String, Object> respSuc = SucursalImp.obtenerSucursales();
-        cbSucursal.setItems(FXCollections.observableArrayList((List<Sucursal>)respSuc.get("sucursales")));
+        //Aqui son solo los caracteres
+        configurarRegexLetras(tfNombreDest, lbErrorNombre);
+        configurarRegexLetras(tfApPaternoDest, lbErrorApPaterno);
+        configurarRegexLetras(tfApMaternoDest, lbErrorApMaterno);
+    }
+    
+    private void configurarRegexLetras(TextField tf, Label lb) {
+        tf.textProperty().addListener((obs, oldV, newV) -> {
+            if (!newV.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ ]*")) {
+                lb.setVisible(true);
+            } else { lb.setVisible(false); }
+        });
+    }
+    
+    private void configurarAutoRellenoCP() {
+        // Al completar 5 dígitos, rellena Ciudad y Estado
+        tfCP.textProperty().addListener((obs, oldV, newV) -> {
+            if (newV.length() == 5) {
+                // Simulación de búsqueda (aquí podrías llamar a tu API externa)
+                if (newV.startsWith("95")) {
+                    tfCiudad.setText("Veracruz");
+                    tfEstado.setText("Veracruz");
+                } else if (newV.startsWith("06")) {
+                    tfCiudad.setText("Cuauhtémoc");
+                    tfEstado.setText("CDMX");
+                }
+                lbErrorCP.setVisible(false);
+            }
+        });
     }
     
      
-    public void prepararFormulario(Envio envio) {
-    this.envioEdicion = envio;
-    this.esEdicion = true;
-    
-    // Rellenar campos con datos existentes 
-    tfNombreDest.setText(envio.getDestinatarioNombre());
-    tfCalle.setText(envio.getDestinoCalle());
-    tfCiudad.setText(envio.getDestinoCiudad());
-    tfCP.setText(envio.getDestinoCodigoPostal());
-    tfEstado.setText(envio.getDestinoEstado());
-    }
-
     
     @FXML
     private void clicGuardar(ActionEvent event) {
-        Cliente cliente = cbCliente.getSelectionModel().getSelectedItem();
-        Sucursal sucursal = cbSucursal.getSelectionModel().getSelectedItem();
+        if (validarCamposRequeridos()) {
+            Envio envio = (esEdicion) ? envioEdicion : new Envio();
+            envio.setIdClienteRemitente(cbCliente.getValue().getIdCliente());
+            envio.setCodigoSucursalOrigen(cbSucursal.getValue().getCodigoSucursal());
+            envio.setDestinatarioNombre(tfNombreDest.getText());
+            envio.setDestinatarioApPaterno(tfApPaternoDest.getText());
+            envio.setDestinatarioApMaterno(tfApMaternoDest.getText());
+            envio.setDestinoCalle(tfCalle.getText());
+            envio.setDestinoNumero(tfNumero.getText());
+            envio.setDestinoColonia(tfColonia.getText());
+            envio.setDestinoCodigoPostal(tfCP.getText());
+            envio.setDestinoCiudad(tfCiudad.getText());
+            envio.setDestinoEstado(tfEstado.getText());
+            
+            // Regla de negocio: costo inicial 0
+            envio.setCostoTotal(0.0);
+            envio.setIdEstatusEnvio(1); 
 
-        if (cliente != null && sucursal != null && 
-            !tfNombreDest.getText().isEmpty() && 
-            !tfApPaternoDest.getText().isEmpty() && 
-            !tfNumero.getText().isEmpty() && 
-            !tfColonia.getText().isEmpty()) {
-
-            Envio nuevoEnvio = new Envio();
-            nuevoEnvio.setIdClienteRemitente(cliente.getIdCliente());
-            nuevoEnvio.setCodigoSucursalOrigen(sucursal.getCodigoSucursal());
-
-            nuevoEnvio.setDestinatarioNombre(tfNombreDest.getText());
-            nuevoEnvio.setDestinatarioApPaterno(tfApPaternoDest.getText()); 
-            nuevoEnvio.setDestinoCalle(tfCalle.getText());
-            nuevoEnvio.setDestinoNumero(tfNumero.getText()); 
-            nuevoEnvio.setDestinoColonia(tfColonia.getText()); 
-
-            nuevoEnvio.setDestinoCiudad(tfCiudad.getText());
-            nuevoEnvio.setDestinoCodigoPostal(tfCP.getText());
-            nuevoEnvio.setDestinoEstado(tfEstado.getText());
-
-            nuevoEnvio.setCostoTotal(0.0); 
-            nuevoEnvio.setIdEstatusEnvio(1); 
-
-            Respuesta resp = EnvioImp.registrar(nuevoEnvio);
-
+            Respuesta resp = (esEdicion) ? EnvioImp.editar(envio) : EnvioImp.registrar(envio);
             if (!resp.isError()) {
                 Utilidades.mostrarAlertaSimple("Éxito", resp.getMensaje(), Alert.AlertType.INFORMATION);
                 cerrarVentana();
             } else {
                 Utilidades.mostrarAlertaSimple("Error", resp.getMensaje(), Alert.AlertType.ERROR);
             }
+        }
+    }
+    
+    private boolean validarCamposRequeridos() {
+        boolean valido = true;
+        valido &= revisarVacio(tfNombreDest, lbErrorNombre);
+        valido &= revisarVacio(tfApPaternoDest, lbErrorApPaterno);
+        valido &= revisarVacio(tfNumero, lbErrorNumero);
+        valido &= revisarVacio(tfCalle, lbErrorCalle);
+        valido &= revisarVacio(tfColonia, lbErrorColonia);
+        valido &= revisarVacio(tfCP, lbErrorCP);
+        
+        if (cbCliente.getValue() == null) { lbErrorCliente.setVisible(true); valido = false; }
+        if (cbSucursal.getValue() == null) { lbErrorSucursal.setVisible(true); valido = false; }
+        
+        return valido;
+    }
+    
+    private boolean revisarVacio(TextField tf, Label lb) {
+        if (tf.getText().trim().isEmpty()) {
+            tf.setStyle("-fx-border-color: red;");
+            lb.setText("Este campo es obligatorio");
+            lb.setVisible(true);
+            return false;
         } else {
-            Utilidades.mostrarAlertaSimple("Campos requeridos", 
-                "Faltan datos obligatorios: Apellido, Número o Colonia.", Alert.AlertType.WARNING);
+            tf.setStyle("");
+            lb.setVisible(false);
+            return true;
         }
     }
     
@@ -123,6 +158,31 @@ public class FXMLFormularioEnvioController implements Initializable {
            !tfNombreDest.getText().trim().isEmpty();
     }
     
+    
+    private void cargarCatalogos(){
+        HashMap<String, Object> respClientes = ClienteImp.obtenerClientes();
+        if (!(boolean)respClientes.get("error"))
+            cbCliente.setItems(FXCollections.observableArrayList((List<Cliente>)respClientes.get("clientes")));
+        
+        HashMap<String, Object> respSuc = SucursalImp.obtenerSucursales();
+        if (!(boolean)respSuc.get("error"))
+            cbSucursal.setItems(FXCollections.observableArrayList((List<Sucursal>)respSuc.get("sucursales")));
+    }
+    
+    
+    public void prepararFormulario(Envio envio) {
+        this.envioEdicion = envio;
+        this.esEdicion = true;
+        tfNombreDest.setText(envio.getDestinatarioNombre());
+        tfApPaternoDest.setText(envio.getDestinatarioApPaterno());
+        tfApMaternoDest.setText(envio.getDestinatarioApMaterno());
+        tfCalle.setText(envio.getDestinoCalle());
+        tfNumero.setText(envio.getDestinoNumero());
+        tfColonia.setText(envio.getDestinoColonia());
+        tfCP.setText(envio.getDestinoCodigoPostal());
+        tfCiudad.setText(envio.getDestinoCiudad());
+        tfEstado.setText(envio.getDestinoEstado());
+    }
   
 
     private void cerrarVentana() {
