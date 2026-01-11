@@ -52,16 +52,26 @@ public class FXMLModalEstatusController implements Initializable {
             Utilidades.mostrarAlertaSimple("Selección", "Selecciona un botón de estatus primero", Alert.AlertType.WARNING);
             return;
         }
-        // Validar comentario si es necesario
-        if((idNuevoEstatus == 4 || idNuevoEstatus == 6) && taComentario.getText().isEmpty()){
-             Utilidades.mostrarAlertaSimple("Comentario requerido", "Agrega motivo para estatus Detenido/Cancelado", Alert.AlertType.WARNING);
+            if((idNuevoEstatus == 4 || idNuevoEstatus == 6) && taComentario.getText().trim().isEmpty()){
+             Utilidades.mostrarAlertaSimple("Comentario requerido", 
+                     "Es obligatorio agregar un motivo para el estatus Detenido o Cancelado", 
+                     Alert.AlertType.WARNING);
              return;
         }
-        
-        Respuesta resp = EnvioImp.actualizarEstatus(envioSeleccionado.getIdEnvio(), idNuevoEstatus, taComentario.getText());
+        int idColaboradorSesion = 1; 
+
+        Respuesta resp = EnvioImp.actualizarEstatus(
+                envioSeleccionado.getIdEnvio(), 
+                idNuevoEstatus, 
+                taComentario.getText(), 
+                idColaboradorSesion
+        );
+
         if(!resp.isError()){
             Utilidades.mostrarAlertaSimple("Éxito", resp.getMensaje(), Alert.AlertType.INFORMATION);
             ((Stage) taComentario.getScene().getWindow()).close();
+        } else {
+            Utilidades.mostrarAlertaSimple("Error", resp.getMensaje(), Alert.AlertType.ERROR);
         }
     }
 }
