@@ -14,6 +14,7 @@ import java.util.ResourceBundle;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -71,11 +72,12 @@ public class FXMLEnviosController implements Initializable {
         colEstado.setCellValueFactory(new PropertyValueFactory<>("estatusEnvio"));
         
         // Paquetes
-        
         colDestino.setCellValueFactory(cellData -> {
             Envio e = cellData.getValue();
-            return new SimpleStringProperty(e.getDestinoCalle() + " #" + e.getDestinoNumero());
+            String estado = (e.getDestinoEstado() != null) ? e.getDestinoEstado() : "No disponible";
+            return new SimpleStringProperty(estado);
         });
+        
         colConductor.setCellValueFactory(new PropertyValueFactory<>("nombreConductor"));
         
         colDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
@@ -99,8 +101,29 @@ public class FXMLEnviosController implements Initializable {
         if(!(boolean)respuesta.get("error")){
             envios = FXCollections.observableArrayList((List<Envio>)respuesta.get("envios"));
             tvEnvios.setItems(envios);
+            configurarBusqueda();
         } else {
             Utilidades.mostrarAlertaSimple("Error", (String)respuesta.get("mensaje"), Alert.AlertType.ERROR);
+        }
+    }
+    
+    
+    private void configurarBusqueda() {
+        if (envios != null) {
+            FilteredList<Envio> filtroEnvio = new FilteredList<>(envios, p -> true);
+
+            tfBusquedaEnvio.textProperty().addListener((obs, oldV, newV) -> {
+                filtroEnvio.setPredicate(envio -> {
+                    if (newV == null || newV.isEmpty()) {
+                        return true;
+                    }
+                    String lowerCaseFilter = newV.toLowerCase();
+                    return envio.getNumeroGuia() != null && 
+                           envio.getNumeroGuia().toLowerCase().contains(lowerCaseFilter);
+                });
+            });
+
+            tvEnvios.setItems(filtroEnvio);
         }
     }
 
@@ -267,12 +290,7 @@ public class FXMLEnviosController implements Initializable {
             Utilidades.mostrarAlertaSimple("Selección", "Elige un paquete", Alert.AlertType.WARNING);
         }
     }
-    
-    private void configurarBusqueda() {
-    tfBusquedaEnvio.textProperty().addListener((observable, oldValue, newValue) -> {
-       
-    });
-    }
+ 
     
     
     private void cargarPaquetesPorEnvio(int idEnvio) {
