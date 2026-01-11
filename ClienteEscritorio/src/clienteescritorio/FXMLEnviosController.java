@@ -245,7 +245,7 @@ public class FXMLEnviosController implements Initializable {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLFormularioPaquete.fxml"));
                 Parent root = loader.load();
                 FXMLFormularioPaqueteController ctrl = loader.getController();
-                ctrl.prepararFormulario(seleccionado); // Debes crear este método en el controlador del paquete
+                ctrl.prepararFormulario(seleccionado); 
 
                 Stage stage = new Stage();
                 stage.setScene(new Scene(root));
