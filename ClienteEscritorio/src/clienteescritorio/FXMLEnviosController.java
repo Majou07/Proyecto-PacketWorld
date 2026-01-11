@@ -2,6 +2,7 @@ package clienteescritorio;
 
 import clienteescritorio.dominio.EnvioImp;
 import clienteescritorio.pojo.Envio;
+import clienteescritorio.pojo.Paquete;
 import clienteescritorio.utilidad.Utilidades;
 import java.io.IOException;
 import java.net.URL;
@@ -23,6 +24,8 @@ import javafx.stage.Stage;
 
 public class FXMLEnviosController implements Initializable {
 
+    // Componentes de Envíos
+    @FXML private TextField tfBusquedaEnvio;
     @FXML private TableView<Envio> tvEnvios;
     @FXML private TableColumn colGuia;
     @FXML private TableColumn colCliente;
@@ -31,13 +34,29 @@ public class FXMLEnviosController implements Initializable {
     @FXML private TableColumn colConductor;
     @FXML private TableColumn colEstado;
     
+    // Componentes de Paquetes (Agregados para evitar errores de FXML)
+    @FXML private TableView<Paquete> tvPaquetes;
+    @FXML private TableColumn colDescripcion;
+    @FXML private TableColumn colPeso;
+    @FXML private TableColumn colDimensiones;
+    @FXML private TableColumn colEnvioPertence;
+
     private ObservableList<Envio> envios;
+    private ObservableList<Paquete> paquetes;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         configurarTabla();
         cargarEnvios();
         
+        // Listener para cargar paquetes al seleccionar un envío [Requerimiento 52 del PDF]
+        tvEnvios.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                cargarPaquetesPorEnvio(newSelection.getIdEnvio());
+            }
+        });
+
+        // Doble clic para cambiar estatus [Requerimiento 42 del PDF]
         tvEnvios.setOnMouseClicked(event -> {
             if(event.getClickCount() == 2 && tvEnvios.getSelectionModel().getSelectedItem() != null){
                 abrirModalEstatus(tvEnvios.getSelectionModel().getSelectedItem());
@@ -46,10 +65,17 @@ public class FXMLEnviosController implements Initializable {
     }
 
     private void configurarTabla() {
-        colGuia.setCellValueFactory(new PropertyValueFactory("numeroGuia"));
-        colCliente.setCellValueFactory(new PropertyValueFactory("nombreCliente"));
-        colOrigen.setCellValueFactory(new PropertyValueFactory("sucursalOrigen"));
-        colEstado.setCellValueFactory(new PropertyValueFactory("estatusEnvio"));
+        // Envíos
+        colGuia.setCellValueFactory(new PropertyValueFactory<>("numeroGuia"));
+        colCliente.setCellValueFactory(new PropertyValueFactory<>("nombreCliente"));
+        colOrigen.setCellValueFactory(new PropertyValueFactory<>("sucursalOrigen"));
+        colEstado.setCellValueFactory(new PropertyValueFactory<>("estatusEnvio"));
+        
+        // Paquetes
+        colDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+        colPeso.setCellValueFactory(new PropertyValueFactory<>("pesoKg"));
+        // Aquí podrías crear una celda personalizada para concatenar dimensiones
+        colDimensiones.setCellValueFactory(new PropertyValueFactory<>("dimensiones")); 
     }
 
     private void cargarEnvios() {
@@ -62,31 +88,33 @@ public class FXMLEnviosController implements Initializable {
         }
     }
 
-    private void abrirModalEstatus(Envio envio) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLModalEstatus.fxml"));
-            Parent root = loader.load();
-            FXMLModalEstatusController controller = loader.getController();
-            controller.inicializarEnvio(envio);
-            
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.showAndWait();
-            cargarEnvios(); 
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+    private void cargarPaquetesPorEnvio(int idEnvio) {
+        // Debes implementar este método en tu clase EnvioImp o PaqueteImp
+    }
+
+    // --- MÉTODOS DE ACCIÓN (BUSCADOS POR EL FXML) ---
+
+    @FXML 
+    private void btnHistorial(ActionEvent event) {
+        Utilidades.mostrarAlertaSimple("Historial", "Funcionalidad de historial en desarrollo", Alert.AlertType.INFORMATION);
     }
 
     @FXML 
     private void btnRegistrarEnvio(ActionEvent event) {
     }
-    
+
+    @FXML 
+    private void btnActualizarEnvio(ActionEvent event) {
+    }
+
+    @FXML 
+    private void btnEliminarEnvio(ActionEvent event) {
+    }
+
     @FXML 
     private void btnAsignarConductor(ActionEvent event) {
     }
-    
+
     @FXML 
     private void btnAgregarPaquete(ActionEvent event) {
         Envio envioSeleccionado = tvEnvios.getSelectionModel().getSelectedItem();
@@ -106,24 +134,29 @@ public class FXMLEnviosController implements Initializable {
             Utilidades.mostrarAlertaSimple("Selección", "Selecciona un envío", Alert.AlertType.WARNING);
         }
     }
-    
-    
-    @FXML
-    private void clicVerDetalles(ActionEvent event) {
-        Envio seleccionado = tvEnvios.getSelectionModel().getSelectedItem();
-        if (seleccionado != null) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLDetalleEnvio.fxml"));
-                Parent root = loader.load();
 
-                FXMLDetalleEnvioController controller = loader.getController();
-                controller.inicializarDetalles(seleccionado); 
+    @FXML 
+    private void btnEditarPaquete(ActionEvent event) {
+    }
 
-                Stage stage = new Stage();
-                stage.setScene(new Scene(root));
-                stage.setTitle("Detalle del Envío: " + seleccionado.getNumeroGuia());
-                stage.show();
-            } catch (IOException ex) { ex.printStackTrace(); }
+    @FXML 
+    private void btnEliminarPaquete(ActionEvent event) {
+    }
+
+    private void abrirModalEstatus(Envio envio) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLModalEstatus.fxml"));
+            Parent root = loader.load();
+            FXMLModalEstatusController controller = loader.getController();
+            controller.inicializarEnvio(envio);
+            
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+            cargarEnvios(); 
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 }
