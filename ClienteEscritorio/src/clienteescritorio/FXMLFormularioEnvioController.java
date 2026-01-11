@@ -23,7 +23,11 @@ public class FXMLFormularioEnvioController implements Initializable {
     @FXML private ComboBox<Cliente> cbCliente;
     @FXML private ComboBox<Sucursal> cbSucursal;
     @FXML private TextField tfNombreDest;
+    @FXML private TextField tfApPaternoDest;
+    @FXML private TextField tfApMaternoDest;
+    @FXML private TextField tfNumero;
     @FXML private TextField tfCalle;
+    @FXML private TextField tfColonia;
     @FXML private TextField tfCiudad;
     @FXML private TextField tfCP;
     @FXML private TextField tfEstado;
@@ -58,35 +62,46 @@ public class FXMLFormularioEnvioController implements Initializable {
 
     
     @FXML
-private void clicGuardar(ActionEvent event) {
-    Cliente cliente = cbCliente.getSelectionModel().getSelectedItem();
-    Sucursal sucursal = cbSucursal.getSelectionModel().getSelectedItem();
+    private void clicGuardar(ActionEvent event) {
+        Cliente cliente = cbCliente.getSelectionModel().getSelectedItem();
+        Sucursal sucursal = cbSucursal.getSelectionModel().getSelectedItem();
 
-    if (cliente != null && sucursal != null && !tfNombreDest.getText().isEmpty()) {
-        Envio nuevoEnvio = new Envio();
-        nuevoEnvio.setIdClienteRemitente(cliente.getIdCliente()); 
-        nuevoEnvio.setCodigoSucursalOrigen(sucursal.getCodigoSucursal()); 
-        nuevoEnvio.setDestinatarioNombre(tfNombreDest.getText());
-        nuevoEnvio.setDestinoCalle(tfCalle.getText());
-        nuevoEnvio.setDestinoCiudad(tfCiudad.getText());
-        nuevoEnvio.setDestinoCodigoPostal(tfCP.getText());
-        nuevoEnvio.setDestinoEstado(tfEstado.getText());
+        if (cliente != null && sucursal != null && 
+            !tfNombreDest.getText().isEmpty() && 
+            !tfApPaternoDest.getText().isEmpty() && 
+            !tfNumero.getText().isEmpty() && 
+            !tfColonia.getText().isEmpty()) {
 
-        nuevoEnvio.setCostoTotal(0.0); 
-        nuevoEnvio.setIdEstatusEnvio(1); 
+            Envio nuevoEnvio = new Envio();
+            nuevoEnvio.setIdClienteRemitente(cliente.getIdCliente());
+            nuevoEnvio.setCodigoSucursalOrigen(sucursal.getCodigoSucursal());
 
-        Respuesta resp = EnvioImp.registrar(nuevoEnvio);
+            nuevoEnvio.setDestinatarioNombre(tfNombreDest.getText());
+            nuevoEnvio.setDestinatarioApPaterno(tfApPaternoDest.getText()); 
+            nuevoEnvio.setDestinoCalle(tfCalle.getText());
+            nuevoEnvio.setDestinoNumero(tfNumero.getText()); 
+            nuevoEnvio.setDestinoColonia(tfColonia.getText()); 
 
-        if (!resp.isError()) {
-            Utilidades.mostrarAlertaSimple("Éxito", resp.getMensaje(), Alert.AlertType.INFORMATION);
-            cerrarVentana();
+            nuevoEnvio.setDestinoCiudad(tfCiudad.getText());
+            nuevoEnvio.setDestinoCodigoPostal(tfCP.getText());
+            nuevoEnvio.setDestinoEstado(tfEstado.getText());
+
+            nuevoEnvio.setCostoTotal(0.0); 
+            nuevoEnvio.setIdEstatusEnvio(1); 
+
+            Respuesta resp = EnvioImp.registrar(nuevoEnvio);
+
+            if (!resp.isError()) {
+                Utilidades.mostrarAlertaSimple("Éxito", resp.getMensaje(), Alert.AlertType.INFORMATION);
+                cerrarVentana();
+            } else {
+                Utilidades.mostrarAlertaSimple("Error", resp.getMensaje(), Alert.AlertType.ERROR);
+            }
         } else {
-            Utilidades.mostrarAlertaSimple("Error", resp.getMensaje(), Alert.AlertType.ERROR);
+            Utilidades.mostrarAlertaSimple("Campos requeridos", 
+                "Faltan datos obligatorios: Apellido, Número o Colonia.", Alert.AlertType.WARNING);
         }
-    } else {
-        Utilidades.mostrarAlertaSimple("Campos requeridos", "Por favor selecciona cliente y sucursal.", Alert.AlertType.WARNING);
     }
-}
     
     
     private boolean validarCampos() {
