@@ -40,6 +40,31 @@ public class FXMLDetalleEnvioController implements Initializable {
         colFecha.setCellValueFactory(new PropertyValueFactory<>("fechaCambio"));
         colColaborador.setCellValueFactory(new PropertyValueFactory<>("nombreColaborador"));
         colComentario.setCellValueFactory(new PropertyValueFactory<>("comentario"));
+        
+        tvHistorial.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2 && tvHistorial.getSelectionModel().getSelectedItem() != null) {
+                HistorialEstatus seleccionado = tvHistorial.getSelectionModel().getSelectedItem();
+
+                if (seleccionado.getComentario() != null && !seleccionado.getComentario().isEmpty()) {
+                    mostrarModalComentario(seleccionado.getEstatus(), seleccionado.getComentario());
+                }
+            }
+        });
+    }
+    
+    private void mostrarModalComentario(String estatus, String comentario) {
+        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+        alerta.setTitle("Detalle de Observación");
+        alerta.setHeaderText("Comentario del estatus: " + estatus);
+
+        TextArea textArea = new TextArea(comentario);
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
+        textArea.setPrefHeight(150);
+        textArea.setPrefWidth(350);
+
+        alerta.getDialogPane().setContent(textArea);
+        alerta.showAndWait();
     }
     
     private void cargarHistorial(int idEnvio) {
