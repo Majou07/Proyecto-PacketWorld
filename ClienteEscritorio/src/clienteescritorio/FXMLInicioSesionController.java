@@ -36,6 +36,8 @@ public class FXMLInicioSesionController implements Initializable {
             RSAutenticacionColaborador respuesta = InicioSesionImp.verificarCredenciales(noPersonal, password);
             
             if(!respuesta.isError()){
+                clienteescritorio.utilidad.Sesion.colaborador = respuesta.getColaborador();
+                
                 Utilidades.mostrarAlertaSimple("Bienvenido", 
                         "Bienvenido(a) " + respuesta.getColaborador().getNombre(), 
                         Alert.AlertType.INFORMATION);
