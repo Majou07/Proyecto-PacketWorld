@@ -1,48 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import javafx.scene.image.*?>
 <?import javafx.scene.text.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="385.0" prefWidth="700.0" style="-fx-background-radius: 10; -fx-background-color: white; -fx-border-color: black; -fx-border-radius: 10;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clienteescritorio.FXMLFormularioSucursalController">
+<AnchorPane prefHeight="450.0" prefWidth="720.0" style="-fx-background-color: white; -fx-border-color: black; -fx-border-radius: 10;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clienteescritorio.FXMLFormularioSucursalController">
    <children>
-      <Label fx:id="lbTitulo" layoutX="36.0" layoutY="28.0" text="Registro de Sucursal">
-         <font>
-            <Font name="System Bold" size="22.0" />
-         </font>
+      <Label fx:id="lbTitulo" layoutX="35.0" layoutY="20.0" text="Registro de Sucursal">
+         <font><Font name="System Bold" size="22.0" /></font>
       </Label>
-      <Label layoutX="36.0" layoutY="80.0" text="Codigo" />
-      <TextField fx:id="tfCodigo" layoutX="35.0" layoutY="109.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
-      
-      <Label layoutX="256.0" layoutY="80.0" text="Nombre" />
-      <TextField fx:id="tfNombre" layoutX="255.0" layoutY="109.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
-      
-      <Label layoutX="476.0" layoutY="80.0" text="Estatus" />
-      
-      <Label layoutX="37.0" layoutY="157.0" text="Código Postal" />
-      <TextField fx:id="tfCodigoPostal" layoutX="33.0" layoutY="186.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
-      
-      <Label layoutX="257.0" layoutY="157.0" text="Calle" />
-      <TextField fx:id="tfCalle" layoutX="253.0" layoutY="186.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
-      
-      <Label layoutX="477.0" layoutY="157.0" text="Numero" />
-      <TextField fx:id="tfNumero" layoutX="473.0" layoutY="186.0" prefWidth="180.0" style="-fx-background-color: #e0e0e0;" />
-      
-      <Label layoutX="39.0" layoutY="236.0" text="Colonia" />
-      
-      <Label layoutX="259.0" layoutY="236.0" text="Ciudad" />
-      
-      <Label layoutX="479.0" layoutY="236.0" text="Estado" />
-      <ComboBox fx:id="cbEstatus" layoutX="471.0" layoutY="109.0" prefWidth="180.0" style="-fx-background-color: #e0e0e0;" />
-      
-      <Button layoutX="479.0" layoutY="338.0" mnemonicParsing="false" onAction="#clicCancelar" style="-fx-background-color: #d1a3a4;" text="Cancelar" />
-      <Button layoutX="579.0" layoutY="338.0" mnemonicParsing="false" onAction="#clicGuardar" style="-fx-background-color: #d1a3a4;" text="Registrar" />
-      <ComboBox fx:id="cbColonia" layoutX="35.0" layoutY="259.0" prefWidth="180.0" style="-fx-background-color: #e0e0e0;" />
-      <TextField fx:id="tfCiudad" layoutX="247.0" layoutY="259.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
-      <TextField fx:id="tfEstado" layoutX="473.0" layoutY="259.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
+
+      <GridPane hgap="20.0" layoutX="35.0" layoutY="70.0" vgap="15.0">
+        <columnConstraints>
+          <ColumnConstraints prefWidth="200.0" />
+          <ColumnConstraints prefWidth="200.0" />
+          <ColumnConstraints prefWidth="200.0" />
+        </columnConstraints>
+        <children>
+            <VBox spacing="2.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+               <children>
+                  <Label text="Código de Sucursal *" />
+                  <TextField fx:id="tfCodigo" />
+                  <Label fx:id="lbErrorCodigo" text="Requerido" textFill="RED" visible="false"><font><Font size="10.0" /></font></Label>
+               </children>
+            </VBox>
+            <VBox spacing="2.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+               <children>
+                  <Label text="Nombre de Sucursal *" />
+                  <TextField fx:id="tfNombre" />
+                  <Label fx:id="lbErrorNombre" text="Requerido" textFill="RED" visible="false"><font><Font size="10.0" /></font></Label>
+               </children>
+            </VBox>
+            <VBox spacing="2.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
+               <children>
+                  <Label text="Estatus *" />
+                  <ComboBox fx:id="cbEstatus" prefWidth="200.0" />
+                  <Label fx:id="lbErrorEstatus" text="Selecciona uno" textFill="RED" visible="false"><font><Font size="10.0" /></font></Label>
+               </children>
+            </VBox>
+
+            <VBox spacing="2.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+               <children>
+                  <Label text="Código Postal (CP) *" />
+                  <TextField fx:id="tfCodigoPostal" promptText="5 dígitos" />
+                  <Label fx:id="lbErrorCP" text="CP no válido" textFill="RED" visible="false"><font><Font size="10.0" /></font></Label>
+               </children>
+            </VBox>
+            <VBox spacing="2.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <children>
+                  <Label text="Calle *" />
+                  <TextField fx:id="tfCalle" />
+                  <Label fx:id="lbErrorCalle" text="Requerido" textFill="RED" visible="false"><font><Font size="10.0" /></font></Label>
+               </children>
+            </VBox>
+            <VBox spacing="2.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+               <children>
+                  <Label text="Número *" />
+                  <TextField fx:id="tfNumero" />
+                  <Label fx:id="lbErrorNumero" text="Requerido" textFill="RED" visible="false"><font><Font size="10.0" /></font></Label>
+               </children>
+            </VBox>
+
+            <VBox spacing="2.0" GridPane.columnIndex="0" GridPane.rowIndex="2">
+               <children>
+                  <Label text="Colonia *" />
+                  <ComboBox fx:id="cbColonia" prefWidth="200.0" />
+                  <Label fx:id="lbErrorColonia" text="Selecciona una" textFill="RED" visible="false"><font><Font size="10.0" /></font></Label>
+               </children>
+            </VBox>
+            <VBox spacing="2.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+               <children>
+                  <Label text="Ciudad" />
+                  <TextField fx:id="tfCiudad" editable="false" style="-fx-background-color: #eee;" />
+               </children>
+            </VBox>
+            <VBox spacing="2.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
+               <children>
+                  <Label text="Estado" />
+                  <TextField fx:id="tfEstado" editable="false" style="-fx-background-color: #eee;" />
+               </children>
+            </VBox>
+        </children>
+      </GridPane>
+
+      <HBox layoutX="470.0" layoutY="380.0" spacing="15.0">
+         <children>
+            <Button onAction="#clicCancelar" prefWidth="100.0" style="-fx-background-color: #d1a3a4;" text="Cancelar" />
+            <Button onAction="#clicGuardar" prefWidth="100.0" style="-fx-background-color: #9cd1a3;" text="Guardar" />
+         </children>
+      </HBox>
    </children>
 </AnchorPane>

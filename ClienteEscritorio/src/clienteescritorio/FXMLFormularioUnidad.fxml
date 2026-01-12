@@ -1,41 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.text.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="350.0" prefWidth="650.0" style="-fx-background-radius: 10; -fx-background-color: white; -fx-border-color: black; -fx-border-radius: 10;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clienteescritorio.FXMLFormularioUnidadController">
+<AnchorPane prefHeight="400.0" prefWidth="650.0" style="-fx-background-color: white; -fx-border-color: black; -fx-border-radius: 10;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clienteescritorio.FXMLFormularioUnidadController">
    <children>
-      <Label fx:id="lbTitulo" layoutX="36.0" layoutY="14.0" text="Registro de Unidad">
-         <font>
-            <Font size="22.0" />
-         </font>
+      <Label fx:id="lbTitulo" layoutX="36.0" layoutY="20.0" text="Registro de Unidad">
+         <font><Font name="System Bold" size="22.0" /></font>
       </Label>
-      
-      <Label layoutX="37.0" layoutY="53.0" text="Marca" />
-      <TextField fx:id="tfMarca" layoutX="36.0" layoutY="77.0" prefWidth="180.0" style="-fx-background-color: #e0e0e0;" />
-      
-      <Label layoutX="237.0" layoutY="53.0" text="Modelo" />
-      <TextField fx:id="tfModelo" layoutX="236.0" layoutY="77.0" prefWidth="180.0" style="-fx-background-color: #e0e0e0;" />
-      
-      <Label layoutX="437.0" layoutY="53.0" text="Año" />
-      <TextField fx:id="tfAnio" layoutX="436.0" layoutY="77.0" prefWidth="100.0" style="-fx-background-color: #e0e0e0;" />
-      
-      <Label layoutX="40.0" layoutY="123.0" prefHeight="27.0" prefWidth="327.0" text="VIN (Número de Identificador Vehicular)" />
-      <TextField fx:id="tfVin" layoutX="36.0" layoutY="152.0" prefHeight="39.0" prefWidth="321.0" style="-fx-background-color: #e0e0e0;" />
-      
-      <Label layoutX="396.0" layoutY="123.0" text="Tipo de Unidad" />
-      <ComboBox fx:id="cbTipo" layoutX="392.0" layoutY="152.0" prefWidth="180.0" style="-fx-background-color: #e0e0e0;" />
-      
-      <Label layoutX="38.0" layoutY="224.0" text="No. Identificación Interno" />
-      <TextField fx:id="tfNii" disable="true" layoutX="36.0" layoutY="257.0" prefWidth="180.0" promptText="Auto-generado" style="-fx-background-color: #e0e0e0;" />
-      
-      <Button layoutX="386.0" layoutY="298.0" mnemonicParsing="false" onAction="#clicCancelar" style="-fx-background-color: #d1a3a4;" text="Cancelar" />
-      <Button layoutX="486.0" layoutY="298.0" mnemonicParsing="false" onAction="#clicGuardar" style="-fx-background-color: #d1a3a4;" text="Registrar" />
-      <Label layoutX="396.0" layoutY="200.0" text="Estado de unidad" visible="false" />
-      <ComboBox fx:id="cbEstado" layoutX="392.0" layoutY="229.0" prefWidth="150.0" visible="false" />
+      <GridPane hgap="15.0" layoutX="36.0" layoutY="70.0" vgap="10.0">
+        <columnConstraints>
+          <ColumnConstraints prefWidth="180.0" />
+          <ColumnConstraints prefWidth="180.0" />
+          <ColumnConstraints prefWidth="180.0" />
+        </columnConstraints>
+        <children>
+            <VBox spacing="2.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+               <children>
+                  <Label text="Marca *" />
+                  <TextField fx:id="tfMarca" />
+                  <Label fx:id="lbErrorMarca" text="Requerido" textFill="RED" visible="false"><font><Font size="10.0" /></font></Label>
+               </children>
+            </VBox>
+            <VBox spacing="2.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+               <children>
+                  <Label text="Modelo *" />
+                  <TextField fx:id="tfModelo" />
+                  <Label fx:id="lbErrorModelo" text="Requerido" textFill="RED" visible="false"><font><Font size="10.0" /></font></Label>
+               </children>
+            </VBox>
+            <VBox spacing="2.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
+               <children>
+                  <Label text="Año (YYYY) *" />
+                  <TextField fx:id="tfAnio" />
+                  <Label fx:id="lbErrorAnio" text="Requerido" textFill="RED" visible="false"><font><Font size="10.0" /></font></Label>
+               </children>
+            </VBox>
+            <VBox spacing="2.0" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="1">
+               <children>
+                  <Label text="VIN (17 caracteres) *" />
+                  <TextField fx:id="tfVin" prefWidth="380.0" />
+                  <Label fx:id="lbErrorVin" text="Debe tener exactamente 17 caracteres" textFill="RED" visible="false"><font><Font size="10.0" /></font></Label>
+               </children>
+            </VBox>
+            <VBox spacing="2.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+               <children>
+                  <Label text="Tipo de Unidad *" />
+                  <ComboBox fx:id="cbTipo" prefWidth="180.0" />
+                  <Label fx:id="lbErrorTipo" text="Selecciona uno" textFill="RED" visible="false"><font><Font size="10.0" /></font></Label>
+               </children>
+            </VBox>
+            <VBox spacing="2.0" GridPane.columnIndex="0" GridPane.rowIndex="2">
+               <children>
+                  <Label text="No. Identificación Interno" />
+                  <TextField fx:id="tfNii" disable="true" promptText="Automático" />
+               </children>
+            </VBox>
+            <VBox fx:id="vbEstado" spacing="2.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+               <children>
+                  <Label text="Estado Unidad" />
+                  <ComboBox fx:id="cbEstado" prefWidth="180.0" />
+               </children>
+            </VBox>
+        </children>
+      </GridPane>
+      <HBox layoutX="400.0" layoutY="340.0" spacing="15.0">
+         <children>
+            <Button onAction="#clicCancelar" prefWidth="100.0" style="-fx-background-color: #d1a3a4;" text="Cancelar" />
+            <Button onAction="#clicGuardar" prefWidth="100.0" style="-fx-background-color: #9cd1a3;" text="Guardar" />
+         </children>
+      </HBox>
    </children>
 </AnchorPane>

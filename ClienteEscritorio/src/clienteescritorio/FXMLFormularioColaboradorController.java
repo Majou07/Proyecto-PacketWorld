@@ -45,6 +45,9 @@ public class FXMLFormularioColaboradorController implements Initializable {
     @FXML private ComboBox<Sucursal> cbSucursal;
     @FXML private ImageView ivFoto;
     
+    @FXML private Label lbErrorNombre, lbErrorPaterno, lbErrorCurp, lbErrorCorreo, 
+            lbErrorNoPersonal, lbErrorPassword, lbErrorRol, lbErrorSucursal, lbErrorLicencia;
+    
 
     private Colaborador colaboradorEdicion;
     private File archivoFoto;
@@ -58,12 +61,12 @@ public class FXMLFormularioColaboradorController implements Initializable {
         cargarSucursales();
         
         cbRol.setOnAction(e -> {
-    boolean esConductor = cbRol.getValue() != null
-            && cbRol.getValue().getNombreRol().equalsIgnoreCase("Conductor");
+        boolean esConductor = cbRol.getValue() != null
+                && cbRol.getValue().getNombreRol().equalsIgnoreCase("Conductor");
 
-    tfNumeroLicencia.setDisable(!esConductor);
-    if (!esConductor) tfNumeroLicencia.clear();
-});
+        tfNumeroLicencia.setDisable(!esConductor);
+        if (!esConductor) tfNumeroLicencia.clear();
+    });
     }    
     
     public void inicializarValores(Colaborador colaborador){
@@ -150,10 +153,9 @@ public class FXMLFormularioColaboradorController implements Initializable {
     }
 
    @FXML
-private void clicGuardar(ActionEvent event) {
+    private void clicGuardar(ActionEvent event) {
     if (!validarCampos()) return;
 
-    // Crear objeto colaborador con los datos del formulario
     Colaborador colaborador = new Colaborador();
     colaborador.setNombre(tfNombre.getText());
     colaborador.setApellidoPaterno(tfPaterno.getText());
@@ -173,7 +175,6 @@ private void clicGuardar(ActionEvent event) {
         colaborador.setNumeroLicencia(tfNumeroLicencia.getText());
 
     // ================= Foto =================
-    // Solo asignar foto si se seleccionó un archivo nuevo
     if (archivoFoto != null) {
         try {
             byte[] bytesFoto = Files.readAllBytes(archivoFoto.toPath());
@@ -184,12 +185,10 @@ private void clicGuardar(ActionEvent event) {
         }
     }
 
-    // ================= Registro o actualización =================
     if (colaboradorEdicion == null) {
         // Registrar colaborador
         Respuesta respuesta = ColaboradorImp.registrar(colaborador);
         if (!respuesta.isError()) {
-            // Obtener ID del colaborador recién creado
             HashMap<String, Object> resultado = ColaboradorImp.buscarPorNumeroPersonal(colaborador.getNumeroPersonal());
             if (!(boolean) resultado.get("error")) {
                 List<Colaborador> lista = (List<Colaborador>) resultado.get("colaboradores");
@@ -197,7 +196,6 @@ private void clicGuardar(ActionEvent event) {
                     int id = lista.get(0).getIdColaborador();
                     colaborador.setIdColaborador(id);
 
-                    // Subir foto si existe
                     if (colaborador.getFoto() != null) {
                         Respuesta respFoto = ColaboradorImp.subirFoto(id, colaborador.getFoto());
                         if (respFoto.isError()) {
@@ -212,32 +210,29 @@ private void clicGuardar(ActionEvent event) {
             Utilidades.mostrarAlertaSimple("Error", respuesta.getMensaje(), Alert.AlertType.ERROR);
         }
 
-    } else {
-        // Actualizar colaborador existente
-        colaborador.setIdColaborador(colaboradorEdicion.getIdColaborador());
-        Respuesta respuesta = ColaboradorImp.editar(colaborador);
-        if (!respuesta.isError()) {
-            // Subir foto solo si se seleccionó una nueva
-            if (archivoFoto != null && colaborador.getFoto() != null) {
-                Respuesta respFoto = ColaboradorImp.subirFoto(colaborador.getIdColaborador(), colaborador.getFoto());
-                if (respFoto.isError()) {
-                    Utilidades.mostrarAlertaSimple("Advertencia", "Colaborador actualizado pero la foto no se pudo subir", Alert.AlertType.WARNING);
-                }
-            }
-            Utilidades.mostrarAlertaSimple("Éxito", respuesta.getMensaje(), Alert.AlertType.INFORMATION);
-            cerrarVentana();
         } else {
-            Utilidades.mostrarAlertaSimple("Error", respuesta.getMensaje(), Alert.AlertType.ERROR);
+            colaborador.setIdColaborador(colaboradorEdicion.getIdColaborador());
+            Respuesta respuesta = ColaboradorImp.editar(colaborador);
+            if (!respuesta.isError()) {
+                if (archivoFoto != null && colaborador.getFoto() != null) {
+                    Respuesta respFoto = ColaboradorImp.subirFoto(colaborador.getIdColaborador(), colaborador.getFoto());
+                    if (respFoto.isError()) {
+                        Utilidades.mostrarAlertaSimple("Advertencia", "Colaborador actualizado pero la foto no se pudo subir", Alert.AlertType.WARNING);
+                    }
+                }
+                Utilidades.mostrarAlertaSimple("Éxito", respuesta.getMensaje(), Alert.AlertType.INFORMATION);
+                cerrarVentana();
+            } else {
+                Utilidades.mostrarAlertaSimple("Error", respuesta.getMensaje(), Alert.AlertType.ERROR);
+            }
         }
     }
-}
 
     
     
     private void registrarColaborador(Colaborador colaborador){
     Respuesta respuesta = ColaboradorImp.registrar(colaborador);
     if(!respuesta.isError()){
-        // Recuperar el colaborador recién creado
         HashMap<String, Object> resultado = ColaboradorImp.buscarPorNumeroPersonal(colaborador.getNumeroPersonal());
         if(!(boolean)resultado.get("error")){
             List<Colaborador> lista = (List<Colaborador>)resultado.get("colaboradores");
@@ -256,63 +251,103 @@ private void clicGuardar(ActionEvent event) {
         }
         Utilidades.mostrarAlertaSimple("Éxito", respuesta.getMensaje(), Alert.AlertType.INFORMATION);
         cerrarVentana();
-    } else {
-        Utilidades.mostrarAlertaSimple("Error", respuesta.getMensaje(), Alert.AlertType.ERROR);
-    }
-}
-
-
-private void actualizarColaborador(Colaborador colaborador){
-    Respuesta respuesta = ColaboradorImp.editar(colaborador);
-    if(!respuesta.isError()){
-        //  Subir foto si existe
-        if(colaborador.getFoto() != null){
-            Respuesta respFoto = ColaboradorImp.subirFoto(colaborador.getIdColaborador(), colaborador.getFoto());
-            if(respFoto.isError()){
-                Utilidades.mostrarAlertaSimple("Advertencia", "Colaborador actualizado pero la foto no se pudo subir", Alert.AlertType.WARNING);
-            }
+        } else {
+            Utilidades.mostrarAlertaSimple("Error", respuesta.getMensaje(), Alert.AlertType.ERROR);
         }
-        Utilidades.mostrarAlertaSimple("Éxito", respuesta.getMensaje(), Alert.AlertType.INFORMATION);
-        cerrarVentana();
-    } else {
-        Utilidades.mostrarAlertaSimple("Error", respuesta.getMensaje(), Alert.AlertType.ERROR);
     }
-}
 
-// Nuevo método para cargar foto desde servidor
-private void cargarFotoServidor(int idColaborador){
-    Colaborador c = ColaboradorImp.obtenerFoto(idColaborador);
-    if(c != null && c.getFotografia() != null){
-        mostrarFotoServidor(c.getFotografia());
-    } else {
-        ivFoto.setImage(null); // no hay foto, no rompe
+
+    private void actualizarColaborador(Colaborador colaborador){
+        Respuesta respuesta = ColaboradorImp.editar(colaborador);
+        if(!respuesta.isError()){
+            //  Subir foto si existe
+            if(colaborador.getFoto() != null){
+                Respuesta respFoto = ColaboradorImp.subirFoto(colaborador.getIdColaborador(), colaborador.getFoto());
+                if(respFoto.isError()){
+                    Utilidades.mostrarAlertaSimple("Advertencia", "Colaborador actualizado pero la foto no se pudo subir", Alert.AlertType.WARNING);
+                }
+            }
+            Utilidades.mostrarAlertaSimple("Éxito", respuesta.getMensaje(), Alert.AlertType.INFORMATION);
+            cerrarVentana();
+        } else {
+            Utilidades.mostrarAlertaSimple("Error", respuesta.getMensaje(), Alert.AlertType.ERROR);
+        }
     }
-}
+
+    private void cargarFotoServidor(int idColaborador){
+        Colaborador c = ColaboradorImp.obtenerFoto(idColaborador);
+        if(c != null && c.getFotografia() != null){
+            mostrarFotoServidor(c.getFotografia());
+        } else {
+            ivFoto.setImage(null); 
+        }
+    }
 
     
 
     private boolean validarCampos() {
-        if(tfNombre.getText().isEmpty() || tfPaterno.getText().isEmpty() || 
-           tfCurp.getText().isEmpty() || tfNoPersonal.getText().isEmpty() || 
-           pfContrasena.getText().isEmpty() || cbRol.getSelectionModel().getSelectedItem() == null ||
-           cbSucursal.getSelectionModel().getSelectedItem() == null){
-            
-            Utilidades.mostrarAlertaSimple("Campos Vacíos", "Por favor llena todos los campos obligatorios", Alert.AlertType.WARNING);
-            return false;
-        }
-        // Validación específica para Conductores
-    if(cbRol.getValue().getNombreRol().equalsIgnoreCase("Conductor")
-            && tfNumeroLicencia.getText().isEmpty()) {
+        boolean valido = true;
+        valido &= revisarVacio(tfNombre, lbErrorNombre);
+        valido &= revisarVacio(tfPaterno, lbErrorPaterno);
+        valido &= revisarVacio(pfContrasena, lbErrorPassword);
 
-        Utilidades.mostrarAlertaSimple(
-            "Número de licencia",
-            "El número de licencia es obligatorio para conductores",
-            Alert.AlertType.WARNING
-        );
-        return false;
+        // Validación CURP 18 caracteres
+        if (tfCurp.getText().length() != 18) {
+            tfCurp.setStyle("-fx-border-color: red;");
+            lbErrorCurp.setVisible(true);
+            valido = false;
+        } else {
+            tfCurp.setStyle("");
+            lbErrorCurp.setVisible(false);
+        }
+
+        if (!tfCorreo.getText().matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+            tfCorreo.setStyle("-fx-border-color: red;");
+            lbErrorCorreo.setVisible(true);
+            valido = false;
+        } else {
+            tfCorreo.setStyle("");
+            lbErrorCorreo.setVisible(false);
+        }
+
+        valido &= revisarVacio(tfNoPersonal, lbErrorNoPersonal);
+
+        if (cbRol.getValue() == null) { lbErrorRol.setVisible(true); valido = false; } else { lbErrorRol.setVisible(false); }
+        if (cbSucursal.getValue() == null) { lbErrorSucursal.setVisible(true); valido = false; } else { lbErrorSucursal.setVisible(false); }
+
+        if (!tfNumeroLicencia.isDisabled()) {
+            valido &= revisarVacio(tfNumeroLicencia, lbErrorLicencia);
+        }
+
+        return valido;
     }
-        
-        return true;
+    
+    private boolean revisarVacio(TextField tf, Label lb) {
+        if (tf.getText().trim().isEmpty()) {
+            tf.setStyle("-fx-border-color: red;");
+            lb.setVisible(true);
+            return false;
+        } else {
+            tf.setStyle("");
+            lb.setVisible(false);
+            return true;
+        }
+    }
+    
+
+    private void configurarValidacionesDinamicas() {
+        tfCurp.textProperty().addListener((obs, oldV, newV) -> {
+            tfCurp.setText(newV.toUpperCase());
+            if (newV.length() > 18) tfCurp.setText(oldV);
+            lbErrorCurp.setVisible(false);
+        });
+
+        tfNoPersonal.textProperty().addListener((obs, oldV, newV) -> {
+            if (!newV.matches("\\d*")) tfNoPersonal.setText(newV.replaceAll("[^\\d]", ""));
+            lbErrorNoPersonal.setVisible(false);
+        });
+
+        tfCorreo.textProperty().addListener((obs, oldV, newV) -> lbErrorCorreo.setVisible(false));
     }
     
     private void seleccionarRol(int idRol) {

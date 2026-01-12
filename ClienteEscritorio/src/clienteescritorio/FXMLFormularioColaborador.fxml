@@ -1,54 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.image.*?>
 <?import javafx.scene.text.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="500.0" prefWidth="700.0" style="-fx-background-radius: 10; -fx-background-color: white; -fx-border-color: black; -fx-border-radius: 10;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clienteescritorio.FXMLFormularioColaboradorController">
+<AnchorPane prefHeight="550.0" prefWidth="720.0" style="-fx-background-color: white; -fx-border-color: black; -fx-border-radius: 10;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clienteescritorio.FXMLFormularioColaboradorController">
    <children>
-      <Label fx:id="lbTitulo" layoutX="36.0" layoutY="28.0" text="Registro de Colaborador">
-         <font>
-            <Font name="System Bold" size="22.0" />
-         </font>
+      <Label fx:id="lbTitulo" layoutX="36.0" layoutY="20.0" text="Registro de Colaborador">
+         <font><Font name="System Bold" size="22.0" /></font>
       </Label>
-      <Label layoutX="36.0" layoutY="80.0" text="Nombre" />
-      <TextField fx:id="tfNombre" layoutX="35.0" layoutY="109.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
-      
-      <Label layoutX="256.0" layoutY="80.0" text="Apellido Paterno" />
-      <TextField fx:id="tfPaterno" layoutX="255.0" layoutY="109.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
-      
-      <Label layoutX="476.0" layoutY="80.0" text="Apellido Materno" />
-      <TextField fx:id="tfMaterno" layoutX="475.0" layoutY="109.0" prefWidth="180.0" style="-fx-background-color: #e0e0e0;" />
-      
-      <Label layoutX="37.0" layoutY="157.0" text="CURP" />
-      <TextField fx:id="tfCurp" layoutX="33.0" layoutY="186.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
-      
-      <Label layoutX="257.0" layoutY="157.0" text="Correo Electrónico" />
-      <TextField fx:id="tfCorreo" layoutX="253.0" layoutY="186.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
-      
-      <Label layoutX="477.0" layoutY="157.0" text="No. de Personal" />
-      <TextField fx:id="tfNoPersonal" layoutX="473.0" layoutY="186.0" prefWidth="180.0" style="-fx-background-color: #e0e0e0;" />
-      
-      <Label layoutX="39.0" layoutY="236.0" text="Contraseña" />
-      <PasswordField fx:id="pfContrasena" layoutX="34.0" layoutY="259.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
-      
-      <Label layoutX="259.0" layoutY="236.0" text="Rol" />
-      <ComboBox fx:id="cbRol" layoutX="254.0" layoutY="259.0" prefWidth="200.0" style="-fx-background-color: #e0e0e0;" />
-      
-      <Label layoutX="479.0" layoutY="236.0" text="Sucursal" />
-      <ComboBox fx:id="cbSucursal" layoutX="474.0" layoutY="259.0" prefWidth="180.0" style="-fx-background-color: #e0e0e0;" />
 
-      <Label layoutX="33.0" layoutY="317.0" text="Fotografía" />
-      <ImageView fx:id="ivFoto" fitHeight="80.0" fitWidth="80.0" layoutX="34.0" layoutY="348.0" pickOnBounds="true" preserveRatio="true" style="-fx-border-color: black;" />
-      <Button layoutX="120.0" layoutY="383.0" mnemonicParsing="false" onAction="#clicSubirFoto" text="Cargar..." />
-      
-      <Button layoutX="450.0" layoutY="430.0" mnemonicParsing="false" onAction="#clicCancelar" style="-fx-background-color: #d1a3a4;" text="Cancelar" />
-      <Button layoutX="550.0" layoutY="430.0" mnemonicParsing="false" onAction="#clicGuardar" style="-fx-background-color: #d1a3a4;" text="Registrar" />
-      <Label layoutX="259.0" layoutY="317.0" text="No. de Licencia" />
-      <TextField fx:id="tfNumeroLicencia" layoutX="259.0" layoutY="348.0" prefWidth="200.0" disable="true" style="-fx-background-color: #e0e0e0;" />
+      <GridPane hgap="20.0" layoutX="36.0" layoutY="70.0" vgap="10.0">
+        <columnConstraints>
+          <ColumnConstraints prefWidth="200.0" />
+          <ColumnConstraints prefWidth="200.0" />
+          <ColumnConstraints prefWidth="200.0" />
+        </columnConstraints>
+        <children>
+           <VBox spacing="2.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+              <children>
+                  <Label text="Nombre *" />
+                  <TextField fx:id="tfNombre" />
+                  <Label fx:id="lbErrorNombre" text="Requerido" textFill="RED" visible="false"><font><Font size="10.0" /></font></Label>
+              </children>
+           </VBox>
+           <VBox spacing="2.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+              <children>
+                  <Label text="Apellido Paterno *" />
+                  <TextField fx:id="tfPaterno" />
+                  <Label fx:id="lbErrorPaterno" text="Requerido" textFill="RED" visible="false"><font><Font size="10.0" /></font></Label>
+              </children>
+           </VBox>
+           <VBox spacing="2.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
+              <children><Label text="Apellido Materno" /><TextField fx:id="tfMaterno" /></children>
+           </VBox>
+
+           <VBox spacing="2.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+              <children>
+                 <Label text="CURP *" />
+                 <TextField fx:id="tfCurp" />
+                 <Label fx:id="lbErrorCurp" text="Debe tener 18 caracteres" textFill="RED" visible="false"><font><Font size="10.0" /></font></Label>
+              </children>
+           </VBox>
+           <VBox spacing="2.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+              <children>
+                 <Label text="Correo Electrónico *" />
+                 <TextField fx:id="tfCorreo" />
+                 <Label fx:id="lbErrorCorreo" text="Formato inválido" textFill="RED" visible="false"><font><Font size="10.0" /></font></Label>
+              </children>
+           </VBox>
+           <VBox spacing="2.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+              <children>
+                  <Label text="No. de Personal *" />
+                  <TextField fx:id="tfNoPersonal" />
+                  <Label fx:id="lbErrorNoPersonal" text="Solo números" textFill="RED" visible="false"><font><Font size="10.0" /></font></Label>
+              </children>
+           </VBox>
+
+           <VBox spacing="2.0" GridPane.columnIndex="0" GridPane.rowIndex="2">
+              <children>
+                  <Label text="Contraseña *" />
+                  <PasswordField fx:id="pfContrasena" />
+                  <Label fx:id="lbErrorPassword" text="Requerido" textFill="RED" visible="false"><font><Font size="10.0" /></font></Label>
+              </children>
+           </VBox>
+           <VBox spacing="2.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+              <children>
+                  <Label text="Rol *" />
+                  <ComboBox fx:id="cbRol" prefWidth="200.0" />
+                  <Label fx:id="lbErrorRol" text="Selecciona uno" textFill="RED" visible="false"><font><Font size="10.0" /></font></Label>
+              </children>
+           </VBox>
+           <VBox spacing="2.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
+              <children>
+                  <Label text="Sucursal *" />
+                  <ComboBox fx:id="cbSucursal" prefWidth="200.0" />
+                  <Label fx:id="lbErrorSucursal" text="Selecciona una" textFill="RED" visible="false"><font><Font size="10.0" /></font></Label>
+              </children>
+           </VBox>
+        </children>
+      </GridPane>
+
+      <Label layoutX="36.0" layoutY="340.0" text="Fotografía" />
+      <ImageView fx:id="ivFoto" fitHeight="100.0" fitWidth="100.0" layoutX="36.0" layoutY="365.0" pickOnBounds="true" preserveRatio="true" style="-fx-border-color: #ccc;" />
+      <Button layoutX="150.0" layoutY="400.0" onAction="#clicSubirFoto" text="Cargar Foto" />
+
+      <VBox layoutX="290.0" layoutY="340.0" spacing="2.0">
+         <children>
+            <Label text="No. de Licencia (Solo Conductores)" />
+            <TextField fx:id="tfNumeroLicencia" disable="true" prefWidth="200.0" />
+            <Label fx:id="lbErrorLicencia" text="Licencia obligatoria" textFill="RED" visible="false"><font><Font size="10.0" /></font></Label>
+         </children>
+      </VBox>
+
+      <HBox layoutX="480.0" layoutY="490.0" spacing="15.0">
+         <children>
+            <Button onAction="#clicCancelar" prefWidth="100.0" style="-fx-background-color: #d1a3a4;" text="Cancelar" />
+            <Button onAction="#clicGuardar" prefWidth="100.0" style="-fx-background-color: #9cd1a3;" text="Guardar" />
+         </children>
+      </HBox>
    </children>
 </AnchorPane>

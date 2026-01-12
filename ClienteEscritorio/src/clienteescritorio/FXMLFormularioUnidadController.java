@@ -27,6 +27,7 @@ public class FXMLFormularioUnidadController implements Initializable {
     @FXML private TextField tfVin;
     @FXML private ComboBox<TipoUnidad> cbTipo;
     @FXML private TextField tfNii;
+    @FXML private Label lbErrorMarca, lbErrorModelo, lbErrorAnio, lbErrorVin, lbErrorTipo;
     
     private Unidad unidadEdicion;
     
@@ -37,6 +38,7 @@ public class FXMLFormularioUnidadController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         cargarTipos();
+        configurarValidacionesDinamicas();
     }    
     
     public void inicializarValores(Unidad unidad){
@@ -79,59 +81,74 @@ public class FXMLFormularioUnidadController implements Initializable {
             cbEstado.setVisible(false);
         }
     }
+    
+    private void configurarValidacionesDinamicas() {
+        // Solo números en el año
+        tfAnio.textProperty().addListener((obs, oldV, newV) -> {
+            if (!newV.matches("\\d*")) tfAnio.setText(newV.replaceAll("[^\\d]", ""));
+            if (newV.length() > 4) tfAnio.setText(oldV);
+        });
+        
+        // VIN siempre en mayúsculas y máximo 17
+        tfVin.textProperty().addListener((obs, oldV, newV) -> {
+            tfVin.setText(newV.toUpperCase());
+            if (newV.length() > 17) tfVin.setText(oldV);
+            lbErrorVin.setVisible(false);
+        });
+    }
 
     @FXML
     private void clicGuardar(ActionEvent event) {
-    if (!validarCampos()) {
-        return; 
-    }
+        if (!validarCampos()) {
+            return; 
+        }
 
-    Unidad nuevaUnidad = new Unidad();
-    nuevaUnidad.setMarca(tfMarca.getText());
-    nuevaUnidad.setModelo(tfModelo.getText());
-    nuevaUnidad.setAnio(Integer.parseInt(tfAnio.getText()));
-    nuevaUnidad.setVin(tfVin.getText());
-    nuevaUnidad.setNii(tfNii.getText());
-    TipoUnidad tipoSeleccionado = cbTipo.getValue();
-    nuevaUnidad.setIdTipoUnidad(tipoSeleccionado.getIdTipoUnidad());
-    
-    if(unidadEdicion == null){
-        nuevaUnidad.setIdEstatusUnidad(1);
-    }else{
-        String estadoSeleccionado = cbEstado.getValue();
-        if(estadoSeleccionado != null){
-        if(estadoSeleccionado.equals("Activo")){
+        Unidad nuevaUnidad = new Unidad();
+        nuevaUnidad.setMarca(tfMarca.getText());
+        nuevaUnidad.setModelo(tfModelo.getText());
+        nuevaUnidad.setAnio(Integer.parseInt(tfAnio.getText()));
+        nuevaUnidad.setVin(tfVin.getText());
+        nuevaUnidad.setNii(tfNii.getText());
+        TipoUnidad tipoSeleccionado = cbTipo.getValue();
+        nuevaUnidad.setIdTipoUnidad(tipoSeleccionado.getIdTipoUnidad());
+
+        if(unidadEdicion == null){
             nuevaUnidad.setIdEstatusUnidad(1);
-        }else if(estadoSeleccionado.equals("En mantenimiento")){
-            nuevaUnidad.setIdEstatusUnidad(3);
-        }   
-            
         }else{
-            nuevaUnidad.setIdEstatusUnidad(unidadEdicion.getIdEstatusUnidad());
-      }
+            String estadoSeleccionado = cbEstado.getValue();
+            if(estadoSeleccionado != null){
+            if(estadoSeleccionado.equals("Activo")){
+                nuevaUnidad.setIdEstatusUnidad(1);
+            }else if(estadoSeleccionado.equals("En mantenimiento")){
+                nuevaUnidad.setIdEstatusUnidad(3);
+            }   
+
+            }else{
+                nuevaUnidad.setIdEstatusUnidad(unidadEdicion.getIdEstatusUnidad());
+          }
     }
 
     Respuesta respuesta;
-    if(unidadEdicion == null){
-        respuesta=UnidadImp.registrar(nuevaUnidad);
-    }else{
-        nuevaUnidad.setIdUnidad(unidadEdicion.getIdUnidad());
-        respuesta = UnidadImp.editar(nuevaUnidad);
+        if(unidadEdicion == null){
+            respuesta=UnidadImp.registrar(nuevaUnidad);
+        }else{
+            nuevaUnidad.setIdUnidad(unidadEdicion.getIdUnidad());
+            respuesta = UnidadImp.editar(nuevaUnidad);
+        }
+
+        if (!respuesta.isError()) {
+        String titulo = (unidadEdicion == null) ? "Registro exitoso" : "Actualización exitosa";
+        Utilidades.mostrarAlertaSimple(titulo, 
+            respuesta.getMensaje(), Alert.AlertType.INFORMATION);
+        cerrarVentana();
+        }else{
+        Utilidades.mostrarAlertaSimple("Error", 
+            respuesta.getMensaje(), Alert.AlertType.ERROR);
+        }
+
     }
 
-    if (!respuesta.isError()) {
-    String titulo = (unidadEdicion == null) ? "Registro exitoso" : "Actualización exitosa";
-    Utilidades.mostrarAlertaSimple(titulo, 
-        respuesta.getMensaje(), Alert.AlertType.INFORMATION);
-    cerrarVentana();
-    }else{
-    Utilidades.mostrarAlertaSimple("Error", 
-        respuesta.getMensaje(), Alert.AlertType.ERROR);
-    }
-
-}
-
- private void cargarTipos() {
+    private void cargarTipos() {
         tipos = FXCollections.observableArrayList();
         HashMap<String, Object> respuesta = UnidadImp.obtenerTipos(); 
         if(!(boolean)respuesta.get("error")){
@@ -152,37 +169,58 @@ public class FXMLFormularioUnidadController implements Initializable {
         ((Stage) tfMarca.getScene().getWindow()).close();
     }
     
+
     private boolean validarCampos() {
-    // Validar campos vacíos
-    if (tfMarca.getText().isEmpty() || tfModelo.getText().isEmpty() || 
-        tfAnio.getText().isEmpty() || tfVin.getText().isEmpty() || cbTipo.getValue() == null) {
-        Utilidades.mostrarAlertaSimple("Campos incompletos", 
-            "Debes llenar todos los campos obligatorios.", Alert.AlertType.WARNING);
-        return false;
-    }
-
-    // Validar que el año sea un número
-    try {
-        int anio = Integer.parseInt(tfAnio.getText());
-        if (anio < 1980 || anio > 2100) {
-            Utilidades.mostrarAlertaSimple("Año inválido", 
-                "El año debe estar entre 1980 y 2100.", Alert.AlertType.ERROR);
-            return false;
+        boolean valido = true;
+        valido &= revisarVacio(tfMarca, lbErrorMarca);
+        valido &= revisarVacio(tfModelo, lbErrorModelo);
+        
+        // Validación Año
+        try {
+            int anio = Integer.parseInt(tfAnio.getText());
+            int anioActual = java.time.Year.now().getValue();
+            if (anio < 1900 || anio > anioActual + 1) {
+                lbErrorAnio.setText("Año inválido");
+                lbErrorAnio.setVisible(true);
+                valido = false;
+            } else {
+                lbErrorAnio.setVisible(false);
+            }
+        } catch (Exception e) {
+            lbErrorAnio.setVisible(true);
+            valido = false;
         }
-    } catch (NumberFormatException e) {
-        Utilidades.mostrarAlertaSimple("Error en año", 
-            "El año debe ser un número válido.", Alert.AlertType.ERROR);
-        return false;
-    }
 
-    if (tfVin.getText().length() < 4) {
-        Utilidades.mostrarAlertaSimple("VIN inválido", 
-            "El VIN debe tener al menos 4 caracteres.", Alert.AlertType.ERROR);
-        return false;
-    }
+        if (tfVin.getText().length() != 17) {
+            tfVin.setStyle("-fx-border-color: red;");
+            lbErrorVin.setVisible(true);
+            valido = false;
+        } else {
+            tfVin.setStyle("");
+            lbErrorVin.setVisible(false);
+        }
 
-    return true;
-}
+        if (cbTipo.getValue() == null) {
+            lbErrorTipo.setVisible(true);
+            valido = false;
+        }
+
+        return valido;
+    }
+    
+    private boolean revisarVacio(TextField tf, Label lb) {
+        if (tf.getText().trim().isEmpty()) {
+            tf.setStyle("-fx-border-color: red;");
+            lb.setVisible(true);
+            return false;
+        } else {
+            tf.setStyle("");
+            lb.setVisible(false);
+            return true;
+        }
+    }
+    
+    
     private void actualizarNii() {
     String vin = tfVin.getText();
 
@@ -199,9 +237,5 @@ public class FXMLFormularioUnidadController implements Initializable {
     
     
 }
-
-   
-
-
 
 }
