@@ -40,7 +40,7 @@
           <TableColumn 
               fx:id="colComentario" 
               prefWidth="190.0" 
-              text="Observaciones" />
+              text="Comentarios" />
         </columns>
       </TableView>
    </children>
