@@ -34,4 +34,14 @@ public class PaqueteWS {
         return new Respuesta(true, "ID de paquete no válido.");
     }
     
+    @Path("editar")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON) 
+    @Produces(MediaType.APPLICATION_JSON) 
+    public Respuesta editar(String json) { 
+        Paquete paquete = new Gson().fromJson(json, Paquete.class); 
+        return PaqueteImp.editar(paquete); 
+    } 
+
+      
 }

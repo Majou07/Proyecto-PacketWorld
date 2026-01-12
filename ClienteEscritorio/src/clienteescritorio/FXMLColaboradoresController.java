@@ -221,4 +221,8 @@ private void clicBuscar(ActionEvent event) {
     return -1;
 }
 
+    @FXML
+    private void clicAsignarUnidad(ActionEvent event) {
+    }
+
 }

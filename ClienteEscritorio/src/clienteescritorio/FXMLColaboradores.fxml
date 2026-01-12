@@ -33,6 +33,7 @@
             <Button mnemonicParsing="false" onAction="#clicRegistrar" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #f0f0f0;" text="Registrar" />
             <Button mnemonicParsing="false" onAction="#clicEditar" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #f0f0f0;" text="Editar" />
             <Button mnemonicParsing="false" onAction="#clicEliminar" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #f0f0f0;" text="Eliminar" />
+            <Button mnemonicParsing="false" onAction="#clicAsignarUnidad" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #f0f0f0;" text="Asignar unidad" />
          </children>
       </VBox>
       <ComboBox fx:id="cbFiltro" layoutX="545.0" layoutY="88.0" prefWidth="150.0" />
