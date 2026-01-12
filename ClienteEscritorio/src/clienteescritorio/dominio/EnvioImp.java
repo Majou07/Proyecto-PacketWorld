@@ -36,16 +36,26 @@ public class EnvioImp {
     }
 
     public static Respuesta actualizarEstatus(int idEnvio, int idEstatus, String comentario, int idColaborador) {
-        String url = Constantes.URL_WS + "envio/actualizar-estatus";
-        String parametros = "idEnvio=" + idEnvio + "&idEstatus=" + idEstatus + 
-                            "&comentario=" + comentario + "&idColaborador=" + idColaborador;
+        Respuesta respuesta = new Respuesta();
+        try {
+            String comentarioCodificado = java.net.URLEncoder.encode(comentario, "UTF-8");
 
-        RespuestaHTTP respuestaAPI = ConexionAPI.peticionPUT(url, parametros);
+            String url = Constantes.URL_WS + "envio/actualizar-estatus";
+            String parametros = "idEnvio=" + idEnvio + "&idEstatus=" + idEstatus + 
+                                "&comentario=" + comentarioCodificado + "&idColaborador=" + idColaborador;
 
-        if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
-            return new Gson().fromJson(respuestaAPI.getContenido(), Respuesta.class);
+            System.out.println("Enviando actualización: " + parametros); 
+            RespuestaHTTP respuestaAPI = ConexionAPI.peticionPUT(url, parametros);
+
+            if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+                return new Gson().fromJson(respuestaAPI.getContenido(), Respuesta.class);
+            } else {
+                return new Respuesta(true, "Servidor respondió con código: " + respuestaAPI.getCodigo());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Respuesta(true, "Error local: " + e.getMessage());
         }
-        return new Respuesta(true, "Error de comunicación con el servidor.");
     }
 
     
