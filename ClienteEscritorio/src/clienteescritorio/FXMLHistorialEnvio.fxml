@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?> 
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clienteescritorio.FXMLHistorialEnvioController">
+   <children>
+      <Label layoutX="25.0" layoutY="20.0" text="Historial de Cambios de Estatus">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <TableView 
+          fx:id="tvHistorial" 
+          layoutX="25.0" 
+          layoutY="60.0" 
+          prefHeight="300.0" 
+          prefWidth="600.0">
+          
+        <columns>
+          <TableColumn 
+              fx:id="colEstatus" 
+              prefWidth="120.0" 
+              text="Estatus" />
+          
+          <TableColumn 
+              fx:id="colFecha" 
+              prefWidth="150.0" 
+              text="Fecha y Hora" />
+          
+          <TableColumn 
+              fx:id="colColaborador" 
+              prefWidth="130.0" 
+              text="Actualizado por" />
+          
+          <TableColumn 
+              fx:id="colComentario" 
+              prefWidth="190.0" 
+              text="Observaciones" />
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>
