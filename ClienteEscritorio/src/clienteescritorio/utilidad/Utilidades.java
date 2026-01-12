@@ -19,6 +19,16 @@ public class Utilidades {
         return "";
     }
 }
+    
+    public static String convertirStreamAString(InputStream is) {
+        if (is == null) return ""; 
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+            return br.lines().collect(Collectors.joining("\n"));
+        } catch (Exception e) {
+            System.err.println("Error al convertir stream: " + e.getMessage());
+            return "";
+        }
+    }
 
 
     public static void mostrarAlertaSimple(String titulo, String contenido, Alert.AlertType tipo) {

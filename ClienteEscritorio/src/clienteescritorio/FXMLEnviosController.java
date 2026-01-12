@@ -2,6 +2,7 @@ package clienteescritorio;
 
 import clienteescritorio.dominio.EnvioImp;
 import clienteescritorio.dominio.PaqueteImp;
+import clienteescritorio.dto.Respuesta;
 import clienteescritorio.pojo.Envio;
 import clienteescritorio.pojo.Paquete;
 import clienteescritorio.utilidad.Constantes;
@@ -171,10 +172,15 @@ public class FXMLEnviosController implements Initializable {
     private void btnEliminarEnvio(ActionEvent event) {
         Envio seleccionado = tvEnvios.getSelectionModel().getSelectedItem();
         if (seleccionado != null) {
-            boolean confirmar = Utilidades.mostrarConfirmacion("Eliminar", "¿Deseas eliminar el envío " + seleccionado.getNumeroGuia() + "?");
+            boolean confirmar = Utilidades.mostrarConfirmacion("Eliminar", "¿Deseas eliminar permanentemente el envío " + seleccionado.getNumeroGuia() + "?");
             if (confirmar) {
-                EnvioImp.eliminarEnvio(seleccionado.getIdEnvio());
-                cargarEnvios();
+                Respuesta resp = EnvioImp.eliminarEnvio(seleccionado.getIdEnvio());
+                if(!resp.isError()){
+                    Utilidades.mostrarAlertaSimple("Éxito", "Envío eliminado correctamente", Alert.AlertType.INFORMATION);
+                    cargarEnvios(); // Esto quita el registro de la vista
+                } else {
+                    Utilidades.mostrarAlertaSimple("Error", resp.getMensaje(), Alert.AlertType.ERROR);
+                }
             }
         } else {
             Utilidades.mostrarAlertaSimple("Selección", "Primero selecciona un envío.", Alert.AlertType.WARNING);

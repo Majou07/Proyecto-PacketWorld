@@ -120,7 +120,13 @@ public class EnvioImp {
     
     
     public static Respuesta eliminarEnvio(int idEnvio) {
-        return actualizarEstatus(idEnvio, 6, "Eliminado desde sistema", 1);
+        String url = Constantes.URL_WS + "envio/eliminar/" + idEnvio;
+        RespuestaHTTP respuestaAPI = ConexionAPI.peticionDELETE(url); 
+
+        if (respuestaAPI.getCodigo() == java.net.HttpURLConnection.HTTP_OK) {
+            return new com.google.gson.Gson().fromJson(respuestaAPI.getContenido(), Respuesta.class);
+        }
+        return new Respuesta(true, "Error al eliminar el envío.");
     }
     
     

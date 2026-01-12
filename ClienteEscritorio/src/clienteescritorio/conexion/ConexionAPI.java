@@ -194,4 +194,28 @@ public class ConexionAPI {
     }
     return respuesta;
     }
+    
+    
+    public static RespuestaHTTP peticionDELETE(String url) {
+    RespuestaHTTP respuesta = new RespuestaHTTP();
+    try {
+        java.net.URL urlDestino = new java.net.URL(url);
+        java.net.HttpURLConnection conexion = (java.net.HttpURLConnection) urlDestino.openConnection();
+        conexion.setRequestMethod("DELETE");
+        conexion.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
+        int codigoRespuesta = conexion.getResponseCode();
+        respuesta.setCodigo(codigoRespuesta);
+
+        if (codigoRespuesta == java.net.HttpURLConnection.HTTP_OK) {
+            respuesta.setContenido(Utilidades.convertirStreamAString(conexion.getInputStream()));
+        } else {
+            respuesta.setContenido(Utilidades.convertirStreamAString(conexion.getErrorStream()));
+        }
+        } catch (Exception e) {
+            respuesta.setCodigo(-1);
+            respuesta.setContenido(e.getMessage());
+        }
+        return respuesta;
+    }
 }

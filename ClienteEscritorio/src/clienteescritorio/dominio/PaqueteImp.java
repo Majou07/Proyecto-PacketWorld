@@ -65,13 +65,20 @@ public class PaqueteImp {
     return respuesta;
     }
     
+    
     public static Respuesta eliminarPaquete(int idPaquete) {
-    String URL = Constantes.URL_WS + "paquete/eliminar/" + idPaquete; 
-    RespuestaHTTP respuestaAPI = ConexionAPI.peticionSinBody(URL, "DELETE");
-    if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
-        return new Gson().fromJson(respuestaAPI.getContenido(), Respuesta.class);
-    }
-    return new Respuesta(true, "Error al eliminar el paquete.");
+        Respuesta respuesta = new Respuesta();
+        String url = Constantes.URL_WS + "paquete/eliminar/" + idPaquete;
+
+        RespuestaHTTP respuestaAPI = ConexionAPI.peticionDELETE(url);
+
+        if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+            respuesta = new Gson().fromJson(respuestaAPI.getContenido(), Respuesta.class);
+        } else {
+            respuesta.setError(true);
+            respuesta.setMensaje("Error al conectar con el servidor para eliminar el paquete.");
+        }
+        return respuesta;
     }
     
 }
