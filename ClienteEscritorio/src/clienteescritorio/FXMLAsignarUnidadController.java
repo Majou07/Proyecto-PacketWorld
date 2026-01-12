@@ -25,6 +25,31 @@ public class FXMLAsignarUnidadController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         cargarUnidades();
+
+        // Personalizar cómo se muestran las unidades en el ComboBox
+        cbUnidades.setCellFactory(param -> new ListCell<Unidad>() {
+            @Override
+            protected void updateItem(Unidad unidad, boolean empty) {
+                super.updateItem(unidad, empty);
+                if (empty || unidad == null) {
+                    setText(null);
+                } else {
+                    setText(unidad.getVin() + " - " + unidad.getMarca() + " " + unidad.getModelo() + " (" + unidad.getAnio() + ")");
+                }
+            }
+        });
+
+        cbUnidades.setButtonCell(new ListCell<Unidad>() {
+            @Override
+            protected void updateItem(Unidad unidad, boolean empty) {
+                super.updateItem(unidad, empty);
+                if (empty || unidad == null) {
+                    setText(null);
+                } else {
+                    setText(unidad.getVin() + " - " + unidad.getMarca() + " " + unidad.getModelo() + " (" + unidad.getAnio() + ")");
+                }
+            }
+        });
     }
 
     public void inicializarConductor(Colaborador conductor) {
@@ -36,30 +61,37 @@ public class FXMLAsignarUnidadController implements Initializable {
         HashMap<String, Object> respuesta = UnidadImp.obtenerUnidades(); 
         
         if (!(boolean) respuesta.get("error")) {
-            
             List<Unidad> lista = (List<Unidad>) respuesta.get("unidades");
             cbUnidades.setItems(FXCollections.observableArrayList(lista));
+        } else {
+            Utilidades.mostrarAlertaSimple("Error", 
+                (String) respuesta.get("mensaje"), 
+                Alert.AlertType.ERROR);
         }
     }
 
     @FXML
     private void clicGuardar(ActionEvent event) {
         Unidad seleccionada = cbUnidades.getValue();
-        if (seleccionada != null) {
-            Respuesta resp = ColaboradorImp.asignarVehiculo(conductor.getIdColaborador(), seleccionada.getIdUnidad());
-            
-            if (!resp.isError()) {
-                Utilidades.mostrarAlertaSimple("Éxito", resp.getMensaje(), Alert.AlertType.INFORMATION);
-                cerrarVentana();
-                
-            } else {
-                
-                Utilidades.mostrarAlertaSimple("Error", resp.getMensaje(), Alert.AlertType.ERROR);
-            }
+        if (seleccionada == null) {
+            Utilidades.mostrarAlertaSimple("Selección requerida", 
+                "Debes seleccionar una unidad antes de asignarla.", 
+                Alert.AlertType.WARNING);
+            return;
+        }
+
+        Respuesta resp = ColaboradorImp.asignarVehiculo(conductor.getIdColaborador(), seleccionada.getIdUnidad());
+        
+        if (!resp.isError()) {
+            Utilidades.mostrarAlertaSimple("Éxito", resp.getMensaje(), Alert.AlertType.INFORMATION);
+            cerrarVentana();
+        } else {
+            Utilidades.mostrarAlertaSimple("Error", resp.getMensaje(), Alert.AlertType.ERROR);
         }
     }
 
-    @FXML private void clicCancelar(ActionEvent event) { 
+    @FXML 
+    private void clicCancelar(ActionEvent event) { 
         cerrarVentana(); 
     }
     

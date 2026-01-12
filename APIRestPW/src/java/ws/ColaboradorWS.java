@@ -8,6 +8,7 @@ import java.util.List;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -141,28 +142,19 @@ public class ColaboradorWS {
     }
     throw new BadRequestException("Id inválido");
 }
+ 
     
-    @Path("asignar-unidad")
+    
+@Path("asignar-unidad")
 @PUT
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-public Respuesta asignarUnidad(String json) {
-    try {
-        Gson gson = new Gson();
-        JsonObject datos = gson.fromJson(json, JsonObject.class);
-
-        if (!datos.has("idColaborador") || !datos.has("idUnidad")) {
-            throw new BadRequestException("Faltan parámetros obligatorios");
-        }
-
-        int idColaborador = datos.get("idColaborador").getAsInt();
-        Integer idUnidad = datos.get("idUnidad").isJsonNull() ? null : datos.get("idUnidad").getAsInt();
-
-        return ColaboradorImp.asignarUnidad(idColaborador, idUnidad);
-    } catch (Exception e) {
-        throw new BadRequestException("Error al asignar unidad: " + e.getMessage());
-    }
+@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+public Respuesta asignarUnidad(
+        @FormParam("idColaborador") int idColaborador,
+        @FormParam("idUnidad") Integer idUnidad) {
+    return ColaboradorImp.asignarUnidad(idColaborador, idUnidad);
 }
+
 
 
 }

@@ -233,28 +233,48 @@ public class ColaboradorImp {
     }
     
     
-    public static Respuesta asignarUnidad(int idColaborador, Integer idUnidad) {
+   public static Respuesta asignarUnidad(int idColaborador, Integer idUnidad) {
     Respuesta resp = new Respuesta();
     SqlSession conexionBD = MyBatisUtil.getSession();
-    if (conexionBD != null) {
-        try {
-            Map<String, Object> params = new HashMap<>();
-            params.put("idColaborador", idColaborador);
-            params.put("idUnidad", idUnidad);
-            int filas = conexionBD.update("colaborador.asignar-unidad", params);
-            conexionBD.commit();
-            if (filas > 0) {
-                resp.setError(false);
-                resp.setMensaje("Unidad asignada correctamente");
-            }
-        } catch (Exception e) {
-            resp.setError(true);
-            resp.setMensaje(e.getMessage());
-            
-            } finally { conexionBD.close(); }
-        }
+
+    if (conexionBD == null) {
+        resp.setError(true);
+        resp.setMensaje("No se pudo establecer conexión con la base de datos");
         return resp;
     }
+
+    try {
+        Map<String, Object> params = new HashMap<>();
+        params.put("idColaborador", idColaborador);
+        params.put("idUnidad", idUnidad);
+
+        int filas = conexionBD.update("colaborador.asignar-unidad", params);
+        conexionBD.commit();
+
+        if (filas > 0) {
+            resp.setError(false);
+            resp.setMensaje("Unidad asignada correctamente");
+        } else {
+            resp.setError(true);
+            resp.setMensaje("No se encontró el colaborador o no se pudo asignar la unidad");
+        }
+    } catch (Exception e) {
+        resp.setError(true);
+
+        // Detectar violación de restricción única
+        if (e.getMessage() != null && e.getMessage().contains("Duplicate entry")) {
+            resp.setMensaje("La unidad seleccionada ya está asignada a otro colaborador.");
+        } else {
+            resp.setMensaje("Error al asignar unidad: " + e.getMessage());
+        }
+    } finally {
+        conexionBD.close();
+    }
+
+    return resp;
+}
+
+
     
     
     public static Respuesta guardarFoto(int idColaborador, byte[] foto){

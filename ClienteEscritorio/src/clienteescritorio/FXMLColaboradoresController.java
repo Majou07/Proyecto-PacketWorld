@@ -17,6 +17,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -221,8 +222,42 @@ private void clicBuscar(ActionEvent event) {
     return -1;
 }
 
-    @FXML
-    private void clicAsignarUnidad(ActionEvent event) {
+   @FXML
+private void clicAsignarUnidad(ActionEvent event) {
+    Colaborador seleccionado = tvColaboradores.getSelectionModel().getSelectedItem();
+    
+    if (seleccionado == null) {
+        Utilidades.mostrarAlertaSimple("Selección requerida", 
+            "Debes seleccionar un colaborador para asignarle una unidad.", 
+            Alert.AlertType.WARNING);
+        return;
     }
+
+    try {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLAsignarUnidad.fxml"));
+        Parent root = loader.load();
+
+        // Pasar el colaborador seleccionado al controlador de la pantalla de asignación
+        FXMLAsignarUnidadController controller = loader.getController();
+        controller.inicializarConductor(seleccionado);
+
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root));
+        stage.setTitle("Asignar Unidad");
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+
+        cargarDatos(); // refrescar tabla por si se asignó unidad
+    } catch (IOException e) {
+        e.printStackTrace();
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText("No se pudo abrir la pantalla");
+        alert.setContentText("Verifica que el archivo FXMLAsignarUnidad.fxml esté bien formado y en la ruta correcta.");
+        alert.showAndWait();
+    }
+}
+
+
 
 }

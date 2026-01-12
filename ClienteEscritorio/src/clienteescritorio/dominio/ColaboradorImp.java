@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ColaboradorImp {
     
@@ -232,15 +233,31 @@ public class ColaboradorImp {
   
   
   
-  public static Respuesta asignarVehiculo(int idColaborador, Integer idUnidad) {
+ public static Respuesta asignarVehiculo(int idColaborador, Integer idUnidad) {
     String url = Constantes.URL_WS + "colaborador/asignar-unidad";
+
+    // Construir parámetros tipo form-urlencoded
     String params = "idColaborador=" + idColaborador + "&idUnidad=" + idUnidad;
-    RespuestaHTTP respuestaAPI = ConexionAPI.peticionPOST(url, params); 
-    
-        if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
-            return new Gson().fromJson(respuestaAPI.getContenido(), Respuesta.class);
-        }
-        
-        return new Respuesta(true, "Error de comunicación");
+
+    System.out.println("📤 Enviando solicitud PUT a: " + url);
+    System.out.println("📦 Parámetros: " + params);
+
+    // Usar peticionPUT (que envía application/x-www-form-urlencoded)
+    RespuestaHTTP respuestaAPI = ConexionAPI.peticionPUT(url, params);
+
+    System.out.println("📥 Código de respuesta HTTP: " + respuestaAPI.getCodigo());
+    System.out.println("📥 Contenido de respuesta: " + respuestaAPI.getContenido());
+
+    if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+        Respuesta respuesta = new Gson().fromJson(respuestaAPI.getContenido(), Respuesta.class);
+        System.out.println("✅ Respuesta procesada: " + respuesta.getMensaje());
+        return respuesta;
     }
+
+    System.out.println("❌ Error de comunicación con el servidor");
+    return new Respuesta(true, "Error de comunicación");
+}
+
+
+
 }
