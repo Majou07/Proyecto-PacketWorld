@@ -27,8 +27,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT h.id_historial AS idHistorial, 
                e.nombre AS estatus, 
                h.fecha_hora_cambio AS fechaCambio,
-               h.comentario AS observaciones,
-               c.nombre AS nombreColaborador  FROM historial_estatus h
+               h.comentario AS comentario, c.nombre AS nombreColaborador 
+        FROM historial_estatus h
         INNER JOIN estatus_envio e ON h.id_estatus_envio = e.id_estatus_envio
         INNER JOIN colaborador c ON h.id_colaborador_actualiza = c.id_colaborador
         WHERE h.id_envio = #{idEnvio}
