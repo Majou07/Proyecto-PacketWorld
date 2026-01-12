@@ -8,18 +8,18 @@ public class HistorialEstatus implements Serializable {
     private Integer idEnvio;
     private String estatus;
     private String fechaCambio;
-    private String observaciones;
+    private String comentario;
     private String nombreColaborador;
 
     public HistorialEstatus() {
     }
 
-    public HistorialEstatus(Integer idHistorial, Integer idEnvio, String estatus, String fechaCambio, String observaciones, String nombreColaborador) {
+    public HistorialEstatus(Integer idHistorial, Integer idEnvio, String estatus, String fechaCambio, String coemntario, String nombreColaborador) {
         this.idHistorial = idHistorial;
         this.idEnvio = idEnvio;
         this.estatus = estatus;
         this.fechaCambio = fechaCambio;
-        this.observaciones = observaciones;
+        this.comentario = comentario;
         this.nombreColaborador = nombreColaborador;
     }
 
@@ -56,13 +56,14 @@ public class HistorialEstatus implements Serializable {
         this.fechaCambio = fechaCambio;
     }
 
-    public String getObservaciones() {
-        return observaciones;
+    public String getComentario() {
+        return comentario;
     }
 
-    public void setObservaciones(String observaciones) {
-        this.observaciones = observaciones;
+    public void setComentario(String comentario) {
+        this.comentario = comentario;
     }
+
 
     public String getNombreColaborador() {
         return nombreColaborador;
