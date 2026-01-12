@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="DireccionMapper"> 
+    <select id="obtenerInformacionPorCP" resultType="pojo.Direccion">
+        SELECT colonia, ciudad, estado, municipio
+        FROM catalogo_codigo_postal
+        WHERE TRIM(codigo_postal) = #{cp}
+    </select>
+</mapper>
