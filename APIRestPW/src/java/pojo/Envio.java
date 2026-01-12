@@ -19,9 +19,12 @@ public class Envio {
     private Integer idEstatusEnvio;
     
     private String nombreCliente;
+    private String telefono;
+    private String correoElectronico;
     private String sucursalOrigen;
     private String nombreConductor;
     private String estatusEnvio;
+    
 
     public Envio() {
     }
@@ -208,6 +211,24 @@ public class Envio {
     public void setEstatusEnvio(String estatusEnvio) {
         this.estatusEnvio = estatusEnvio;
     }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public String getCorreoElectronico() {
+        return correoElectronico;
+    }
+
+    public void setCorreoElectronico(String correoElectronico) {
+        this.correoElectronico = correoElectronico;
+    }
+    
+    
     
     
     

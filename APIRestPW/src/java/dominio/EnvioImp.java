@@ -64,6 +64,38 @@ public class EnvioImp {
         }
         return respuesta;
     }
+    
+    public static List<Envio> obtenerPorConductor(int idConductor) {
+    List<Envio> envios = null;
+    SqlSession conexionBD = MyBatisUtil.getSession();
+    if (conexionBD != null) {
+        try {
+            envios = conexionBD.selectList("envio.obtener-por-conductor", idConductor);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            conexionBD.close();
+        }
+    }
+    return envios;
+}
+    
+    public static Envio obtenerDetalle(int idEnvio) {
+    Envio envio = null;
+    SqlSession conexionBD = MyBatisUtil.getSession();
+    if (conexionBD != null) {
+        try {
+            envio = conexionBD.selectOne("envio.obtener-detalle", idEnvio);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            conexionBD.close();
+        }
+    }
+    return envio;
+}
+
+
 
     public static Respuesta actualizarEstatus(int idEnvio, int idEstatus, String comentario, int idColaborador) {
     Respuesta respuesta = new Respuesta();

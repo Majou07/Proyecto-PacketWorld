@@ -35,6 +35,58 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         ORDER BY h.fecha_hora_cambio DESC
     </select>
     
+    <select id="obtener-por-conductor" parameterType="int" resultType="pojo.Envio">
+    SELECT e.id_envio AS idEnvio,
+           e.numero_guia AS numeroGuia,
+           e.destinatario_nombre AS destinatarioNombre,
+           e.destinatario_ap_paterno AS destinatarioApPaterno,
+           e.destinatario_ap_materno AS destinatarioApMaterno,
+           e.destino_calle AS destinoCalle,
+           e.destino_numero AS destinoNumero,
+           e.destino_colonia AS destinoColonia,
+           e.destino_codigo_postal AS destinoCodigoPostal,
+           e.destino_ciudad AS destinoCiudad,
+           e.destino_estado AS destinoEstado,
+           est.nombre AS estatusEnvio
+    FROM envio e
+    INNER JOIN estatus_envio est ON e.id_estatus_envio = est.id_estatus_envio
+    WHERE e.id_conductor_asignado = #{idConductor}
+    ORDER BY e.id_envio DESC
+</select>
+
+
+<select id="obtener-detalle" parameterType="int" resultType="pojo.Envio">
+    SELECT e.id_envio AS idEnvio,
+           e.numero_guia AS numeroGuia,
+           e.destinatario_nombre AS destinatarioNombre,
+           e.destinatario_ap_paterno AS destinatarioApPaterno,
+           e.destinatario_ap_materno AS destinatarioApMaterno,
+           e.destino_calle AS destinoCalle,
+           e.destino_numero AS destinoNumero,
+           e.destino_colonia AS destinoColonia,
+           e.destino_codigo_postal AS destinoCodigoPostal,
+           e.destino_ciudad AS destinoCiudad,
+           e.destino_estado AS destinoEstado,
+           e.costo_total AS costoTotal,
+           e.id_cliente_remitente AS idClienteRemitente,
+           e.codigo_sucursal_origen AS codigoSucursalOrigen,
+           e.id_conductor_asignado AS idConductorAsignado,
+           e.id_estatus_envio AS idEstatusEnvio,
+           c.nombre AS nombreCliente,
+           c.telefono,
+           c.correo_electronico AS correoElectronico,
+           s.nombre_corto AS sucursalOrigen,
+           col.nombre AS nombreConductor,
+           est.nombre AS estatusEnvio
+    FROM envio e
+    INNER JOIN cliente c ON e.id_cliente_remitente = c.id_cliente
+    INNER JOIN sucursal s ON e.codigo_sucursal_origen = s.codigo_sucursal
+    LEFT JOIN colaborador col ON e.id_conductor_asignado = col.id_colaborador
+    INNER JOIN estatus_envio est ON e.id_estatus_envio = est.id_estatus_envio
+    WHERE e.id_envio = #{idEnvio}
+</select>
+
+    
     <insert id="registrar" parameterType="pojo.Envio" useGeneratedKeys="true" keyProperty="idEnvio">
         INSERT INTO envio (numero_guia, destinatario_nombre, destinatario_ap_paterno, destinatario_ap_materno,
                            destino_calle, destino_numero, destino_colonia, destino_codigo_postal, destino_ciudad, destino_estado,

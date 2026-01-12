@@ -107,5 +107,19 @@ public class EnvioWS {
     public List<HistorialEstatus> obtenerHistorial(@PathParam("idEnvio") int idEnvio) {
         return EnvioImp.obtenerHistorial(idEnvio);
     }
+    
+    @GET 
+    @Path("asignados/{idConductor}") 
+    @Produces(MediaType.APPLICATION_JSON) 
+    public List<Envio> obtenerPorConductor(@PathParam("idConductor") int idConductor) { 
+        return EnvioImp.obtenerPorConductor(idConductor); 
+    }
+    
+    @GET 
+    @Path("detalle/{idEnvio}") 
+    @Produces(MediaType.APPLICATION_JSON) 
+    public Envio obtenerDetalle(@PathParam("idEnvio") int idEnvio) { 
+        return EnvioImp.obtenerDetalle(idEnvio); 
+    }
 
 }
