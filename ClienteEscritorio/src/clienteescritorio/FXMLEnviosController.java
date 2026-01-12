@@ -133,7 +133,24 @@ public class FXMLEnviosController implements Initializable {
     private void btnHistorial(ActionEvent event) {
         Envio seleccionado = tvEnvios.getSelectionModel().getSelectedItem();
         if (seleccionado != null) {
-             Utilidades.mostrarAlertaSimple("Historial", "Mostrando historial de: " + seleccionado.getNumeroGuia(), Alert.AlertType.INFORMATION);
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLHistorialEnvio.fxml"));
+                Parent root = loader.load();
+
+                FXMLHistorialEnvioController controller = loader.getController();
+                controller.cargarHistorial(seleccionado.getIdEnvio());
+
+                Stage stage = new Stage();
+                stage.setTitle("Historial - Guía: " + seleccionado.getNumeroGuia());
+                stage.setScene(new Scene(root));
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.showAndWait();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            Utilidades.mostrarAlertaSimple("Selección", "Selecciona un envío para ver su historial.", 
+                    Alert.AlertType.WARNING);
         }
     }
 
