@@ -1,10 +1,12 @@
 package clienteescritorio;
 
 import clienteescritorio.dominio.ClienteImp;
+import clienteescritorio.dominio.DireccionImp;
 import clienteescritorio.dominio.EnvioImp;
 import clienteescritorio.dominio.SucursalImp;
 import clienteescritorio.dto.Respuesta;
 import clienteescritorio.pojo.Cliente;
+import clienteescritorio.pojo.Direccion;
 import clienteescritorio.pojo.Sucursal;
 import clienteescritorio.pojo.Envio;
 import clienteescritorio.utilidad.Utilidades;
@@ -34,7 +36,6 @@ public class FXMLFormularioEnvioController implements Initializable {
     private Envio envioEdicion;
     private boolean esEdicion = false;
     
-    //Son los errores por si no rellenamos un campo
     @FXML private Label lbErrorNombre, lbErrorApPaterno, lbErrorApMaterno, lbErrorNumero, lbErrorCP, 
             lbErrorCliente, lbErrorSucursal, lbErrorCalle, lbErrorColonia;
 
@@ -75,21 +76,41 @@ public class FXMLFormularioEnvioController implements Initializable {
     }
     
     private void configurarAutoRellenoCP() {
-        // Al completar 5 dígitos, rellena Ciudad y Estado
-        tfCP.textProperty().addListener((obs, oldV, newV) -> {
-            if (newV.length() == 5) {
-                // Simulación de búsqueda (aquí podrías llamar a tu API externa)
-                if (newV.startsWith("95")) {
-                    tfCiudad.setText("Veracruz");
-                    tfEstado.setText("Veracruz");
-                } else if (newV.startsWith("06")) {
-                    tfCiudad.setText("Cuauhtémoc");
-                    tfEstado.setText("CDMX");
+    tfCP.textProperty().addListener((obs, oldVal, newVal) -> {
+        tfCP.setStyle(""); 
+        lbErrorCP.setVisible(false);
+
+        if (newVal.length() == 5) {
+            try {
+                List<Direccion> direcciones = DireccionImp.obtenerInformacionPorCP(newVal);
+                
+                if (direcciones != null && !direcciones.isEmpty()) {
+                    Direccion primera = direcciones.get(0);
+                    
+                    tfCiudad.setText(primera.getCiudad());
+                    tfEstado.setText(primera.getEstado());
+                    tfColonia.setText(primera.getColonia()); 
+                    
+                    tfCP.setStyle("-fx-border-color: green;");
+                } else {
+                    mostrarErrorCP("El CP " + newVal + " no existe en el catálogo");
                 }
-                lbErrorCP.setVisible(false);
+            } catch (Exception e) {
+                mostrarErrorCP("Error al conectar con el servidor");
             }
+        }
         });
     }
+
+private void mostrarErrorCP(String mensaje) {
+    lbErrorCP.setText(mensaje);
+    lbErrorCP.setVisible(true);
+    tfCP.setStyle("-fx-border-color: red;");
+    // Limpiamos los campos para no dejar datos viejos
+    tfCiudad.setText("");
+    tfEstado.setText("");
+    tfColonia.setText("");
+}
     
      
     
