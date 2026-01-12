@@ -3,6 +3,7 @@ package clienteescritorio;
 import clienteescritorio.dominio.EnvioImp;
 import clienteescritorio.dto.Respuesta;
 import clienteescritorio.pojo.Envio;
+import clienteescritorio.utilidad.Sesion;
 import clienteescritorio.utilidad.Utilidades;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -29,7 +30,7 @@ public class FXMLModalEstatusController implements Initializable {
     @FXML
     private void clicTransito(ActionEvent event) { 
         idNuevoEstatus = 3; 
-    } // IDs según BD
+    } 
     
     @FXML
     private void clicDetenido(ActionEvent event) { 
@@ -52,26 +53,40 @@ public class FXMLModalEstatusController implements Initializable {
             Utilidades.mostrarAlertaSimple("Selección", "Selecciona un botón de estatus primero", Alert.AlertType.WARNING);
             return;
         }
-            if((idNuevoEstatus == 4 || idNuevoEstatus == 6) && taComentario.getText().trim().isEmpty()){
+        if((idNuevoEstatus == 4 || idNuevoEstatus == 6) && taComentario.getText().trim().isEmpty()){
              Utilidades.mostrarAlertaSimple("Comentario requerido", 
                      "Es obligatorio agregar un motivo para el estatus Detenido o Cancelado", 
                      Alert.AlertType.WARNING);
              return;
         }
-        int idColaboradorSesion = 1; 
 
-        Respuesta resp = EnvioImp.actualizarEstatus(
-                envioSeleccionado.getIdEnvio(), 
-                idNuevoEstatus, 
-                taComentario.getText(), 
-                idColaboradorSesion
-        );
+        try {
+            int idColaboradorSesion = Sesion.colaborador.getIdColaborador(); 
 
-        if(!resp.isError()){
-            Utilidades.mostrarAlertaSimple("Éxito", resp.getMensaje(), Alert.AlertType.INFORMATION);
-            ((Stage) taComentario.getScene().getWindow()).close();
-        } else {
-            Utilidades.mostrarAlertaSimple("Error", resp.getMensaje(), Alert.AlertType.ERROR);
+            System.out.println("Enviando actualización para envío: " + envioSeleccionado.getIdEnvio()); 
+
+            Respuesta resp = EnvioImp.actualizarEstatus(
+                    envioSeleccionado.getIdEnvio(), 
+                    idNuevoEstatus, 
+                    taComentario.getText(), 
+                    idColaboradorSesion
+            );
+
+            System.out.println("Respuesta del servidor: " + (resp != null ? resp.getMensaje() : "NULL"));
+
+            if(resp != null && !resp.isError()){
+                Utilidades.mostrarAlertaSimple("Éxito", resp.getMensaje(), Alert.AlertType.INFORMATION);
+
+                Stage stage = (Stage) taComentario.getScene().getWindow();
+                stage.close();
+            } else {
+                String msj = (resp != null) ? resp.getMensaje() : "Respuesta nula del servidor";
+                Utilidades.mostrarAlertaSimple("Error", msj, Alert.AlertType.ERROR);
+            }
+        } catch (Exception e) {
+            System.err.println("Error al procesar la actualización:");
+            e.printStackTrace();
+            Utilidades.mostrarAlertaSimple("Error Interno", "Ocurrió un error al procesar la respuesta: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 }
