@@ -5,29 +5,34 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 <mapper namespace="envio">
     <select id="obtener-todos" resultType="pojo.Envio">
-    SELECT e.id_envio AS idEnvio, 
-           e.numero_guia AS numeroGuia, 
-           e.destinatario_nombre AS destinatarioNombre,
-           e.destino_calle AS destinoCalle,       
-           e.destino_numero AS destinoNumero,     
-           e.destino_estado AS destinoEstado,     
-            c.nombre AS nombreCliente, 
-           s.nombre_corto AS sucursalOrigen,
-           col.nombre AS nombreConductor,
-           est.nombre AS estatusEnvio,
-           e.costo_total AS costoTotal
-    FROM envio e
-    INNER JOIN cliente c ON e.id_cliente_remitente = c.id_cliente
-    INNER JOIN sucursal s ON e.codigo_sucursal_origen = s.codigo_sucursal
-    LEFT JOIN colaborador col ON e.id_conductor_asignado = col.id_colaborador
-    INNER JOIN estatus_envio est ON e.id_estatus_envio = est.id_estatus_envio
-</select>
+        SELECT e.id_envio AS idEnvio, 
+               e.numero_guia AS numeroGuia, 
+               e.destinatario_nombre AS destinatarioNombre,
+               e.destino_calle AS destinoCalle,       
+               e.destino_numero AS destinoNumero,     
+               e.destino_estado AS destinoEstado,     
+                c.nombre AS nombreCliente, 
+               s.nombre_corto AS sucursalOrigen,
+               col.nombre AS nombreConductor,
+               est.nombre AS estatusEnvio,
+               e.costo_total AS costoTotal
+        FROM envio e
+        INNER JOIN cliente c ON e.id_cliente_remitente = c.id_cliente
+        INNER JOIN sucursal s ON e.codigo_sucursal_origen = s.codigo_sucursal
+        LEFT JOIN colaborador col ON e.id_conductor_asignado = col.id_colaborador
+        INNER JOIN estatus_envio est ON e.id_estatus_envio = est.id_estatus_envio
+    </select>
     
     <select id="obtener-historial" resultType="pojo.HistorialEstatus">
-        SELECT h.id_historial AS idHistorial, e.nombre AS estatus, h.fecha_hora_cambio AS fechaCambio,h.comentario AS observaciones
-        FROM historial_estatus h
+        SELECT h.id_historial AS idHistorial, 
+               e.nombre AS estatus, 
+               h.fecha_hora_cambio AS fechaCambio,
+               h.comentario AS observaciones,
+               c.nombre AS nombreColaborador  FROM historial_estatus h
         INNER JOIN estatus_envio e ON h.id_estatus_envio = e.id_estatus_envio
+        INNER JOIN colaborador c ON h.id_colaborador_actualiza = c.id_colaborador
         WHERE h.id_envio = #{idEnvio}
+        ORDER BY h.fecha_hora_cambio DESC
     </select>
     
     <insert id="registrar" parameterType="pojo.Envio" useGeneratedKeys="true" keyProperty="idEnvio">
@@ -40,8 +45,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </insert>
     
     <insert id="registrar-historial" parameterType="map">
-    INSERT INTO historial_estatus (id_envio, id_colaborador_actualiza, id_estatus_envio, comentario)
-    VALUES (#{idEnvio}, #{idColaborador}, #{idEstatus}, #{comentario})
+        INSERT INTO historial_estatus (id_envio, id_colaborador_actualiza, id_estatus_envio, comentario)
+        VALUES (#{idEnvio}, #{idColaborador}, #{idEstatus}, #{comentario})
     </insert>
     
     
