@@ -95,14 +95,12 @@ public class EnvioWS {
                             .setParameter("guia", guia)
                             .getSingleResult();
 
-            // IMPORTANTE: Devolvemos un objeto Response con los permisos CORS
             return javax.ws.rs.core.Response.ok(envio)
                     .header("Access-Control-Allow-Origin", "*")
                     .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
                     .header("Access-Control-Allow-Headers", "Content-Type")
                     .build();
         } catch (javax.persistence.NoResultException e) {
-            // Si no existe la guía, devolvemos un 404 limpio para que el JS sepa que no hay datos
             return javax.ws.rs.core.Response.status(javax.ws.rs.core.Response.Status.NOT_FOUND)
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
@@ -130,6 +128,16 @@ public class EnvioWS {
     @Produces(MediaType.APPLICATION_JSON) 
     public Envio obtenerDetalle(@PathParam("idEnvio") int idEnvio) { 
         return EnvioImp.obtenerDetalle(idEnvio); 
+    }
+    
+    @Path("eliminar/{idEnvio}")
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    public Respuesta eliminarEnvio(@PathParam("idEnvio") Integer idEnvio) {
+        if (idEnvio != null && idEnvio > 0) {
+            return EnvioImp.eliminar(idEnvio); 
+        }
+        return new Respuesta(true, "ID de envío no válido.");
     }
 
 }

@@ -231,15 +231,37 @@ public class EnvioImp {
     return historial;
     }
     
-    public static HashMap<String, Object> eliminarEnvio(Integer idEnvio) {
-    HashMap<String, Object> respuesta = new HashMap<>();
-    respuesta.put("error", false); 
-    respuesta.put("mensaje", "Envío eliminado correctamente");
-    return respuesta;
-    }
+    public static Respuesta eliminar(Integer idEnvio) {
+        Respuesta respuesta = new Respuesta();
+        SqlSession conexionBD = MyBatisUtil.getSession();
 
-        public static HashMap<String, Object> buscarEnvioPorGuia(String numeroGuia) {
-        HashMap<String, Object> respuesta = new HashMap<>();
+        if (conexionBD != null) {
+            try {
+                conexionBD.delete("envio.eliminar-historial", idEnvio);
+
+
+                int filasAfectadas = conexionBD.delete("envio.eliminar", idEnvio);
+
+                if (filasAfectadas > 0) {
+                    conexionBD.commit();
+                    respuesta.setError(false);
+                    respuesta.setMensaje("Envío eliminado físicamente de la base de datos.");
+                } else {
+                    respuesta.setError(true);
+                    respuesta.setMensaje("No se encontró el envío para eliminar.");
+                }
+            } catch (Exception e) {
+                conexionBD.rollback();
+                respuesta.setError(true);
+                respuesta.setMensaje("Error al eliminar: " + e.getMessage());
+                e.printStackTrace();
+            } finally {
+                conexionBD.close();
+            }
+        } else {
+            respuesta.setError(true);
+            respuesta.setMensaje(Constantes.MSJ_ERROR_BD);
+        }
         return respuesta;
     }
         

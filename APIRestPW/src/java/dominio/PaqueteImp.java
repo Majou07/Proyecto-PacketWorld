@@ -61,19 +61,29 @@ public class PaqueteImp {
     } 
 
     public static Respuesta eliminar(int idPaquete) {
-        Respuesta resp = new Respuesta();
-        SqlSession conexion = MyBatisUtil.getSession();
-        if (conexion != null) {
+        Respuesta respuesta = new Respuesta();
+        SqlSession conexionBD = MyBatisUtil.getSession();
+        if (conexionBD != null) {
             try {
-                conexion.delete("paquete.eliminar", idPaquete);
-                conexion.commit();
-                resp.setError(false);
-                resp.setMensaje("Paquete eliminado");
+                int filasAfectadas = conexionBD.delete("paquete.eliminar", idPaquete);
+                conexionBD.commit();
+                if (filasAfectadas > 0) {
+                    respuesta.setError(false);
+                    respuesta.setMensaje("Paquete eliminado de la base de datos.");
+                } else {
+                    respuesta.setError(true);
+                    respuesta.setMensaje("No se encontró el paquete para eliminar.");
+                }
             } catch (Exception e) {
-                resp.setError(true);
-                resp.setMensaje(e.getMessage());
-            } finally { conexion.close(); }
+                respuesta.setError(true);
+                respuesta.setMensaje("Error: " + e.getMessage());
+            } finally {
+                conexionBD.close();
+            }
+        } else {
+            respuesta.setError(true);
+            respuesta.setMensaje("Error de conexión con la base de datos.");
         }
-        return resp;
-    } 
+        return respuesta;
+    }
 }

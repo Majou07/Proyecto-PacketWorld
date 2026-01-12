@@ -23,4 +23,15 @@ public class PaqueteWS {
     public Respuesta registrar(String json) {
         return PaqueteImp.registrar(new Gson().fromJson(json, Paquete.class));
     }
+    
+    @Path("eliminar/{idPaquete}")
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    public Respuesta eliminarPaquete(@PathParam("idPaquete") Integer idPaquete) {
+        if (idPaquete != null && idPaquete > 0) {
+            return dominio.PaqueteImp.eliminar(idPaquete);
+        }
+        return new Respuesta(true, "ID de paquete no válido.");
+    }
+    
 }

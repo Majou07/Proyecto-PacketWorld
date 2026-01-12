@@ -127,6 +127,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             destino_estado = #{destinoEstado}
         WHERE id_envio = #{idEnvio}
     </update>
+    
+    <delete id="eliminar-historial" parameterType="int">
+        DELETE FROM historial_estatus WHERE id_envio = #{idEnvio}
+    </delete>
+    
+    <delete id="eliminar" parameterType="int">
+        DELETE FROM envio WHERE id_envio = #{idEnvio}
+    </delete>
   
 </mapper>
 
