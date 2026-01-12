@@ -102,15 +102,14 @@ public class FXMLFormularioEnvioController implements Initializable {
         });
     }
 
-private void mostrarErrorCP(String mensaje) {
-    lbErrorCP.setText(mensaje);
-    lbErrorCP.setVisible(true);
-    tfCP.setStyle("-fx-border-color: red;");
-    // Limpiamos los campos para no dejar datos viejos
-    tfCiudad.setText("");
-    tfEstado.setText("");
-    tfColonia.setText("");
-}
+    private void mostrarErrorCP(String mensaje) {
+        lbErrorCP.setText(mensaje);
+        lbErrorCP.setVisible(true);
+        tfCP.setStyle("-fx-border-color: red;");
+        tfCiudad.setText("");
+        tfEstado.setText("");
+        tfColonia.setText("");
+    }
     
      
     
@@ -130,7 +129,6 @@ private void mostrarErrorCP(String mensaje) {
             envio.setDestinoCiudad(tfCiudad.getText());
             envio.setDestinoEstado(tfEstado.getText());
             
-            // Regla de negocio: costo inicial 0
             envio.setCostoTotal(0.0);
             envio.setIdEstatusEnvio(1); 
 
