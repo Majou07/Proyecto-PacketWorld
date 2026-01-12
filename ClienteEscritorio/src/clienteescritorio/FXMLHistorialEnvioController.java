@@ -23,7 +23,7 @@ public class FXMLHistorialEnvioController implements Initializable {
         colEstatus.setCellValueFactory(new PropertyValueFactory<>("estatus"));
         colFecha.setCellValueFactory(new PropertyValueFactory<>("fechaCambio"));
         colColaborador.setCellValueFactory(new PropertyValueFactory<>("nombreColaborador"));
-        colComentario.setCellValueFactory(new PropertyValueFactory<>("observaciones"));
+        colComentario.setCellValueFactory(new PropertyValueFactory<>("comentario"));
     }
 
     public void cargarHistorial(int idEnvio) {
