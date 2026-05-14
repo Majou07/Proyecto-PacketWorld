@@ -1,4 +1,27 @@
-/ClienteEscritorio/nbproject/private/
+# Builds
 /APIRestPW/build/
 /ClienteEscritorio/build/
+
+# Dist
 /ClienteEscritorio/dist/
+
+# Archivos privados de NetBeans
+/APIRestPW/nbproject/private/
+/ClienteEscritorio/nbproject/private/
+
+# Archivos generados automáticamente
+**/nbproject/private/
+/**/nbproject/private/private.properties
+/**/nbproject/private/private.xml
+/**/nbproject/genfiles.properties
+
+# Logs
+*.log
+
+# Archivos temporales
+*.tmp
+*.temp
+
+# Sistema
+.DS_Store
+Thumbs.db
