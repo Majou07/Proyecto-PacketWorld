@@ -1,6 +1,7 @@
 package ws;
 import com.google.gson.Gson;
 import dominio.EnvioImp;
+import dominio.PaqueteImp;
 import dto.EnvioStatus;
 import dto.Respuesta;
 import java.util.Date;
@@ -12,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import pojo.Envio;
 import pojo.HistorialEstatus;
+import pojo.Paquete;
 
 @Path("envio")
 public class EnvioWS {
@@ -140,5 +142,32 @@ public class EnvioWS {
         return new Respuesta(true, "ID de envío no válido.");
     }
     
+    @GET
+    @Path("detalle-web/{numeroGuia}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response obtenerDetalleWeb(
+        @PathParam("numeroGuia") String numeroGuia) {
 
+    Envio envio = EnvioImp.obtenerDetallePorGuia(numeroGuia);
+
+    if (envio == null) {
+        return Response.status(Response.Status.NOT_FOUND)
+                .entity(new Respuesta(true, "No existe el envío"))
+                .build();
+    }
+
+    List<Paquete> paquetes =
+            PaqueteImp.obtenerPaquetesPorEnvio(envio.getIdEnvio());
+
+    List<HistorialEstatus> historial =
+            EnvioImp.obtenerHistorial(envio.getIdEnvio());
+
+    envio.setPaquetes(paquetes);
+    envio.setHistorial(historial);
+
+    return Response.ok(envio).build();
+}
+    
+    
+    
 }

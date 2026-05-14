@@ -1,5 +1,7 @@
 package pojo;
 
+import java.util.List;
+
 public class Envio {
     private Integer idEnvio;
     private String numeroGuia;
@@ -24,6 +26,9 @@ public class Envio {
     private String sucursalOrigen;
     private String nombreConductor;
     private String estatusEnvio;
+    
+    private List<Paquete> paquetes;
+    private List<HistorialEstatus> historial;
     
 
     public Envio() {
@@ -227,9 +232,22 @@ public class Envio {
     public void setCorreoElectronico(String correoElectronico) {
         this.correoElectronico = correoElectronico;
     }
-    
-    
-    
+
+    public List<Paquete> getPaquetes() {
+        return paquetes;
+    }
+
+    public void setPaquetes(List<Paquete> paquetes) {
+        this.paquetes = paquetes;
+    }
+
+    public List<HistorialEstatus> getHistorial() {
+        return historial;
+    }
+
+    public void setHistorial(List<HistorialEstatus> historial) {
+        this.historial = historial;
+    }
     
     
 }

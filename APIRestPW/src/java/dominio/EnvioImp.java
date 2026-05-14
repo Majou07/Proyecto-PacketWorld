@@ -95,6 +95,25 @@ public class EnvioImp {
     return envio;
 }
 
+    public static Envio obtenerDetallePorGuia(String numeroGuia) {
+    Envio envio = null;
+    SqlSession conexionBD = MyBatisUtil.getSession();
+    
+    if (conexionBD != null) {
+        try {
+            envio = conexionBD.selectOne(
+                "envio.obtener-detalle-por-guia",
+                numeroGuia
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            conexionBD.close();
+        }
+    }
+    
+    return envio;
+}
 
 
     public static Respuesta actualizarEstatus(int idEnvio, int idEstatus, String comentario, int idColaborador) {
