@@ -25,3 +25,4 @@
 # Sistema
 .DS_Store
 Thumbs.db
+/APIRestPW/dist/

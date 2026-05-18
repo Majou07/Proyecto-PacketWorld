@@ -15,6 +15,7 @@ public class ApplicationConfig extends Application {
     }
 
     private void addRestResourceClasses(Set<Class<?>> resources) {
+        resources.add(filtros.CORSFilter.class);
         resources.add(ws.AutenticacionWS.class);
         resources.add(ws.CatalogoCPWS.class);
         resources.add(ws.ClienteWS.class);
