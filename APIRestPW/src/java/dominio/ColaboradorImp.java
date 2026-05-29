@@ -2,6 +2,8 @@
 package dominio;
 
 import dto.Respuesta;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +36,20 @@ public class ColaboradorImp {
         
         if(conexionBD !=null){
             try{
+            // Validar formato número de personal
+            if (!colaborador.getNumeroPersonal().matches(Constantes.REGEX_NUMERO_PERSONAL)) {
+                respuesta.setError(true);
+                respuesta.setMensaje("El número de personal debe tener el formato EMP001");
+            return respuesta;
+        }
+            // Validar contraseña mínima
+            if (colaborador.getContrasena() == null 
+            || colaborador.getContrasena().length() < 8) {
+                respuesta.setError(true);
+                respuesta.setMensaje("La contraseña debe tener mínimo 8 caracteres");
+            return respuesta;
+            }
+            
                 
             // 1. Validar CURP
             int curpExiste = conexionBD.selectOne("colaborador.existe-curp", colaborador.getCurp());
@@ -63,13 +79,36 @@ public class ColaboradorImp {
             }
 
             // 4. Validar licencia solo si es conductor
-            if (colaborador.getIdRol() == 2) { // 2 = Conductor
-                if (colaborador.getNumeroLicencia() == null || colaborador.getNumeroLicencia().trim().isEmpty()) {
-                    respuesta.setError(true);
-                    respuesta.setMensaje("El número de licencia es obligatorio para conductores");
-                    return respuesta;
-                }
-            } 
+           if (colaborador.getIdRol() == 2) {
+
+            if (colaborador.getNumeroLicencia() == null
+            || colaborador.getNumeroLicencia().trim().isEmpty()) {
+            respuesta.setError(true);
+            respuesta.setMensaje("El número de licencia es obligatorio para conductores");
+            return respuesta;
+          }
+
+            // Validar formato
+             if (!colaborador.getNumeroLicencia()
+                .matches(Constantes.REGEX_NUMERO_LICENCIA)) {
+            respuesta.setError(true);
+            respuesta.setMensaje("El número de licencia tiene un formato inválido");
+            return respuesta;
+         }
+
+            // Validar duplicado
+             int licenciaExiste = conexionBD.selectOne(
+                "colaborador.existe-numero-licencia",
+                colaborador.getNumeroLicencia()
+            );
+
+            if (licenciaExiste > 0) {
+            respuesta.setError(true);
+            respuesta.setMensaje("El número de licencia ya está registrado");
+            return respuesta;
+        }
+    }
+            
                 //si no existe registrar
                 int filasAfectadas = conexionBD.insert("colaborador.registrar",colaborador);
                 conexionBD.commit();
@@ -100,6 +139,39 @@ public class ColaboradorImp {
     SqlSession conexionBD =MyBatisUtil.getSession();
     if(conexionBD !=null){
         try{
+            
+                // Validar contraseña mínima
+            if (colaborador.getContrasena() == null
+                    || colaborador.getContrasena().length() < 8) {
+
+                respuesta.setError(true);
+                respuesta.setMensaje("La contraseña debe tener mínimo 8 caracteres");
+                return respuesta;
+            }
+
+            // Validaciones para conductores
+            if (colaborador.getIdRol() == 2) {
+
+                // Licencia obligatoria
+                if (colaborador.getNumeroLicencia() == null
+                        || colaborador.getNumeroLicencia().trim().isEmpty()) {
+
+                    respuesta.setError(true);
+                    respuesta.setMensaje("El número de licencia es obligatorio para conductores");
+                    return respuesta;
+                }
+
+                // Validar formato licencia
+                if (!colaborador.getNumeroLicencia()
+                        .matches(Constantes.REGEX_NUMERO_LICENCIA)) {
+
+                    respuesta.setError(true);
+                    respuesta.setMensaje("El número de licencia tiene un formato inválido");
+                    return respuesta;
+                }
+            }
+
+            
             int filasAfectadas = conexionBD.update("colaborador.editar", colaborador);
             conexionBD.commit();
             if(filasAfectadas>0){
@@ -112,7 +184,20 @@ public class ColaboradorImp {
         }catch(Exception e){
             conexionBD.rollback();
             respuesta.setError(true);
-            respuesta.setMensaje(e.getMessage());
+           
+            // Detectar restricciones UNIQUE
+            if(e.getMessage().contains("uq_curp")){
+                respuesta.setMensaje("La CURP ya está registrada");
+
+            }else if(e.getMessage().contains("uq_correo_colaborador")){
+                respuesta.setMensaje("El correo electrónico ya está registrado");
+
+            }else if(e.getMessage().contains("uq_numero_licencia")){
+                respuesta.setMensaje("El número de licencia ya está registrado");
+
+            }else{
+                respuesta.setMensaje(e.getMessage());
+            }
         }finally{
             conexionBD.close();
         }
@@ -154,19 +239,38 @@ public class ColaboradorImp {
     }
     return respuesta;
 }
-    public static List<Colaborador> obtenerColaboradoresPorNombre(String nombre){
+   public static List<Colaborador> obtenerColaboradoresPorNombre(String nombre) {
     List<Colaborador> colaboradores = null;
     SqlSession conexionBD = MyBatisUtil.getSession();
-    if(conexionBD != null){
+
+    if (conexionBD != null) {
         try {
-            colaboradores = conexionBD.selectList("colaborador.obtener-por-nombre", nombre);
-            conexionBD.close();
+
+            if (nombre == null) {
+                return Collections.emptyList();
+            }
+
+            String filtroLimpio = nombre.trim().replaceAll("\\s+", " ");
+
+            if (filtroLimpio.isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            Map<String, Object> params = new HashMap<>();
+            params.put("filtro", filtroLimpio);
+
+            colaboradores = conexionBD.selectList(
+                "colaborador.obtener-por-nombre",
+                params
+            );
+
         } catch (Exception e) {
             e.printStackTrace();
-        }finally{
+        } finally {
             conexionBD.close();
         }
     }
+
     return colaboradores;
 }
     

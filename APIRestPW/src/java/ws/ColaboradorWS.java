@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import dominio.ColaboradorImp;
 import dto.Respuesta;
+import java.util.Collections;
 import java.util.List;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
@@ -17,6 +18,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import static javax.ws.rs.client.Entity.json;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import pojo.Colaborador;
 
 
@@ -75,14 +77,23 @@ public class ColaboradorWS {
     }
     
    @Path("buscar/nombre/{filtro}")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<Colaborador> buscarPorNombre(@PathParam("filtro") String filtro) {
-        if (filtro != null && !filtro.trim().isEmpty()) {
-            return ColaboradorImp.obtenerColaboradoresPorNombre(filtro);
-        }
+@GET
+@Produces(MediaType.APPLICATION_JSON)
+public Response buscarPorNombre(@PathParam("filtro") String filtro) {
+
+    if (filtro == null || filtro.trim().isEmpty()) {
         throw new BadRequestException("Filtro vacío");
     }
+
+    List<Colaborador> lista =
+        ColaboradorImp.obtenerColaboradoresPorNombre(filtro);
+
+    if (lista == null) {
+        lista = Collections.emptyList();
+    }
+
+    return Response.ok(lista).build();
+}
 
     @Path("buscar/numero/{numero}")
     @GET

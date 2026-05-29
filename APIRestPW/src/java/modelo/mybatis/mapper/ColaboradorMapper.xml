@@ -40,8 +40,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     SELECT COUNT(*) FROM colaborador WHERE numero_personal = #{numeroPersonal}
     </select>
     
+    <select id="existe-numero-licencia" parameterType="string" resultType="int">
+    SELECT COUNT(*) FROM colaborador WHERE numero_licencia = #{numeroLicencia}
+    </select>
     
-
+    
     <insert id="registrar" parameterType="pojo.Colaborador">
         INSERT INTO colaborador (numero_personal,nombre,apellido_paterno,apellido_materno,curp,correo_electronico,contrasena,
         numero_licencia,idrol,codigo_sucursal,id_unidad_asignada) 
@@ -59,8 +62,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         correo_electronico = #{correoElectronico},
         contrasena = #{contrasena},
         numero_licencia = #{numeroLicencia},
-        codigo_sucursal = #{codigoSucursal},
-        id_unidad_asignada = #{idUnidadAsignada}
+        codigo_sucursal = #{codigoSucursal}
     WHERE id_colaborador = #{idColaborador};
     </update>
     
@@ -69,26 +71,31 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
     
     
-     <select id="obtener-por-nombre" parameterType="string" resultType="pojo.Colaborador">
-    SELECT 
-        c.id_colaborador AS idColaborador,
-        c.nombre AS nombre,
-        c.apellido_paterno AS apellidoPaterno,
-        c.apellido_materno AS apellidoMaterno,
-        c.numero_personal AS numeroPersonal,
-        c.curp AS curp,
-        c.correo_electronico AS correoElectronico,
-        c.id_unidad_asignada AS idUnidadAsignada,
-        c.idrol AS idRol,
-        r.nombre_rol AS rol
-        FROM colaborador c
-        INNER JOIN rol r ON r.idrol = c.idrol
-        WHERE CONCAT_WS(' ', c.nombre, c.apellido_paterno, c.apellido_materno) COLLATE utf8_general_ci LIKE CONCAT('%', #{filtro}, '%')
-       OR c.nombre COLLATE utf8_general_ci LIKE CONCAT('%', #{filtro}, '%')
-       OR c.apellido_paterno COLLATE utf8_general_ci LIKE CONCAT('%', #{filtro}, '%')
-       OR c.apellido_materno COLLATE utf8_general_ci LIKE CONCAT('%', #{filtro}, '%');
-    </select>
+   <select id="obtener-por-nombre" parameterType="map" resultType="pojo.Colaborador">
 
+SELECT 
+    c.id_colaborador AS idColaborador,
+    c.nombre AS nombre,
+    c.apellido_paterno AS apellidoPaterno,
+    c.apellido_materno AS apellidoMaterno,
+    c.numero_personal AS numeroPersonal,
+    c.curp AS curp,
+    c.correo_electronico AS correoElectronico,
+    c.numero_licencia AS numeroLicencia,
+    c.id_unidad_asignada AS idUnidadAsignada,
+    c.codigo_sucursal AS codigoSucursal,
+    s.nombre_corto AS sucursal,
+    c.idrol AS idRol,
+    r.nombre_rol AS rol
+
+FROM colaborador c
+INNER JOIN rol r ON r.idrol = c.idrol
+INNER JOIN sucursal s ON s.codigo_sucursal = c.codigo_sucursal
+
+WHERE CONCAT_WS(' ', c.nombre, c.apellido_paterno, c.apellido_materno)
+LIKE CONCAT('%', #{filtro}, '%')
+
+</select>
     
      <select id="obtener-por-noPersonal" parameterType="string" resultType="pojo.Colaborador" >
        SELECT 
@@ -101,9 +108,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         c.correo_electronico AS correoElectronico,
         c.id_unidad_asignada AS idUnidadAsignada,
         c.idrol AS idRol,
-        r.nombre_rol AS rol
+        r.nombre_rol AS rol,
+        c.numero_licencia AS numeroLicencia,
+        c.codigo_sucursal AS codigoSucursal,
+        s.nombre_corto AS sucursal
     FROM colaborador c
     INNER JOIN rol r ON r.idrol = c.idrol
+         INNER JOIN sucursal s ON s.codigo_sucursal = c.codigo_sucursal
         WHERE numero_personal = #{numeroPersonal};
 
     </select>
@@ -120,9 +131,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         c.correo_electronico AS correoElectronico,
         c.id_unidad_asignada AS idUnidadAsignada,
         c.idrol AS idRol,
-        r.nombre_rol AS rol
+        r.nombre_rol AS rol,
+        c.numero_licencia AS numeroLicencia,
+        c.codigo_sucursal AS codigoSucursal,
+        s.nombre_corto AS sucursal
     FROM colaborador c
     INNER JOIN rol r ON r.idrol = c.idrol
+        INNER JOIN sucursal s ON s.codigo_sucursal = c.codigo_sucursal
         WHERE c.idrol = #{idRol};
     </select>
     
