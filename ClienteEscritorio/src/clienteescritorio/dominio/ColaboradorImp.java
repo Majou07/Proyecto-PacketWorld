@@ -195,16 +195,19 @@ public class ColaboradorImp {
     HashMap<String, Object> respuesta = new LinkedHashMap<>();
 
     try {
-        // Codificar el filtro
-        String filtroEncoded = URLEncoder.encode(filtro, "UTF-8");
+        // Codificar el filtro y reemplazar '+' por '%20'
+        String filtroEncoded = URLEncoder.encode(filtro.trim(), "UTF-8");
+        filtroEncoded = filtroEncoded.replace("+", "%20");
+
         String URL = Constantes.URL_WS + "colaborador/buscar/nombre/" + filtroEncoded;
 
-        // Log de la URL que se está llamando
+        // Logs de depuración
+        System.out.println("[buscarPorNombre] Valor enviado: [" + filtro.trim() + "]");
+        System.out.println("[buscarPorNombre] Valor codificado: [" + filtroEncoded + "]");
         System.out.println("[buscarPorNombre] URL: " + URL);
 
         RespuestaHTTP respuestaAPI = ConexionAPI.peticionGET(URL);
 
-        // Logs de depuración
         System.out.println("[buscarPorNombre] Código HTTP: " + respuestaAPI.getCodigo());
         System.out.println("[buscarPorNombre] Contenido recibido: " + respuestaAPI.getContenido());
 
@@ -213,7 +216,6 @@ public class ColaboradorImp {
             Type tipoLista = new TypeToken<List<Colaborador>>(){}.getType();
             List<Colaborador> lista = gson.fromJson(respuestaAPI.getContenido(), tipoLista);
 
-            // Log de la lista parseada
             System.out.println("[buscarPorNombre] Lista parseada, tamaño: " + (lista != null ? lista.size() : 0));
 
             respuesta.put(Constantes.KEY_ERROR, false);
@@ -222,15 +224,15 @@ public class ColaboradorImp {
             respuesta.put(Constantes.KEY_ERROR, true);
             respuesta.put(Constantes.KEY_MENSAJE, "Error al buscar colaboradores por nombre.");
         }
-        } catch (Exception e) {
-            e.printStackTrace();
-            respuesta.put(Constantes.KEY_ERROR, true);
-            respuesta.put(Constantes.KEY_MENSAJE, "Error al codificar o procesar la búsqueda por nombre.");
-        }
-
-        return respuesta;
+    } catch (Exception e) {
+        e.printStackTrace();
+        respuesta.put(Constantes.KEY_ERROR, true);
+        respuesta.put(Constantes.KEY_MENSAJE, "Error al codificar o procesar la búsqueda por nombre.");
     }
-  
+
+    return respuesta;
+}
+
   
   
  public static Respuesta asignarVehiculo(int idColaborador, Integer idUnidad) {

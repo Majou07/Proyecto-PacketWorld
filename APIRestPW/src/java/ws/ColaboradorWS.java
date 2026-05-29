@@ -76,24 +76,23 @@ public class ColaboradorWS {
        } 
     }
     
-   @Path("buscar/nombre/{filtro}")
+ @Path("buscar/nombre/{filtro}")
 @GET
 @Produces(MediaType.APPLICATION_JSON)
 public Response buscarPorNombre(@PathParam("filtro") String filtro) {
-
     if (filtro == null || filtro.trim().isEmpty()) {
         throw new BadRequestException("Filtro vacío");
     }
 
-    List<Colaborador> lista =
-        ColaboradorImp.obtenerColaboradoresPorNombre(filtro);
-
+    List<Colaborador> lista = ColaboradorImp.obtenerColaboradoresPorNombre(filtro);
     if (lista == null) {
         lista = Collections.emptyList();
     }
 
-    return Response.ok(lista).build();
+    String json = new Gson().toJson(lista);
+    return Response.ok(json, MediaType.APPLICATION_JSON).build();
 }
+
 
     @Path("buscar/numero/{numero}")
     @GET
