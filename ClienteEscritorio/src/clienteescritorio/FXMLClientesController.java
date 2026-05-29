@@ -24,20 +24,41 @@ import javafx.stage.Stage;
 public class FXMLClientesController implements Initializable {
     @FXML private TableView<Cliente> tvClientes;
     @FXML private TableColumn colNombre, colTelefono, colCorreo, colCP;
+    @FXML private TableColumn<Cliente, String> colDireccion;
     @FXML private TextField tfBusqueda;
+    @FXML
+    private Button btBusqueda;
+    @FXML
+    private ComboBox<String> cbFiltro;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        configurarTabla();
-        cargarDatos();
-    }
+    configurarTabla();
+    cargarDatos();
+    
+    cbFiltro.getItems().addAll("Nombre", "Teléfono", "Correo");
+    cbFiltro.setValue("Nombre");
+}
+    
+    
+    
 
     private void configurarTabla() {
         colNombre.setCellValueFactory(new PropertyValueFactory("nombre"));
         colTelefono.setCellValueFactory(new PropertyValueFactory("telefono"));
         colCorreo.setCellValueFactory(new PropertyValueFactory("correoElectronico"));
         colCP.setCellValueFactory(new PropertyValueFactory("codigoPostal"));
-    }
+        colDireccion.setCellValueFactory(cellData -> {
+        Cliente c = cellData.getValue();
+
+        String direccion =
+                (c.getCalle() != null ? c.getCalle() : "") + " " +
+                (c.getNumero() != null ? c.getNumero() : "") + ", " +
+                (c.getColonia() != null ? c.getColonia() : "");
+
+        return new javafx.beans.property.SimpleStringProperty(direccion);
+    });
+}
 
     private void cargarDatos() {
         HashMap<String, Object> respuesta = ClienteImp.obtenerClientes();
@@ -107,5 +128,9 @@ public class FXMLClientesController implements Initializable {
             ex.printStackTrace();
             Utilidades.mostrarAlertaSimple("Error", "No se pudo cargar la ventana del formulario.", Alert.AlertType.ERROR);
         }
+    }
+
+    @FXML
+    private void clicBuscar(ActionEvent event) {
     }
 }

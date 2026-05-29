@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -15,14 +17,17 @@
           <TableColumn fx:id="colTelefono" prefWidth="100.0" text="Teléfono" />
           <TableColumn fx:id="colCorreo" prefWidth="180.0" text="Correo Electrónico" />
           <TableColumn fx:id="colCP" prefWidth="70.0" text="C.P." />
+           <TableColumn fx:id="colDireccion" prefWidth="180.0" text="Dirección" />        
         </columns>
       </TableView>
-      <VBox layoutX="630.0" layoutY="140.0" spacing="15.0">
+      <VBox layoutX="630.0" layoutY="202.0" spacing="15.0">
          <children>
             <Button mnemonicParsing="false" onAction="#clicRegistrar" prefWidth="120.0" text="Registrar" />
             <Button mnemonicParsing="false" onAction="#clicEditar" prefWidth="120.0" text="Editar" />
             <Button mnemonicParsing="false" onAction="#clicEliminar" prefWidth="120.0" text="Eliminar" />
          </children>
       </VBox>
+      <Button fx:id="btBusqueda" layoutX="458.0" layoutY="85.0" mnemonicParsing="false" onAction="#clicBuscar" text="Buscar" />
+      <ComboBox fx:id="cbFiltro" layoutX="555.0" layoutY="85.0" prefWidth="150.0" />
    </children>
 </AnchorPane>

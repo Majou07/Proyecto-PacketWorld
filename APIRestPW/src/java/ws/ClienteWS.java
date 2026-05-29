@@ -36,4 +36,13 @@ public class ClienteWS {
     public Respuesta eliminar(@PathParam("idCliente") int idCliente) {
         return ClienteImp.eliminar(idCliente);
     }
+    
+  @Path("buscar")
+@GET
+@Produces(MediaType.APPLICATION_JSON)
+public List<Cliente> buscar(
+        @QueryParam("valor") String valor) {
+
+    return ClienteImp.buscarClientes(valor);
+}    
 }

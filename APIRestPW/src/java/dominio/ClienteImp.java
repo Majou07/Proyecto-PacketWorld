@@ -1,6 +1,8 @@
 package dominio;
 import dto.Respuesta;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import modelo.mybatis.MyBatisUtil;
 import org.apache.ibatis.session.SqlSession;
 import pojo.Cliente;
@@ -70,4 +72,29 @@ public class ClienteImp {
         }
         return resp;
     }
+    
+    public static List<Cliente> buscarClientes(String valor) {
+
+    List<Cliente> lista = null;
+    SqlSession session = MyBatisUtil.getSession();
+
+    if (session != null) {
+        try {
+
+            HashMap<String, String> parametros = new HashMap<>();
+            parametros.put("valor", valor);
+
+            lista = session.selectList("cliente.buscarClientes", parametros);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+    }
+
+    return lista;
+}
+    
+    
 }
