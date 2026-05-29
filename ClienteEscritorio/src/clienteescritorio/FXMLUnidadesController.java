@@ -39,6 +39,7 @@ public class FXMLUnidadesController implements Initializable {
     private Button btBusqueda;
     @FXML
     private ComboBox<String> cbFiltro;
+    private ObservableList<Unidad> listaUnidades = FXCollections.observableArrayList();
     
 
     @Override
@@ -60,6 +61,10 @@ public class FXMLUnidadesController implements Initializable {
         colTipoUnidad.setCellValueFactory(new PropertyValueFactory("tipoUnidad"));
         colEstatusUnidad.setCellValueFactory(new PropertyValueFactory("estatusUnidad"));
         colMotivoBaja.setCellValueFactory(new PropertyValueFactory("motivoBaja")); 
+        
+        tvUnidades.setPlaceholder(
+        new Label("Cargando unidades...")
+    );
        
     }
     

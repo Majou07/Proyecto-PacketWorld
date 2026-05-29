@@ -19,4 +19,19 @@ public class Constantes {
     
     public static final String APPLICATION_JSON = "application/json";
     public static final String APPLICATION_FORM = "application/x-www-form-urlencoded";
+    
+    public static final String REGEX_NUMERO_PERSONAL = "^EMP\\d{3}$";
+    public static final String REGEX_NUMERO_LICENCIA = "^[A-Z0-9-]{6,20}$";
+    public static final String REGEX_CORREO = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
+    public static final String REGEX_CURP = "^[A-Z]{4}\\d{6}[HM][A-Z]{5}[A-Z0-9]\\d$";
+    
+    public static final String ESTILO_ERROR =
+        "-fx-border-color: red;";
+    public static final String ESTILO_NORMAL =
+        "";
+    
+    public static final String ROL_CONDUCTOR = "Conductor";
+    public static final String ROL_ADMIN = "Administrador";
+    public static final String ROL_EJECUTIVO = "Ejecutivo de tienda";
+
 }

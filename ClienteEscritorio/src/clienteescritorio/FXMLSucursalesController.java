@@ -26,6 +26,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.concurrent.Task;
+import javafx.scene.control.Label;
 
 /**
  * FXML Controller class
@@ -77,13 +79,42 @@ public class FXMLSucursalesController implements Initializable {
     }
     
     private void cargarDatos() {
-        HashMap<String, Object> respuesta = SucursalImp.obtenerSucursales();
-        if(!(boolean)respuesta.get("error")){
-            tvSucursales.setItems(FXCollections.observableArrayList((List<Sucursal>)respuesta.get("sucursales")));
-        } else {
-            Utilidades.mostrarAlertaSimple("Error", (String)respuesta.get("mensaje"), Alert.AlertType.ERROR);
+
+    Task<HashMap<String, Object>> task = new Task<HashMap<String, Object>>() {
+        @Override
+        protected HashMap<String, Object> call() {
+            return SucursalImp.obtenerSucursales();
         }
-    }
+    };
+
+    task.setOnSucceeded(e -> {
+
+        HashMap<String, Object> respuesta = task.getValue();
+
+        if (!(boolean) respuesta.get("error")) {
+
+            List<Sucursal> lista = (List<Sucursal>) respuesta.get("sucursales");
+            tvSucursales.setItems(FXCollections.observableArrayList(lista));
+
+        } else {
+            Utilidades.mostrarAlertaSimple(
+                    "Error",
+                    respuesta.get("mensaje").toString(),
+                    Alert.AlertType.ERROR
+            );
+        }
+    });
+
+    task.setOnFailed(e -> {
+        tvSucursales.setPlaceholder(
+                new Label("Error al cargar sucursales")
+        );
+    });
+
+    tvSucursales.setPlaceholder(new Label("Cargando sucursales..."));
+
+    new Thread(task).start();
+}
 
     
 
@@ -104,60 +135,105 @@ public class FXMLSucursalesController implements Initializable {
 
   @FXML
 private void clicDarBaja(ActionEvent event) {
-    Sucursal seleccionada = tvSucursales.getSelectionModel().getSelectedItem();
-    if (seleccionada != null) {
-        // Validar si ya está inactiva
-        if ("inactiva".equalsIgnoreCase(seleccionada.getEstatus())) {
-            Utilidades.mostrarAlertaSimple("Aviso",
-                    "La sucursal seleccionada ya está inactiva",
-                    Alert.AlertType.INFORMATION);
-            return; // salir sin llamar al API
-        }
 
-        // Ventana de confirmación
-        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmacion.setTitle("Confirmar baja");
-        confirmacion.setHeaderText(null);
-        confirmacion.setContentText("¿Deseas dar de baja la sucursal seleccionada?");
-        
-        // Mostrar y esperar respuesta
-        confirmacion.showAndWait().ifPresent(response -> {
-            if (response == javafx.scene.control.ButtonType.OK) {
-                // Llamar al API
-                Respuesta resp = SucursalImp.darBajaSucursal(seleccionada.getCodigoSucursal());
-                Utilidades.mostrarAlertaSimple("Resultado", resp.getMensaje(),
-                        resp.isError() ? Alert.AlertType.ERROR : Alert.AlertType.INFORMATION);
-                if (!resp.isError()) {
-                    cargarDatos(); // refrescar tabla
-                }
-            }
-        });
-    } else {
-        Utilidades.mostrarAlertaSimple("Selección",
+    Sucursal seleccionada = tvSucursales.getSelectionModel().getSelectedItem();
+
+    if (seleccionada == null) {
+        Utilidades.mostrarAlertaSimple(
+                "Selección",
                 "Selecciona una sucursal para dar de baja",
-                Alert.AlertType.WARNING);
+                Alert.AlertType.WARNING
+        );
+        return;
     }
+
+    if ("inactiva".equalsIgnoreCase(seleccionada.getEstatus())) {
+        Utilidades.mostrarAlertaSimple(
+                "Aviso",
+                "La sucursal ya está inactiva",
+                Alert.AlertType.INFORMATION
+        );
+        return;
+    }
+
+    Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+    confirmacion.setTitle("Confirmar baja");
+    confirmacion.setHeaderText(null);
+    confirmacion.setContentText("¿Deseas dar de baja la sucursal seleccionada?");
+
+    confirmacion.showAndWait().ifPresent(response -> {
+
+        if (response == javafx.scene.control.ButtonType.OK) {
+
+            Task<Respuesta> task = new Task<Respuesta>() {
+                @Override
+                protected Respuesta call() {
+                    return SucursalImp.darBajaSucursal(seleccionada.getCodigoSucursal());
+                }
+            };
+
+            task.setOnSucceeded(e -> {
+
+                Respuesta resp = task.getValue();
+
+                Utilidades.mostrarAlertaSimple(
+                        "Resultado",
+                        resp.getMensaje(),
+                        resp.isError()
+                                ? Alert.AlertType.ERROR
+                                : Alert.AlertType.INFORMATION
+                );
+
+                if (!resp.isError()) {
+                    cargarDatos();
+                }
+            });
+
+            new Thread(task).start();
+        }
+    });
 }
 
 
 @FXML
 private void clicReactivar(ActionEvent event) {
+
     Sucursal seleccionada = tvSucursales.getSelectionModel().getSelectedItem();
-    if (seleccionada != null) {
-        // Llamar al API
-        Respuesta resp = SucursalImp.reactivarSucursal(seleccionada.getCodigoSucursal());
-        // Mostrar mensaje
-        Utilidades.mostrarAlertaSimple("Resultado", resp.getMensaje(),
-                resp.isError() ? Alert.AlertType.ERROR : Alert.AlertType.INFORMATION);
-        // Refrescar tabla si fue exitoso
+
+    if (seleccionada == null) {
+        Utilidades.mostrarAlertaSimple(
+                "Selección",
+                "Selecciona una sucursal para reactivar",
+                Alert.AlertType.WARNING
+        );
+        return;
+    }
+
+    Task<Respuesta> task = new Task<Respuesta>() {
+        @Override
+        protected Respuesta call() {
+            return SucursalImp.reactivarSucursal(seleccionada.getCodigoSucursal());
+        }
+    };
+
+    task.setOnSucceeded(e -> {
+
+        Respuesta resp = task.getValue();
+
+        Utilidades.mostrarAlertaSimple(
+                "Resultado",
+                resp.getMensaje(),
+                resp.isError()
+                        ? Alert.AlertType.ERROR
+                        : Alert.AlertType.INFORMATION
+        );
+
         if (!resp.isError()) {
             cargarDatos();
         }
-    } else {
-        Utilidades.mostrarAlertaSimple("Selección",
-                "Selecciona una sucursal para reactivar",
-                Alert.AlertType.WARNING);
-    }
+    });
+
+    new Thread(task).start();
 }
     
     private void irFormulario(Sucursal sucursal) {

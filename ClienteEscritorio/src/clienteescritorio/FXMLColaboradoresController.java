@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -24,6 +25,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class FXMLColaboradoresController implements Initializable {
 
@@ -39,21 +43,25 @@ public class FXMLColaboradoresController implements Initializable {
     @FXML private TableColumn colUnidadAsignada;
     @FXML private ComboBox<String> cbFiltro;
     
-    private ObservableList<Colaborador> colaboradores;
+   // private ScheduledExecutorService scheduler;
+    private ObservableList<Colaborador> colaboradores = FXCollections.observableArrayList();
     @FXML
     private Button btBuscar;
    
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        configurarTabla();
-        cargarDatos();
-        System.out.println("Colaboradores: " + colaboradores.size());
-        
-        cbFiltro.setItems(FXCollections.observableArrayList( 
-                "Nombre", "Número de Personal", "Rol" )); 
-        cbFiltro.getSelectionModel().selectFirst(); // opción por defecto
-    }    
+
+    configurarTabla();
+
+    cbFiltro.setItems(FXCollections.observableArrayList(
+            "Nombre", "Número de Personal", "Rol"
+    ));
+    cbFiltro.getSelectionModel().selectFirst();
+
+    cargarDatos(); // async
+   
+}
 
     private void configurarTabla() {
         colNoPersonal.setCellValueFactory(new PropertyValueFactory("numeroPersonal"));
@@ -64,23 +72,54 @@ public class FXMLColaboradoresController implements Initializable {
         colSucursal.setCellValueFactory(new PropertyValueFactory("sucursal"));
         colNumeroLicencia.setCellValueFactory(new PropertyValueFactory("numeroLicencia"));
         colUnidadAsignada.setCellValueFactory(new PropertyValueFactory("idUnidadAsignada"));
+        
+        tvColaboradores.setPlaceholder(
+        new Label("Cargando colaboradores...")
+    );
     }
     
+    
+    
     private void cargarDatos() {
-        HashMap<String, Object> respuesta = ColaboradorImp.obtenerColaboradores();
-        boolean esError = (boolean) respuesta.get(Constantes.KEY_ERROR);
 
-        if(!esError){
-            List<Colaborador> colaboradoresAPI = (List<Colaborador>) respuesta.get("colaboradores");
-            // Patrón de diseño observable
-            colaboradores = FXCollections.observableArrayList();
-            colaboradores.addAll(colaboradoresAPI);
-            tvColaboradores.setItems(colaboradores);
-        } else {
-            Utilidades.mostrarAlertaSimple("Error al cargar", 
-                    " " + respuesta.get("mensaje"), Alert.AlertType.ERROR);
+    Task<List<Colaborador>> task = new Task<List<Colaborador>>() {
+        @Override
+        protected List<Colaborador> call() {
+
+            HashMap<String, Object> respuesta =
+                    ColaboradorImp.obtenerColaboradores();
+
+            boolean error = (boolean) respuesta.get(Constantes.KEY_ERROR);
+
+            if (error) return null;
+
+            return (List<Colaborador>) respuesta.get("colaboradores");
         }
-    }
+    };
+
+    task.setOnSucceeded(e -> {
+
+        List<Colaborador> lista = task.getValue();
+
+        colaboradores.clear();
+
+        if (lista != null) {
+            colaboradores.addAll(lista);
+        }
+
+        tvColaboradores.setItems(colaboradores);
+    });
+
+    task.setOnFailed(e -> {
+        Utilidades.mostrarAlertaSimple(
+                "Error",
+                "No se pudo cargar la información del servidor",
+                Alert.AlertType.ERROR
+        );
+    });
+
+    new Thread(task).start();
+}
 
     @FXML
     private void clicRegistrar(ActionEvent event) {
@@ -99,28 +138,65 @@ public class FXMLColaboradoresController implements Initializable {
 
    @FXML
 private void clicEliminar(ActionEvent event) {
-    Colaborador seleccionado = tvColaboradores.getSelectionModel().getSelectedItem();
-    if(seleccionado != null){
-        // Confirmación antes de eliminar
-        boolean confirmar = Utilidades.mostrarAlertaConfirmacion(
-            "Eliminar colaborador",
-            "¿Estás seguro de eliminar al colaborador " + seleccionado.getNombre() + "?"
+
+    Colaborador seleccionado =
+            tvColaboradores.getSelectionModel().getSelectedItem();
+
+    if (seleccionado == null) {
+        Utilidades.mostrarAlertaSimple(
+                "Selección",
+                "Selecciona un colaborador",
+                Alert.AlertType.WARNING
         );
-
-        if(confirmar){
-            Respuesta respuesta = ColaboradorImp.eliminar(seleccionado.getIdColaborador());
-            if(!respuesta.isError()){
-                Utilidades.mostrarAlertaSimple("Éxito", respuesta.getMensaje(), Alert.AlertType.INFORMATION);
-                cargarDatos(); //  refresca la tabla después de eliminar
-            } else {
-                Utilidades.mostrarAlertaSimple("Error", respuesta.getMensaje(), Alert.AlertType.ERROR);
-            }
-        }
-    } else {
-        Utilidades.mostrarAlertaSimple("Selección", "Selecciona un colaborador", Alert.AlertType.WARNING);
+        return;
     }
-}
 
+    boolean confirmar = Utilidades.mostrarAlertaConfirmacion(
+            "Eliminar colaborador",
+            "¿Estás seguro de eliminar a " + seleccionado.getNombre() + "?"
+    );
+
+    if (!confirmar) return;
+
+    Task<Respuesta> task = new Task<Respuesta>() {
+        @Override
+        protected Respuesta call() {
+            return ColaboradorImp.eliminar(seleccionado.getIdColaborador());
+        }
+    };
+
+    task.setOnSucceeded(e -> {
+
+        Respuesta respuesta = task.getValue();
+
+        if (!respuesta.isError()) {
+
+            Utilidades.mostrarAlertaSimple(
+                    "Éxito",
+                    respuesta.getMensaje(),
+                    Alert.AlertType.INFORMATION
+            );
+
+            cargarDatos(); // refresca async también
+        } else {
+            Utilidades.mostrarAlertaSimple(
+                    "Error",
+                    respuesta.getMensaje(),
+                    Alert.AlertType.ERROR
+            );
+        }
+    });
+
+    task.setOnFailed(e -> {
+        Utilidades.mostrarAlertaSimple(
+                "Error",
+                "No se pudo eliminar el colaborador",
+                Alert.AlertType.ERROR
+        );
+    });
+
+    new Thread(task).start();
+}
     
     private void irFormulario(Colaborador colaborador) {
         try {
@@ -131,6 +207,10 @@ private void clicEliminar(ActionEvent event) {
             
             Stage stage = new Stage();
             stage.setScene(new Scene(root));
+            
+            stage.setOnCloseRequest(e -> {
+            });
+            
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
             cargarDatos(); 
@@ -144,68 +224,68 @@ private void clicBuscar(ActionEvent event) {
     String filtro = tfBusqueda.getText().trim();
     String criterio = cbFiltro.getValue();
 
-    // Si el campo está vacío, recargar toda la tabla
-    if(filtro.isEmpty()){
-        cargarDatos(); 
+    if (filtro.isEmpty()) {
+        cargarDatos();
         return;
     }
 
-    HashMap<String, Object> respuesta = null;
+    Task<List<Colaborador>> task = new Task<List<Colaborador>>() {
+        @Override
+        protected List<Colaborador> call() {
 
-    switch (criterio) {
-        case "Nombre":
-            respuesta = ColaboradorImp.buscarPorNombre(filtro);
-            break;
+            HashMap<String, Object> respuesta = null;
 
-        case "Número de Personal":
-            respuesta = ColaboradorImp.buscarPorNumeroPersonal(filtro);
-            break;
-
-        case "Rol":
-            int idRol = obtenerIdRolPorNombre(filtro);
-            if(idRol > 0){
-                respuesta = ColaboradorImp.buscarPorRol(idRol);
-            } else {
-                Utilidades.mostrarAlertaSimple("Rol inválido", 
-                        "No se reconoce el rol ingresado", 
-                        Alert.AlertType.WARNING);
-                return;
-            }
-            break;
-    }
-
-    if(respuesta != null && !(boolean) respuesta.get(Constantes.KEY_ERROR)){
-        List<Colaborador> resultados = (List<Colaborador>) respuesta.get("colaboradores");
-
-        if(resultados == null || resultados.isEmpty()){
-            // Mensaje específico según el criterio
             switch (criterio) {
+
                 case "Nombre":
-                    Utilidades.mostrarAlertaSimple("Sin resultados", 
-                            "No se encontraron colaboradores con ese nombre o apellidos", 
-                            Alert.AlertType.INFORMATION);
+                    respuesta = ColaboradorImp.buscarPorNombre(filtro);
                     break;
+
                 case "Número de Personal":
-                    Utilidades.mostrarAlertaSimple("Sin resultados", 
-                            "No existe ningún colaborador con ese número de personal", 
-                            Alert.AlertType.INFORMATION);
+                    respuesta = ColaboradorImp.buscarPorNumeroPersonal(filtro);
                     break;
+
                 case "Rol":
-                    Utilidades.mostrarAlertaSimple("Sin resultados", 
-                            "No se encontraron colaboradores con ese rol", 
-                            Alert.AlertType.INFORMATION);
+                    int idRol = obtenerIdRolPorNombre(filtro);
+                    if (idRol > 0) {
+                        respuesta = ColaboradorImp.buscarPorRol(idRol);
+                    }
                     break;
             }
-            //  Ya no limpiamos la tabla, se queda como estaba
+
+            if (respuesta == null || (boolean) respuesta.get(Constantes.KEY_ERROR)) {
+                return null;
+            }
+
+            return (List<Colaborador>) respuesta.get("colaboradores");
+        }
+    };
+
+    task.setOnSucceeded(e -> {
+
+        List<Colaborador> resultados = task.getValue();
+
+        if (resultados == null || resultados.isEmpty()) {
+            Utilidades.mostrarAlertaSimple(
+                    "Sin resultados",
+                    "No se encontraron coincidencias",
+                    Alert.AlertType.INFORMATION
+            );
         } else {
             colaboradores = FXCollections.observableArrayList(resultados);
             tvColaboradores.setItems(colaboradores);
         }
-    } else {
-        Utilidades.mostrarAlertaSimple("Error", 
-                (respuesta != null ? (String) respuesta.get(Constantes.KEY_MENSAJE) : "Error desconocido"), 
-                Alert.AlertType.ERROR);
-    }
+    });
+
+    task.setOnFailed(e -> {
+        Utilidades.mostrarAlertaSimple(
+                "Error",
+                "Error al realizar la búsqueda",
+                Alert.AlertType.ERROR
+        );
+    });
+
+    new Thread(task).start();
 }
 
 
@@ -257,7 +337,5 @@ private void clicAsignarUnidad(ActionEvent event) {
         alert.showAndWait();
     }
 }
-
-
 
 }

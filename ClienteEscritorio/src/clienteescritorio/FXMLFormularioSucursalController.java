@@ -30,6 +30,8 @@ public class FXMLFormularioSucursalController implements Initializable {
         cbEstatus.getItems().addAll("Activa", "Inactiva");
         configurarValidacionesDinamicas();
         configurarAutoRellenoCP();
+        
+         configurarLimpiezaErrores();
     }
 
     private void configurarValidacionesDinamicas() {
@@ -126,8 +128,24 @@ public class FXMLFormularioSucursalController implements Initializable {
         valido &= revisarVacio(tfNumero, lbErrorNumero);
         valido &= revisarVacio(tfCodigoPostal, lbErrorCP);
 
-        if (cbEstatus.getValue() == null) { lbErrorEstatus.setVisible(true); valido = false; } else { lbErrorEstatus.setVisible(false); }
-        if (cbColonia.getValue() == null) { lbErrorColonia.setVisible(true); valido = false; } else { lbErrorColonia.setVisible(false); }
+        if (cbEstatus.getValue() == null) {
+        lbErrorEstatus.setText("Selecciona un estatus");
+        lbErrorEstatus.setVisible(true);
+        lbErrorEstatus.setManaged(true);
+        valido = false;
+    }else {
+    lbErrorEstatus.setVisible(false);
+    lbErrorEstatus.setManaged(false);
+}
+        if (cbColonia.getValue() == null) {
+        lbErrorColonia.setText("Selecciona una colonia");
+        lbErrorColonia.setVisible(true);
+        lbErrorColonia.setManaged(true);
+    valido = false;
+} else {
+    lbErrorColonia.setVisible(false);
+    lbErrorColonia.setManaged(false);
+}
 
         return valido;
     }
@@ -143,35 +161,132 @@ public class FXMLFormularioSucursalController implements Initializable {
     }
 
     private boolean revisarVacio(TextField tf, Label lb) {
-        if (tf.getText().trim().isEmpty()) {
-            tf.setStyle("-fx-border-color: red;");
-            lb.setVisible(true);
-            return false;
-        } else {
-            tf.setStyle("");
-            lb.setVisible(false);
-            return true;
-        }
+
+    if (tf.getText() == null || tf.getText().trim().isEmpty()) {
+
+        tf.setStyle("-fx-border-color: red;");
+
+        lb.setText("Campo obligatorio");
+        lb.setVisible(true);
+        lb.setManaged(true);
+
+        return false;
+
+    } else {
+
+        tf.setStyle("");
+
+        lb.setVisible(false);
+        lb.setManaged(false);
+
+        return true;
     }
+}
+    
+    private void configurarLimpieza(TextField tf, Label lb) {
+
+    tf.textProperty().addListener((obs, oldV, newV) -> {
+
+        tf.setStyle("");
+
+        lb.setVisible(false);
+        lb.setManaged(false);
+    });
+}
+    
+   private void configurarLimpiezaErrores() {
+
+    configurarLimpieza(tfCodigo, lbErrorCodigo);
+    configurarLimpieza(tfNombre, lbErrorNombre);
+    configurarLimpieza(tfCalle, lbErrorCalle);
+    configurarLimpieza(tfNumero, lbErrorNumero);
+    configurarLimpieza(tfCodigoPostal, lbErrorCP);
+
+    cbEstatus.valueProperty().addListener((obs, oldV, newV) -> {
+        lbErrorEstatus.setVisible(false);
+        lbErrorEstatus.setManaged(false);
+    });
+
+    cbColonia.valueProperty().addListener((obs, oldV, newV) -> {
+        lbErrorColonia.setVisible(false);
+        lbErrorColonia.setManaged(false);
+    });
+}
+    
 
     public void inicializarValores(Sucursal sucursal) {
-        this.sucursalEdicion = sucursal;
-        if (sucursal != null) {
-            lbTitulo.setText("Actualizar Sucursal");
-            tfCodigo.setText(sucursal.getCodigoSucursal());
-            tfCodigo.setDisable(true);
-            tfNombre.setText(sucursal.getNombreCorto());
-            tfCalle.setText(sucursal.getCalle());
-            tfNumero.setText(sucursal.getNumero());
-            tfCodigoPostal.setText(sucursal.getCodigoPostal());
-            cbEstatus.getSelectionModel().select(sucursal.getEstatus());
-            // Para la colonia en edición, la cargamos manualmente si no se dispara el listener
-            cbColonia.getItems().add(sucursal.getColonia());
-            cbColonia.getSelectionModel().select(sucursal.getColonia());
-            tfCiudad.setText(sucursal.getCiudad());
-            tfEstado.setText(sucursal.getEstado());
-        }
+
+    this.sucursalEdicion = sucursal;
+
+    if (sucursal != null) {
+
+        lbTitulo.setText("Actualizar Sucursal");
+
+        // =========================
+        // CAMPOS PRINCIPALES
+        // =========================
+        tfCodigo.setText(sucursal.getCodigoSucursal());
+        tfCodigo.setDisable(true);
+
+        tfNombre.setText(sucursal.getNombreCorto());
+        tfCalle.setText(sucursal.getCalle());
+        tfNumero.setText(sucursal.getNumero());
+        tfCodigoPostal.setText(sucursal.getCodigoPostal());
+
+        tfCiudad.setText(sucursal.getCiudad());
+        tfEstado.setText(sucursal.getEstado());
+
+        // =========================
+        // ESTATUS (NO EDITABLE)
+        // =========================
+        cbEstatus.getItems().clear();
+        cbEstatus.getItems().addAll("Activa", "Inactiva");
+        cbEstatus.getSelectionModel().select(sucursal.getEstatus());
+        cbEstatus.setDisable(true);
+
+        // =========================
+        // COLONIA
+        // =========================
+        cbColonia.getItems().clear();
+        cbColonia.getItems().add(sucursal.getColonia());
+        cbColonia.getSelectionModel().select(sucursal.getColonia());
+
+        // =========================
+        // LIMPIAR ESTILOS DE ERROR
+        // =========================
+        limpiarErroresSucursal();
+
+        // =========================
+        // ACTIVAR MISMAS VALIDACIONES DINÁMICAS
+        // =========================
+        configurarValidacionesDinamicas();
     }
+}
+    private void limpiarErroresSucursal() {
+
+    tfCodigo.setStyle("");
+    tfNombre.setStyle("");
+    tfCalle.setStyle("");
+    tfNumero.setStyle("");
+    tfCodigoPostal.setStyle("");
+
+    lbErrorCodigo.setVisible(false);
+    lbErrorNombre.setVisible(false);
+    lbErrorCalle.setVisible(false);
+    lbErrorNumero.setVisible(false);
+    lbErrorCP.setVisible(false);
+    lbErrorColonia.setVisible(false);
+    lbErrorEstatus.setVisible(false);
+
+    lbErrorCodigo.setManaged(false);
+    lbErrorNombre.setManaged(false);
+    lbErrorCalle.setManaged(false);
+    lbErrorNumero.setManaged(false);
+    lbErrorCP.setManaged(false);
+    lbErrorColonia.setManaged(false);
+    lbErrorEstatus.setManaged(false);
+}
+    
 
     @FXML private void clicCancelar(ActionEvent event) { cerrarVentana(); }
     private void cerrarVentana() { ((Stage) tfNombre.getScene().getWindow()).close(); }

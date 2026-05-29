@@ -17,6 +17,9 @@ public class ConexionAPI {
             URL url = new URL(urlString);
             HttpURLConnection conexion = (HttpURLConnection) url.openConnection();
             conexion.setRequestMethod("GET");
+            
+            conexion.setConnectTimeout(5000);
+            conexion.setReadTimeout(5000);
 
             int codigo = conexion.getResponseCode();
             respuesta.setCodigo(codigo);
@@ -42,6 +45,9 @@ public class ConexionAPI {
             URL urlWS = new URL(urlString);
             HttpURLConnection conexionHTTP = (HttpURLConnection) urlWS.openConnection();
             conexionHTTP.setRequestMethod(metodoHTTP);
+            
+            conexionHTTP.setConnectTimeout(5000);
+            conexionHTTP.setReadTimeout(5000);
 
             int codigo = conexionHTTP.getResponseCode();
             respuesta.setCodigo(codigo);
@@ -77,6 +83,8 @@ public class ConexionAPI {
             HttpURLConnection conexion = (HttpURLConnection) url.openConnection();
             conexion.setRequestMethod(metodo);
             conexion.setRequestProperty("Content-Type", contentType);
+            conexion.setConnectTimeout(5000);
+            conexion.setReadTimeout(5000);
             conexion.setDoOutput(true);
 
             OutputStream os = conexion.getOutputStream();
@@ -106,6 +114,9 @@ public class ConexionAPI {
             HttpURLConnection conexion = (HttpURLConnection) url.openConnection();
             conexion.setRequestMethod(Constantes.METODO_POST);
             conexion.setDoOutput(true);
+            
+            conexion.setConnectTimeout(5000);
+            conexion.setReadTimeout(5000);
             conexion.setRequestProperty(
                 "Content-Type",
                 "application/x-www-form-urlencoded"
@@ -143,6 +154,8 @@ public class ConexionAPI {
             HttpURLConnection conexion = (HttpURLConnection) url.openConnection();
             conexion.setRequestMethod(metodo);
             conexion.setRequestProperty("Content-Type", contentType);
+            conexion.setConnectTimeout(5000);
+            conexion.setReadTimeout(5000);
             conexion.setDoOutput(true);
 
             OutputStream os = conexion.getOutputStream();
@@ -173,6 +186,8 @@ public class ConexionAPI {
         HttpURLConnection conexion = (HttpURLConnection) url.openConnection();
         conexion.setRequestMethod("PUT"); 
         conexion.setDoOutput(true);
+        conexion.setConnectTimeout(5000);
+        conexion.setReadTimeout(5000);
         conexion.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
         OutputStream os = conexion.getOutputStream();
@@ -203,7 +218,8 @@ public class ConexionAPI {
         java.net.HttpURLConnection conexion = (java.net.HttpURLConnection) urlDestino.openConnection();
         conexion.setRequestMethod("DELETE");
         conexion.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
+        conexion.setConnectTimeout(5000);
+        conexion.setReadTimeout(5000);
         int codigoRespuesta = conexion.getResponseCode();
         respuesta.setCodigo(codigoRespuesta);
 

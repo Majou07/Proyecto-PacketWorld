@@ -12,6 +12,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -19,185 +20,280 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 public class FXMLFormularioUnidadController implements Initializable {
-    
+
     @FXML private Label lbTitulo;
+
     @FXML private TextField tfMarca;
     @FXML private TextField tfModelo;
     @FXML private TextField tfAnio;
     @FXML private TextField tfVin;
-    @FXML private ComboBox<TipoUnidad> cbTipo;
     @FXML private TextField tfNii;
-    @FXML private Label lbErrorMarca, lbErrorModelo, lbErrorAnio, lbErrorVin, lbErrorTipo;
-    
+
+    @FXML private ComboBox<TipoUnidad> cbTipo;
+    @FXML private ComboBox<String> cbEstado;
+
+    @FXML private Label lbErrorMarca;
+    @FXML private Label lbErrorModelo;
+    @FXML private Label lbErrorAnio;
+    @FXML private Label lbErrorVin;
+    @FXML private Label lbErrorTipo;
+
     private Unidad unidadEdicion;
-    
     private ObservableList<TipoUnidad> tipos;
-    @FXML
-    private ComboBox<String> cbEstado;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+
         cargarTipos();
         configurarValidacionesDinamicas();
-    }    
-    
-    public void inicializarValores(Unidad unidad){
+    }
+
+    // =========================
+    // INICIALIZAR EDICIÓN
+    // =========================
+    public void inicializarValores(Unidad unidad) {
+
         this.unidadEdicion = unidad;
-        if(unidad != null){
+
+        if (unidad != null) {
+
             lbTitulo.setText("Actualizar Registro");
-            // Setear valores
+
             tfMarca.setText(unidad.getMarca());
             tfModelo.setText(unidad.getModelo());
             tfAnio.setText(String.valueOf(unidad.getAnio()));
             tfVin.setText(unidad.getVin());
             tfNii.setText(unidad.getNii());
-            
-            tfVin.setDisable(true); 
+
+            tfVin.setDisable(true);
             tfNii.setDisable(true);
-            
-            
-            
-            for(TipoUnidad tipo : tipos){
-                if(tipo.getNombre().equals(unidad.getTipoUnidad())){
-                    cbTipo.getSelectionModel().select(tipo);
-                    break;
-                }
-            }
-            
+
             cbEstado.setVisible(true);
-            cbEstado.getItems().clear();
-              cbEstado.getItems().addAll("Activo","En mantenimiento");
-            
-            if(unidad.getIdEstatusUnidad() == 1){
-              cbEstado.getSelectionModel().select("Activo");
-            }else if(unidad.getIdEstatusUnidad()==3){
+            cbEstado.getItems().setAll("Activo", "En mantenimiento");
+
+            if (unidad.getIdEstatusUnidad() == 1) {
+                cbEstado.getSelectionModel().select("Activo");
+            } else {
                 cbEstado.getSelectionModel().select("En mantenimiento");
-            } 
-            
-            tfAnio.textProperty().addListener((obs, oldVal, newVal) ->{
-                actualizarNii();
-            });   
-        }else{
+            }
+
+        } else {
             cbEstado.setVisible(false);
         }
     }
-    
+
+    // =========================
+    // VALIDACIONES DINÁMICAS
+    // =========================
     private void configurarValidacionesDinamicas() {
-        // Solo números en el año
-        tfAnio.textProperty().addListener((obs, oldV, newV) -> {
-            if (!newV.matches("\\d*")) tfAnio.setText(newV.replaceAll("[^\\d]", ""));
-            if (newV.length() > 4) tfAnio.setText(oldV);
+
+        // MARCA SOLO LETRAS
+        tfMarca.textProperty().addListener((obs, oldV, newV) -> {
+
+            String texto = newV.replaceAll("[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]", "");
+
+            if (texto.length() > 50) {
+                texto = texto.substring(0, 50);
+            }
+
+            if (!texto.equals(tfMarca.getText())) {
+                tfMarca.setText(texto);
+            }
+
+            limpiarError(lbErrorMarca);
         });
-        
-        // VIN siempre en mayúsculas y máximo 17
+
+        // MODELO
+        configurarLimpieza(tfModelo, lbErrorModelo);
+
+        // AÑO SOLO NÚMEROS
+        tfAnio.textProperty().addListener((obs, oldV, newV) -> {
+
+            if (!newV.matches("\\d*")) {
+                tfAnio.setText(newV.replaceAll("[^\\d]", ""));
+            }
+
+            if (newV.length() > 4) {
+                tfAnio.setText(oldV);
+            }
+
+            limpiarError(lbErrorAnio);
+        });
+
+        // VIN
         tfVin.textProperty().addListener((obs, oldV, newV) -> {
+
             tfVin.setText(newV.toUpperCase());
-            if (newV.length() > 17) tfVin.setText(oldV);
-            lbErrorVin.setVisible(false);
+
+            if (newV.length() > 17) {
+                tfVin.setText(oldV);
+            }
+
+            limpiarError(lbErrorVin);
+        });
+
+        // TIPO
+        cbTipo.valueProperty().addListener((obs, oldV, newV) -> {
+            limpiarError(lbErrorTipo);
         });
     }
 
+    // =========================
+    // GUARDAR
+    // =========================
     @FXML
     private void clicGuardar(ActionEvent event) {
-        if (!validarCampos()) {
-            return; 
-        }
 
-        Unidad nuevaUnidad = new Unidad();
-        nuevaUnidad.setMarca(tfMarca.getText());
-        nuevaUnidad.setModelo(tfModelo.getText());
-        nuevaUnidad.setAnio(Integer.parseInt(tfAnio.getText()));
-        nuevaUnidad.setVin(tfVin.getText());
-        nuevaUnidad.setNii(tfNii.getText());
-        TipoUnidad tipoSeleccionado = cbTipo.getValue();
-        nuevaUnidad.setIdTipoUnidad(tipoSeleccionado.getIdTipoUnidad());
+    if (!validarCampos()) return;
 
-        if(unidadEdicion == null){
-            nuevaUnidad.setIdEstatusUnidad(1);
-        }else{
-            String estadoSeleccionado = cbEstado.getValue();
-            if(estadoSeleccionado != null){
-            if(estadoSeleccionado.equals("Activo")){
-                nuevaUnidad.setIdEstatusUnidad(1);
-            }else if(estadoSeleccionado.equals("En mantenimiento")){
-                nuevaUnidad.setIdEstatusUnidad(3);
-            }   
+    Unidad u = new Unidad();
 
-            }else{
-                nuevaUnidad.setIdEstatusUnidad(unidadEdicion.getIdEstatusUnidad());
-          }
+    u.setMarca(tfMarca.getText().trim());
+    u.setModelo(tfModelo.getText().trim());
+    u.setAnio(Integer.parseInt(tfAnio.getText().trim()));
+    u.setVin(tfVin.getText().trim());
+    u.setNii(tfNii.getText().trim());
+
+    // =========================
+    // VALIDACIÓN SEGURA COMBOBOX
+    // =========================
+    if (cbTipo.getValue() == null) {
+
+        Utilidades.mostrarAlertaSimple(
+                "Error",
+                "Debes seleccionar un tipo de unidad",
+                Alert.AlertType.ERROR
+        );
+        return;
     }
 
+    u.setIdTipoUnidad(cbTipo.getValue().getIdTipoUnidad());
+
+    // =========================
+    // ESTATUS
+    // =========================
+    if (unidadEdicion == null) {
+
+        u.setIdEstatusUnidad(1);
+
+    } else {
+
+        String estado = cbEstado.getValue();
+
+        if (estado == null) {
+
+            u.setIdEstatusUnidad(unidadEdicion.getIdEstatusUnidad());
+
+        } else if (estado.equals("Activo")) {
+            u.setIdEstatusUnidad(1);
+        } else {
+            u.setIdEstatusUnidad(3);
+        }
+
+        u.setIdUnidad(unidadEdicion.getIdUnidad());
+    }
+
+    // =========================
+    // GUARDAR
+    // =========================
     Respuesta respuesta;
-        if(unidadEdicion == null){
-            respuesta=UnidadImp.registrar(nuevaUnidad);
-        }else{
-            nuevaUnidad.setIdUnidad(unidadEdicion.getIdUnidad());
-            respuesta = UnidadImp.editar(nuevaUnidad);
-        }
 
-        if (!respuesta.isError()) {
-        String titulo = (unidadEdicion == null) ? "Registro exitoso" : "Actualización exitosa";
-        Utilidades.mostrarAlertaSimple(titulo, 
-            respuesta.getMensaje(), Alert.AlertType.INFORMATION);
-        cerrarVentana();
-        }else{
-        Utilidades.mostrarAlertaSimple("Error", 
-            respuesta.getMensaje(), Alert.AlertType.ERROR);
-        }
+if (unidadEdicion == null) {
+    respuesta = UnidadImp.registrar(u);
+} else {
+    respuesta = UnidadImp.editar(u);
+}
 
-    }
+if (respuesta != null && !respuesta.isError()) {
 
+    Utilidades.mostrarAlertaSimple(
+            "Éxito",
+            (unidadEdicion == null)
+                    ? "Registro exitoso"
+                    : "Actualización exitosa",
+            Alert.AlertType.INFORMATION
+    );
+
+    cerrarVentana();
+
+} else {
+
+    Utilidades.mostrarAlertaSimple(
+            "Error",
+            (respuesta != null) ? respuesta.getMensaje() : "Error desconocido",
+            Alert.AlertType.ERROR
+    );
+}
+}
+    // =========================
+    // CARGAR TIPOS (ASYNC)
+    // =========================
     private void cargarTipos() {
-        tipos = FXCollections.observableArrayList();
-        HashMap<String, Object> respuesta = UnidadImp.obtenerTipos(); 
-        if(!(boolean)respuesta.get("error")){
-            tipos.addAll((List<TipoUnidad>)respuesta.get("tipos"));
-            cbTipo.setItems(tipos);
-        }
+
+        Task<List<TipoUnidad>> task = new Task<List<TipoUnidad>>() {
+            @Override
+            protected List<TipoUnidad> call() {
+
+                HashMap<String, Object> respuesta = UnidadImp.obtenerTipos();
+
+                if ((boolean) respuesta.get("error")) {
+                    return null;
+                }
+
+                return (List<TipoUnidad>) respuesta.get("tipos");
+            }
+        };
+
+        task.setOnSucceeded(e -> {
+
+            List<TipoUnidad> lista = task.getValue();
+
+            if (lista != null) {
+                tipos = FXCollections.observableArrayList(lista);
+                cbTipo.setItems(tipos);
+            }
+        });
+
+        task.setOnFailed(e -> {
+            Utilidades.mostrarAlertaSimple(
+                    "Error",
+                    "Error al cargar tipos",
+                    Alert.AlertType.ERROR
+            );
+        });
+
+        new Thread(task).start();
     }
 
-    
-    @FXML
-     private void clicCancelar(ActionEvent event) {
-        if(Utilidades.mostrarAlertaConfirmacion("Cancelar", "¿Deseas salir sin guardar los cambios?")){
-            cerrarVentana();
-        }
-    }
-    
-    private void cerrarVentana(){
-        ((Stage) tfMarca.getScene().getWindow()).close();
-    }
-    
-
+    // =========================
+    // VALIDACIÓN GENERAL
+    // =========================
     private boolean validarCampos() {
+
         boolean valido = true;
+
         valido &= revisarVacio(tfMarca, lbErrorMarca);
         valido &= revisarVacio(tfModelo, lbErrorModelo);
-        
-        // Validación Año
+
         try {
+
             int anio = Integer.parseInt(tfAnio.getText());
-            int anioActual = java.time.Year.now().getValue();
-            if (anio < 1900 || anio > anioActual + 1) {
+            int actual = java.time.Year.now().getValue();
+
+            if (anio < 1900 || anio > actual + 1) {
                 lbErrorAnio.setText("Año inválido");
                 lbErrorAnio.setVisible(true);
                 valido = false;
-            } else {
-                lbErrorAnio.setVisible(false);
             }
+
         } catch (Exception e) {
             lbErrorAnio.setVisible(true);
             valido = false;
         }
 
         if (tfVin.getText().length() != 17) {
-            tfVin.setStyle("-fx-border-color: red;");
             lbErrorVin.setVisible(true);
             valido = false;
-        } else {
-            tfVin.setStyle("");
-            lbErrorVin.setVisible(false);
         }
 
         if (cbTipo.getValue() == null) {
@@ -207,35 +303,43 @@ public class FXMLFormularioUnidadController implements Initializable {
 
         return valido;
     }
-    
+
+    // =========================
+    // UTILIDADES UI
+    // =========================
+    private void configurarLimpieza(TextField tf, Label lb) {
+
+        tf.textProperty().addListener((obs, oldV, newV) -> {
+            limpiarError(lb);
+        });
+    }
+
+    private void limpiarError(Label lb) {
+        lb.setVisible(false);
+        lb.setManaged(false);
+    }
+
     private boolean revisarVacio(TextField tf, Label lb) {
-        if (tf.getText().trim().isEmpty()) {
-            tf.setStyle("-fx-border-color: red;");
+
+        if (tf.getText() == null || tf.getText().trim().isEmpty()) {
+
+            lb.setText("Campo obligatorio");
             lb.setVisible(true);
+            lb.setManaged(true);
+
             return false;
-        } else {
-            tf.setStyle("");
-            lb.setVisible(false);
-            return true;
         }
+
+        limpiarError(lb);
+        return true;
     }
-    
-    
-    private void actualizarNii() {
-    String vin = tfVin.getText();
 
-    if (vin == null || vin.length() < 4) return;
-
-    try {
-        int nuevoAnio = Integer.parseInt(tfAnio.getText());
-        String parteVin = vin.substring(0, 4); 
-        String nuevoNii = nuevoAnio + "-" + parteVin;
-        tfNii.setText(nuevoNii);
-    } catch (NumberFormatException e) {
-        tfNii.setText(""); 
+    @FXML
+    private void clicCancelar(ActionEvent event) {
+        cerrarVentana();
     }
-    
-    
-}
 
+    private void cerrarVentana() {
+        ((Stage) tfMarca.getScene().getWindow()).close();
+    }
 }
