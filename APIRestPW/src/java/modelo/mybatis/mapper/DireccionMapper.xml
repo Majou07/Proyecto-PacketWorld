@@ -5,8 +5,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 <mapper namespace="DireccionMapper"> 
     <select id="obtenerInformacionPorCP" resultType="pojo.Direccion">
-        SELECT colonia, ciudad, estado, municipio
-        FROM catalogo_codigo_postal
-        WHERE TRIM(codigo_postal) = #{cp}
+        SELECT colonia, ciudad, estado, municipio,
+        codigo_postal AS codigoPostal
+        FROM sepomex.catalogo_codigo_postal
+       WHERE codigo_postal = #{cp}
     </select>
 </mapper>
