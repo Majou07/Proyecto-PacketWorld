@@ -178,6 +178,27 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         UPDATE colaborador SET id_unidad_asignada = #{idUnidad} 
         WHERE id_colaborador = #{idColaborador}
     </update>
+    
+    <select id="obtener-conductor-por-unidad" parameterType="map" resultType="Integer">
+        SELECT id_colaborador 
+        FROM colaborador 
+        WHERE id_unidad_asignada = #{idUnidad} 
+        AND id_colaborador != #{idColaboradorActual}
+        LIMIT 1
+    </select>
+
+    <select id="obtener-conductor-por-unidad-simple" parameterType="int" resultType="Integer">
+        SELECT id_colaborador 
+        FROM colaborador 
+        WHERE id_unidad_asignada = #{idUnidad}
+        LIMIT 1
+    </select>
+
+    <update id="desasignar-unidad" parameterType="map">
+        UPDATE colaborador 
+        SET id_unidad_asignada = NULL 
+        WHERE id_colaborador = #{idColaborador}
+    </update>
    
 
 </mapper>

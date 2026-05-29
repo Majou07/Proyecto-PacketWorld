@@ -168,6 +168,18 @@ public class EnvioWS {
     return Response.ok(envio).build();
 }
     
-    
+    @Path("recalcular-costo/{idEnvio}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Respuesta recalcularCosto(@PathParam("idEnvio") int idEnvio) {
+        return EnvioImp.recalcularCostoEnvio(idEnvio);
+    }
+
+    @Path("recalcular-todos-los-costos")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Respuesta recalcularTodosLosCostos() {
+        return EnvioImp.recalcularCostosDeTodosLosEnvios();
+    }
     
 }

@@ -6,18 +6,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="sucursal" >
   
     <select id="obtener-todas" resultType="pojo.Sucursal">
-    SELECT
-        codigo_sucursal AS codigoSucursal,
-        nombre_corto AS nombreCorto,
-        estatus,
-        calle,
-        numero,
-        colonia,
-        codigo_postal AS codigoPostal,
-        ciudad,
-        estado
-    FROM sucursal
-</select>
+        SELECT
+            codigo_sucursal AS codigoSucursal,
+            nombre_corto AS nombreCorto,
+            estatus,
+            calle,
+            numero,
+            colonia,
+            codigo_postal AS codigoPostal,
+            ciudad,
+            estado
+        FROM sucursal
+    </select>
+
+    <select id="obtener-cp" parameterType="string" resultType="string">
+        SELECT codigo_postal FROM sucursal WHERE codigo_sucursal = #{codigoSucursal}
+    </select>
 
 
     <insert id="registrar" parameterType="pojo.Sucursal">

@@ -147,4 +147,25 @@ public class EnvioImp {
         }
         return respuesta;
     }
+    
+    public static Respuesta recalcularCosto(int idEnvio) {
+        String url = Constantes.URL_WS + "envio/recalcular-costo/" + idEnvio;
+        RespuestaHTTP respuestaAPI = ConexionAPI.peticionGET(url);
+
+        if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+            return new Gson().fromJson(respuestaAPI.getContenido(), Respuesta.class);
+        }
+        return new Respuesta(true, "Error al recalcular costo");
+    }
+    
+    
+    public static Respuesta recalcularTodosLosCostos() {
+        String url = Constantes.URL_WS + "envio/recalcular-todos-los-costos";
+        RespuestaHTTP respuestaAPI = ConexionAPI.peticionGET(url);
+
+        if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+            return new Gson().fromJson(respuestaAPI.getContenido(), Respuesta.class);
+        }
+        return new Respuesta(true, "Error al recalcular costos");
+    }
 }

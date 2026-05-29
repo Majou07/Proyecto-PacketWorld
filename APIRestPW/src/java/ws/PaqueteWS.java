@@ -42,6 +42,13 @@ public class PaqueteWS {
         Paquete paquete = new Gson().fromJson(json, Paquete.class); 
         return PaqueteImp.editar(paquete); 
     } 
+    
+    @Path("obtener-por-id/{idPaquete}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Paquete obtenerPorId(@PathParam("idPaquete") int idPaquete) {
+        return PaqueteImp.obtenerPorId(idPaquete);
+    }
 
       
 }

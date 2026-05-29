@@ -64,16 +64,23 @@ public class FXMLFormularioPaqueteController implements Initializable {
             paquete.setAlto(Float.parseFloat(tfAlto.getText()));
             paquete.setAncho(Float.parseFloat(tfAncho.getText()));
             paquete.setProfundidad(Float.parseFloat(tfProfundidad.getText()));
-            
+
             Respuesta resp;
             if (esEdicion) {
-                resp = PaqueteImp.editar(paquete); 
+                resp = PaqueteImp.editar(paquete);
             } else {
                 resp = PaqueteImp.registrar(paquete);
             }
 
             if(!resp.isError()){
                 Utilidades.mostrarAlertaSimple("Éxito", resp.getMensaje(), Alert.AlertType.INFORMATION);
+
+                try {
+                    Stage stage = (Stage) tfDescripcion.getScene().getWindow();
+                } catch (Exception e) {
+                    System.out.println("No se pudo refrescar automáticamente");
+                }
+
                 cerrarVentana();
             } else {
                 Utilidades.mostrarAlertaSimple("Error", resp.getMensaje(), Alert.AlertType.ERROR);

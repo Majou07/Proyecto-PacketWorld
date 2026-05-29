@@ -86,4 +86,13 @@ public class PaqueteImp {
         }
         return respuesta;
     }
+    
+    public static Paquete obtenerPorId(int idPaquete) {
+        SqlSession conexionBD = MyBatisUtil.getSession();
+        try {
+            return conexionBD.selectOne("paquete.obtener-por-id", idPaquete);
+        } finally {
+            conexionBD.close();
+        }
+    }
 }

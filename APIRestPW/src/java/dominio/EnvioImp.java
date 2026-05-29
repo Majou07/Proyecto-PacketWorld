@@ -31,39 +31,81 @@ public class EnvioImp {
     }
 
     public static Respuesta registrarEnvio(Envio envio) {
-        Respuesta respuesta = new Respuesta();
-        SqlSession conexionBD = MyBatisUtil.getSession();
+    Respuesta respuesta = new Respuesta();
+    SqlSession conexionBD = MyBatisUtil.getSession();
 
-        if (conexionBD != null) {
-            try {
-                // Genera número de guía único 
-                String guia = UUID.randomUUID().toString().replace("-", "").substring(0, 10).toUpperCase();
-                envio.setNumeroGuia(guia);
-
-                // El estatus inicial suele ser 1 (recibido/pendiente)                
-                int filasAfectadas = conexionBD.insert("envio.registrar", envio);
-                conexionBD.commit();
-
-                if (filasAfectadas > 0) {
-                    respuesta.setError(false);
-                    respuesta.setMensaje("Envío registrado correctamente. Guía: " + guia);
-                } else {
-                    respuesta.setError(true);
-                    respuesta.setMensaje("No se pudo registrar el envío.");
+    if (conexionBD != null) {
+        try {
+            // 1. Obtener CP de la sucursal origen
+            String cpOrigen = conexionBD.selectOne("sucursal.obtener-cp", envio.getCodigoSucursalOrigen());
+            String cpDestino = envio.getDestinoCodigoPostal();
+            
+            System.out.println("=== REGISTRANDO ENVÍO ===");
+            System.out.println("CP Origen: " + cpOrigen);
+            System.out.println("CP Destino: " + cpDestino);
+            System.out.println("Sucursal: " + envio.getCodigoSucursalOrigen());
+            
+            // 2. Calcular costo (con fallback si la API falla)
+            Double costo = 150.00; // costo base por defecto
+            
+            if (cpOrigen != null && cpDestino != null && !cpOrigen.isEmpty() && !cpDestino.isEmpty()) {
+                costo = calcularCostoEnvio(cpOrigen, cpDestino, 1);
+                if (costo == null || costo == 0.0) {
+                    costo = calcularCostoPorDefecto(cpOrigen, cpDestino, 1);
                 }
-            } catch (Exception e) {
-                conexionBD.rollback();
-                respuesta.setError(true);
-                respuesta.setMensaje(e.getMessage());
-            } finally {
-                conexionBD.close();
+            } else {
+                System.out.println("Advertencia: CP origen o destino faltante, usando costo por defecto");
             }
-        } else {
+            
+            envio.setCostoTotal(costo);
+            
+            String guia = UUID.randomUUID().toString().replace("-", "").substring(0, 10).toUpperCase();
+            envio.setNumeroGuia(guia);
+            envio.setIdEstatusEnvio(1); // Estatus inicial: recibido
+            
+            int filasAfectadas = conexionBD.insert("envio.registrar", envio);
+            conexionBD.commit();
+
+            if (filasAfectadas > 0) {
+                respuesta.setError(false);
+                respuesta.setMensaje("Envío registrado correctamente. Guía: " + guia + ". Costo: $" + String.format("%.2f", costo));
+            } else {
+                respuesta.setError(true);
+                respuesta.setMensaje("No se pudo registrar el envío.");
+            }
+        } catch (Exception e) {
+            conexionBD.rollback();
             respuesta.setError(true);
-            respuesta.setMensaje(Constantes.MSJ_ERROR_BD);
+            respuesta.setMensaje(e.getMessage());
+            e.printStackTrace();
+        } finally {
+            conexionBD.close();
         }
-        return respuesta;
+    } else {
+        respuesta.setError(true);
+        respuesta.setMensaje(Constantes.MSJ_ERROR_BD);
     }
+    return respuesta;
+}
+
+private static Double calcularCostoPorDefecto(String cpOrigen, String cpDestino, int numeroPaquetes) {
+    double costoBase = 150.00;
+    
+    if (cpOrigen != null && cpDestino != null && !cpOrigen.equals(cpDestino)) {
+        costoBase += 100.00;
+    }
+    
+    double costoAdicional = 0.00;
+    switch (numeroPaquetes) {
+        case 2: costoAdicional = 50.00; break;
+        case 3: costoAdicional = 80.00; break;
+        case 4: costoAdicional = 110.00; break;
+        default: costoAdicional = 0.00; break;
+    }
+    
+    return costoBase + costoAdicional;
+}
+    
     
     public static List<Envio> obtenerPorConductor(int idConductor) {
     List<Envio> envios = null;
@@ -203,35 +245,38 @@ public class EnvioImp {
     
     
     public static Double calcularCostoEnvio(String cpOrigen, String cpDestino, int numeroPaquetes) {
-    try {
-        String urlDistancia = "http://sublimas.com.mx:8080/calculadora/api/envios/distancia/" + cpOrigen + "," + cpDestino;
-        String jsonRespuesta = llamarApiExterna(urlDistancia); 
-        JsonObject resp = new Gson().fromJson(jsonRespuesta, JsonObject.class);
-        double distancia = resp.get("distanciaKM").getAsDouble();
+        try {
+            String urlDistancia = "http://sublimas.com.mx:8080/calculadora/api/envios/distancia/" + cpOrigen + "," + cpDestino;
+            String jsonRespuesta = llamarApiExterna(urlDistancia);
+            JsonObject resp = new Gson().fromJson(jsonRespuesta, JsonObject.class);
 
-        // Determina el costo por kilómetro 
-        double costoKM = 0.50; // Más de 2000 km
-        if (distancia <= 200) costoKM = 4.00;
-        else if (distancia <= 500) costoKM = 3.00;
-        else if (distancia <= 1000) costoKM = 2.00;
-        else if (distancia <= 2000) costoKM = 1.00;
+            if (resp.has("distanciaKM")) {
+                double distancia = resp.get("distanciaKM").getAsDouble();
 
-        
-        // Determina el costo adicional por paquetes
-        double costoAdicional = 150.00; // 5 o más
-        switch (numeroPaquetes) {
-            case 1: costoAdicional = 0.00; break;
-            case 2: costoAdicional = 50.00; break;
-            case 3: costoAdicional = 80.00; break;
-            case 4: costoAdicional = 110.00; break;
-        }
+                double costoKM = 0.50;
+                if (distancia <= 200) costoKM = 4.00;
+                else if (distancia <= 500) costoKM = 3.00;
+                else if (distancia <= 1000) costoKM = 2.00;
+                else if (distancia <= 2000) costoKM = 1.00;
 
-        return (distancia * costoKM) + costoAdicional;
+                double costoAdicional = 150.00;
+                switch (numeroPaquetes) {
+                    case 1: costoAdicional = 0.00; break;
+                    case 2: costoAdicional = 50.00; break;
+                    case 3: costoAdicional = 80.00; break;
+                    case 4: costoAdicional = 110.00; break;
+                }
 
+                return (distancia * costoKM) + costoAdicional;
+            } else {
+                return calcularCostoPorDefecto(cpOrigen, cpDestino, numeroPaquetes);
+            }
         } catch (Exception e) {
-            return 0.0;
+            System.err.println("Error en API de distancias: " + e.getMessage());
+            return calcularCostoPorDefecto(cpOrigen, cpDestino, numeroPaquetes);
         }
     }
+
     
     
     
@@ -313,4 +358,103 @@ public class EnvioImp {
         }
         return respuesta;
     }
+    
+    
+    public static Respuesta recalcularCostosDeTodosLosEnvios() {
+        Respuesta respuesta = new Respuesta();
+        SqlSession conexionBD = MyBatisUtil.getSession();
+
+        if (conexionBD == null) {
+            respuesta.setError(true);
+            respuesta.setMensaje(Constantes.MSJ_ERROR_BD);
+            return respuesta;
+        }
+
+        try {
+            List<Envio> envios = conexionBD.selectList("envio.obtener-todos-sin-costo");
+            int actualizados = 0;
+
+            for (Envio envio : envios) {
+                String cpOrigen = conexionBD.selectOne("sucursal.obtener-cp", envio.getCodigoSucursalOrigen());
+                String cpDestino = envio.getDestinoCodigoPostal();
+
+                if (cpOrigen != null && cpDestino != null && !cpOrigen.isEmpty() && !cpDestino.isEmpty()) {
+                    Double costo = calcularCostoEnvio(cpOrigen, cpDestino, 1);
+                    if (costo == null || costo == 0.0) {
+                        costo = calcularCostoPorDefecto(cpOrigen, cpDestino, 1);
+                    }
+
+                    Map<String, Object> params = new HashMap<>();
+                    params.put("idEnvio", envio.getIdEnvio());
+                    params.put("costoTotal", costo);
+                    conexionBD.update("envio.actualizar-costo", params);
+                    actualizados++;
+                }
+            }
+
+            conexionBD.commit();
+            respuesta.setError(false);
+            respuesta.setMensaje("Se recalcularon " + actualizados + " envíos correctamente");
+
+        } catch (Exception e) {
+            conexionBD.rollback();
+            respuesta.setError(true);
+            respuesta.setMensaje("Error: " + e.getMessage());
+        } finally {
+            conexionBD.close();
+        }
+        return respuesta;
+    }
+    
+    
+    public static Respuesta recalcularCostoEnvio(int idEnvio) {
+    Respuesta respuesta = new Respuesta();
+    SqlSession conexionBD = MyBatisUtil.getSession();
+    
+    if (conexionBD == null) {
+        respuesta.setError(true);
+        respuesta.setMensaje(Constantes.MSJ_ERROR_BD);
+        return respuesta;
+    }
+    
+    try {
+        Envio envio = conexionBD.selectOne("envio.obtener-detalle", idEnvio);
+        if (envio == null) {
+            respuesta.setError(true);
+            respuesta.setMensaje("Envío no encontrado");
+            return respuesta;
+        }
+        
+        String cpOrigen = conexionBD.selectOne("sucursal.obtener-cp", envio.getCodigoSucursalOrigen());
+        String cpDestino = envio.getDestinoCodigoPostal();
+        
+        // Contar paquetes
+        Integer numeroPaquetes = conexionBD.selectOne("paquete.contar-por-envio", idEnvio);
+        if (numeroPaquetes == null || numeroPaquetes == 0) {
+            numeroPaquetes = 1;
+        }
+        
+        Double costo = calcularCostoEnvio(cpOrigen, cpDestino, numeroPaquetes);
+        if (costo == null || costo == 0.0) {
+            costo = calcularCostoPorDefecto(cpOrigen, cpDestino, numeroPaquetes);
+        }
+        
+        Map<String, Object> params = new HashMap<>();
+        params.put("idEnvio", idEnvio);
+        params.put("costoTotal", costo);
+        conexionBD.update("envio.actualizar-costo", params);
+        conexionBD.commit();
+        
+        respuesta.setError(false);
+        respuesta.setMensaje("Costo recalculado: $" + String.format("%.2f", costo));
+        
+    } catch (Exception e) {
+        conexionBD.rollback();
+        respuesta.setError(true);
+        respuesta.setMensaje("Error: " + e.getMessage());
+    } finally {
+        conexionBD.close();
+    }
+    return respuesta;
+}
 }

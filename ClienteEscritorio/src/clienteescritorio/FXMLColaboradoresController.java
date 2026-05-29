@@ -338,4 +338,34 @@ private void clicAsignarUnidad(ActionEvent event) {
     }
 }
 
+    @FXML
+    private void clicDesasignarUnidad(ActionEvent event) {
+        Colaborador seleccionado = tvColaboradores.getSelectionModel().getSelectedItem();
+
+        if (seleccionado == null) {
+            Utilidades.mostrarAlertaSimple("Selección requerida", 
+                "Debes seleccionar un colaborador", Alert.AlertType.WARNING);
+            return;
+        }
+
+        if (seleccionado.getIdUnidadAsignada() == null) {
+            Utilidades.mostrarAlertaSimple("Sin vehículo", 
+                "Este conductor no tiene ningún vehículo asignado", Alert.AlertType.WARNING);
+            return;
+        }
+
+        boolean confirmar = Utilidades.mostrarConfirmacion("Desasignar", 
+            "¿Estás seguro de desasignar el vehículo de " + seleccionado.getNombre() + "?");
+
+        if (confirmar) {
+            Respuesta resp = ColaboradorImp.desasignarVehiculo(seleccionado.getIdColaborador());
+            if (!resp.isError()) {
+                Utilidades.mostrarAlertaSimple("Éxito", resp.getMensaje(), Alert.AlertType.INFORMATION);
+                cargarDatos(); // refrescar tabla
+            } else {
+                Utilidades.mostrarAlertaSimple("Error", resp.getMensaje(), Alert.AlertType.ERROR);
+            }
+        }
+    }
+
 }

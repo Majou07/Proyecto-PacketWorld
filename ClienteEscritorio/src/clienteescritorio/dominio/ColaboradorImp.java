@@ -260,6 +260,18 @@ public class ColaboradorImp {
     return new Respuesta(true, "Error de comunicación");
 }
 
+ 
+ public static Respuesta desasignarVehiculo(int idColaborador) {
+    String url = Constantes.URL_WS + "colaborador/desasignar-unidad";
+    String params = "idColaborador=" + idColaborador;
+    
+    RespuestaHTTP respuestaAPI = ConexionAPI.peticionPUT(url, params);
+    
+    if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+        return new Gson().fromJson(respuestaAPI.getContenido(), Respuesta.class);
+    }
+    return new Respuesta(true, "Error al desasignar vehículo");
+}
 
 
 }

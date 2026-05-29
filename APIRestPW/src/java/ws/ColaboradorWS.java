@@ -155,15 +155,24 @@ public Response buscarPorNombre(@PathParam("filtro") String filtro) {
  
     
     
-@Path("asignar-unidad")
-@PUT
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-public Respuesta asignarUnidad(
-        @FormParam("idColaborador") int idColaborador,
-        @FormParam("idUnidad") Integer idUnidad) {
-    return ColaboradorImp.asignarUnidad(idColaborador, idUnidad);
-}
+    @Path("asignar-unidad")
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Respuesta asignarUnidad(
+            @FormParam("idColaborador") int idColaborador,
+            @FormParam("idUnidad") Integer idUnidad) {
+        return ColaboradorImp.asignarUnidad(idColaborador, idUnidad);
+    }
+    
+    @Path("desasignar-unidad")
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Respuesta desasignarUnidad(
+            @FormParam("idColaborador") int idColaborador) {
+        return ColaboradorImp.asignarUnidad(idColaborador, null);
+    }
 
 
 

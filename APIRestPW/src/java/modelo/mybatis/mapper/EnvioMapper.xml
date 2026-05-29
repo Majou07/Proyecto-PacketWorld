@@ -138,6 +138,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 </select>
 
+    <select id="obtener-todos-sin-costo" resultType="pojo.Envio">
+        SELECT id_envio AS idEnvio, 
+               codigo_sucursal_origen AS codigoSucursalOrigen,
+               destino_codigo_postal AS destinoCodigoPostal
+        FROM envio
+        WHERE costo_total = 0 OR costo_total IS NULL
+    </select>
+
     
     <insert id="registrar" parameterType="pojo.Envio" useGeneratedKeys="true" keyProperty="idEnvio">
         INSERT INTO envio (numero_guia, destinatario_nombre, destinatario_ap_paterno, destinatario_ap_materno,
@@ -178,6 +186,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             destino_ciudad = #{destinoCiudad}, 
             destino_estado = #{destinoEstado}
         WHERE id_envio = #{idEnvio}
+    </update>
+    
+    <update id="actualizar-costo" parameterType="map">
+        UPDATE envio SET costo_total = #{costoTotal} WHERE id_envio = #{idEnvio}
     </update>
     
     <delete id="eliminar-historial" parameterType="int">

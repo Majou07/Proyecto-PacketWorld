@@ -348,6 +348,35 @@ public class ColaboradorImp {
     }
 
     try {
+        if (idUnidad == null) {
+            Map<String, Object> params = new HashMap<>();
+            params.put("idColaborador", idColaborador);
+            params.put("idUnidad", null);
+            int filas = conexionBD.update("colaborador.desasignar-unidad", params);
+            conexionBD.commit();
+            
+            if (filas > 0) {
+                resp.setError(false);
+                resp.setMensaje("Vehículo desasignado correctamente");
+            } else {
+                resp.setError(true);
+                resp.setMensaje("No se pudo desasignar el vehículo");
+            }
+            return resp;
+        }
+
+        Map<String, Object> checkParams = new HashMap<>();
+        checkParams.put("idUnidad", idUnidad);
+        checkParams.put("idColaboradorActual", idColaborador);
+        
+        Integer idConductorActual = conexionBD.selectOne("colaborador.obtener-conductor-por-unidad", checkParams);
+        
+        if (idConductorActual != null && idConductorActual != idColaborador) {
+            resp.setError(true);
+            resp.setMensaje("La unidad ya está asignada a otro conductor. No puede asignarse a dos conductores.");
+            return resp;
+        }
+
         Map<String, Object> params = new HashMap<>();
         params.put("idColaborador", idColaborador);
         params.put("idUnidad", idUnidad);
@@ -363,19 +392,29 @@ public class ColaboradorImp {
             resp.setMensaje("No se encontró el colaborador o no se pudo asignar la unidad");
         }
     } catch (Exception e) {
+        conexionBD.rollback();
         resp.setError(true);
-
-        // Detectar violación de restricción única
         if (e.getMessage() != null && e.getMessage().contains("Duplicate entry")) {
-            resp.setMensaje("La unidad seleccionada ya está asignada a otro colaborador.");
+            resp.setMensaje("La unidad ya está asignada a otro colaborador.");
         } else {
             resp.setMensaje("Error al asignar unidad: " + e.getMessage());
         }
     } finally {
         conexionBD.close();
     }
-
     return resp;
+}
+
+// Método adicional para obtener conductor por unidad
+public static Integer obtenerConductorPorUnidad(int idUnidad) {
+    SqlSession conexionBD = MyBatisUtil.getSession();
+    try {
+        return conexionBD.selectOne("colaborador.obtener-conductor-por-unidad-simple", idUnidad);
+    } catch (Exception e) {
+        return null;
+    } finally {
+        conexionBD.close();
+    }
 }
 
 

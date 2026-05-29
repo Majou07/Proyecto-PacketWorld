@@ -37,6 +37,7 @@ public class FXMLEnviosController implements Initializable {
     @FXML private TableColumn<Envio, String> colDestino;
     @FXML private TableColumn<Envio, String> colConductor;
     @FXML private TableColumn<Envio, String> colEstado;
+    @FXML private TableColumn<Envio, Double> colCosto;
     
     @FXML private TableView<Paquete> tvPaquetes;
     @FXML private TableColumn<Paquete, String> colDescripcion;
@@ -71,6 +72,7 @@ public class FXMLEnviosController implements Initializable {
         colCliente.setCellValueFactory(new PropertyValueFactory<>("nombreCliente"));
         colOrigen.setCellValueFactory(new PropertyValueFactory<>("sucursalOrigen"));
         colEstado.setCellValueFactory(new PropertyValueFactory<>("estatusEnvio"));
+        colCosto.setCellValueFactory(new PropertyValueFactory<>("costoTotal"));
         
         // Paquetes
         colDestino.setCellValueFactory(cellData -> {
@@ -106,6 +108,10 @@ public class FXMLEnviosController implements Initializable {
         } else {
             Utilidades.mostrarAlertaSimple("Error", (String)respuesta.get("mensaje"), Alert.AlertType.ERROR);
         }
+    }
+
+    public void refrescarEnvios() {
+        cargarEnvios();
     }
     
     
@@ -158,6 +164,7 @@ public class FXMLEnviosController implements Initializable {
     @FXML 
     private void btnRegistrarEnvio(ActionEvent event) {
         irFormularioEnvio(null);
+        cargarEnvios(); 
     }
 
     @FXML 
@@ -165,6 +172,7 @@ public class FXMLEnviosController implements Initializable {
         Envio seleccionado = tvEnvios.getSelectionModel().getSelectedItem();
         if (seleccionado != null) {
             irFormularioEnvio(seleccionado);
+            cargarEnvios(); 
         }
     }
 
@@ -172,18 +180,15 @@ public class FXMLEnviosController implements Initializable {
     private void btnEliminarEnvio(ActionEvent event) {
         Envio seleccionado = tvEnvios.getSelectionModel().getSelectedItem();
         if (seleccionado != null) {
-            boolean confirmar = Utilidades.mostrarConfirmacion("Eliminar", "¿Deseas eliminar permanentemente el envío " + seleccionado.getNumeroGuia() + "?");
-            if (confirmar) {
+            if (Utilidades.mostrarConfirmacion("Eliminar", "¿Deseas eliminar permanentemente el envío?")) {
                 Respuesta resp = EnvioImp.eliminarEnvio(seleccionado.getIdEnvio());
                 if(!resp.isError()){
-                    Utilidades.mostrarAlertaSimple("Éxito", "Envío eliminado correctamente", Alert.AlertType.INFORMATION);
-                    cargarEnvios(); // Esto quita el registro de la vista
+                    Utilidades.mostrarAlertaSimple("Éxito", "Envío eliminado", Alert.AlertType.INFORMATION);
+                    cargarEnvios(); // Refrescar después de eliminar
                 } else {
                     Utilidades.mostrarAlertaSimple("Error", resp.getMensaje(), Alert.AlertType.ERROR);
                 }
             }
-        } else {
-            Utilidades.mostrarAlertaSimple("Selección", "Primero selecciona un envío.", Alert.AlertType.WARNING);
         }
     }
 
@@ -231,6 +236,26 @@ public class FXMLEnviosController implements Initializable {
         }
     }
     
+    
+    
+    @FXML
+    private void btnRecalcularTodosCostos(ActionEvent event) {
+        boolean confirmacion = Utilidades.mostrarAlertaConfirmacion("Recalcular", 
+            "¿Deseas recalcular los costos de todos los envíos?");
+
+        // Como mostrarAlertaConfirmacion devuelve boolean, lo manejamos así:
+        if (Utilidades.mostrarConfirmacion("Recalcular Costos", 
+            "¿Deseas recalcular los costos de todos los envíos?")) {
+
+            Respuesta resp = EnvioImp.recalcularTodosLosCostos();
+            if (!resp.isError()) {
+                Utilidades.mostrarAlertaSimple("Éxito", resp.getMensaje(), Alert.AlertType.INFORMATION);
+                cargarEnvios(); // Refrescar tabla
+            } else {
+                Utilidades.mostrarAlertaSimple("Error", resp.getMensaje(), Alert.AlertType.ERROR);
+            }
+        }
+    }
     
     private void irFormularioEnvio(Envio envio) {
         try {
@@ -348,4 +373,7 @@ public class FXMLEnviosController implements Initializable {
             ex.printStackTrace();
         }
     }
+    
+    
+    
 }
