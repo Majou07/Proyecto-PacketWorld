@@ -76,4 +76,59 @@ public class ClienteImp {
         }
         return new Respuesta(true, "Error de comunicación con el servidor");
     }
+    
+    public static HashMap<String, Object> buscarPorNombre(String valor) {
+    HashMap<String, Object> respuesta = new LinkedHashMap<>();
+    String url = Constantes.URL_WS + "cliente/buscar/nombre/" + valor.trim();
+    RespuestaHTTP respuestaAPI = ConexionAPI.peticionGET(url);
+
+    if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+        Gson gson = new Gson();
+        Type tipoLista = new TypeToken<List<Cliente>>(){}.getType();
+        List<Cliente> clientes = gson.fromJson(respuestaAPI.getContenido(), tipoLista);
+        respuesta.put(Constantes.KEY_ERROR, false);
+        respuesta.put("clientes", clientes);
+    } else {
+        respuesta.put(Constantes.KEY_ERROR, true);
+        respuesta.put(Constantes.KEY_MENSAJE, "Error al buscar clientes por nombre.");
+    }
+    return respuesta;
+}
+
+public static HashMap<String, Object> buscarPorTelefono(String valor) {
+    HashMap<String, Object> respuesta = new LinkedHashMap<>();
+    String url = Constantes.URL_WS + "cliente/buscar/telefono/" + valor.trim();
+    RespuestaHTTP respuestaAPI = ConexionAPI.peticionGET(url);
+
+    if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+        Gson gson = new Gson();
+        Type tipoLista = new TypeToken<List<Cliente>>(){}.getType();
+        List<Cliente> clientes = gson.fromJson(respuestaAPI.getContenido(), tipoLista);
+        respuesta.put(Constantes.KEY_ERROR, false);
+        respuesta.put("clientes", clientes);
+    } else {
+        respuesta.put(Constantes.KEY_ERROR, true);
+        respuesta.put(Constantes.KEY_MENSAJE, "Error al buscar clientes por teléfono.");
+    }
+    return respuesta;
+}
+
+    public static HashMap<String, Object> buscarPorCorreo(String valor) {
+    HashMap<String, Object> respuesta = new LinkedHashMap<>();
+    String url = Constantes.URL_WS + "cliente/buscar/correo/" + valor.trim();
+    RespuestaHTTP respuestaAPI = ConexionAPI.peticionGET(url);
+
+    if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
+        Gson gson = new Gson();
+        Type tipoLista = new TypeToken<List<Cliente>>(){}.getType();
+        List<Cliente> clientes = gson.fromJson(respuestaAPI.getContenido(), tipoLista);
+        respuesta.put(Constantes.KEY_ERROR, false);
+        respuesta.put("clientes", clientes);
+    } else {
+        respuesta.put(Constantes.KEY_ERROR, true);
+        respuesta.put(Constantes.KEY_MENSAJE, "Error al buscar clientes por correo.");
+    }
+    return respuesta;
+}
+
 }

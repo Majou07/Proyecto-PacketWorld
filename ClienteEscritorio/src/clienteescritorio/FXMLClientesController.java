@@ -132,5 +132,43 @@ public class FXMLClientesController implements Initializable {
 
     @FXML
     private void clicBuscar(ActionEvent event) {
+       String filtro = cbFiltro.getValue();       // "Nombre", "Teléfono" o "Correo"
+    String valor = tfBusqueda.getText().trim(); // texto ingresado en el campo
+
+    if (valor.isEmpty()) {
+        Utilidades.mostrarAlertaSimple("Búsqueda",
+                "Por favor ingresa un valor para buscar.",
+                Alert.AlertType.WARNING);
+        return;
     }
+
+    HashMap<String, Object> respuesta = null;
+
+    switch (filtro) {
+        case "Nombre":
+            respuesta = ClienteImp.buscarPorNombre(valor);
+            break;
+        case "Teléfono":
+            respuesta = ClienteImp.buscarPorTelefono(valor);
+            break;
+        case "Correo":
+            respuesta = ClienteImp.buscarPorCorreo(valor);
+            break;
+    }
+
+    if (respuesta != null && !(boolean) respuesta.get("error")) {
+        List<Cliente> lista = (List<Cliente>) respuesta.get("clientes");
+        tvClientes.setItems(FXCollections.observableArrayList(lista));
+
+        if (lista.isEmpty()) {
+            Utilidades.mostrarAlertaSimple("Sin resultados",
+                    "No se encontraron clientes con ese criterio.",
+                    Alert.AlertType.INFORMATION);
+        }
+    } else {
+        Utilidades.mostrarAlertaSimple("Error",
+                (respuesta != null ? (String) respuesta.get("mensaje") : "Error en la búsqueda"),
+                Alert.AlertType.ERROR);
+    }
+}
 }
