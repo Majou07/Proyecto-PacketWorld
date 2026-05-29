@@ -79,8 +79,29 @@ public class ClienteImp {
     
     public static HashMap<String, Object> buscarPorNombre(String valor) {
     HashMap<String, Object> respuesta = new LinkedHashMap<>();
-    String url = Constantes.URL_WS + "cliente/buscar/nombre/" + valor.trim();
+    
+    // Codificar el valor para evitar problemas con espacios en la URL
+    String valorCodificado;
+   try {
+    valorCodificado = java.net.URLEncoder.encode(valor.trim(), "UTF-8");
+    // Reemplazar '+' por '%20' para que sea igual que Postman
+    valorCodificado = valorCodificado.replace("+", "%20");
+    } catch (Exception e) {
+    valorCodificado = valor.trim(); // fallback
+    }
+
+    String url = Constantes.URL_WS + "cliente/buscar/nombre/" + valorCodificado;
+
+    // Depuración: imprime lo que se envía desde el cliente
+    System.out.println("Cliente Escritorio - Valor enviado en búsqueda: [" + valor.trim() + "]");
+    System.out.println("Cliente Escritorio - Valor codificado: [" + valorCodificado + "]");
+    System.out.println("Cliente Escritorio - URL construida: " + url);
+
     RespuestaHTTP respuestaAPI = ConexionAPI.peticionGET(url);
+
+    // Depuración: imprime lo que se recibe del servidor
+    System.out.println("Cliente Escritorio - Código HTTP: " + respuestaAPI.getCodigo());
+    System.out.println("Cliente Escritorio - Contenido recibido: " + respuestaAPI.getContenido());
 
     if (respuestaAPI.getCodigo() == HttpURLConnection.HTTP_OK) {
         Gson gson = new Gson();
@@ -94,6 +115,7 @@ public class ClienteImp {
     }
     return respuesta;
 }
+
 
 public static HashMap<String, Object> buscarPorTelefono(String valor) {
     HashMap<String, Object> respuesta = new LinkedHashMap<>();

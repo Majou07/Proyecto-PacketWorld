@@ -78,6 +78,8 @@ public class ClienteImp {
     SqlSession conexion = MyBatisUtil.getSession();
     if (conexion != null) {
         try {
+            // Depuración: imprime lo que recibe el servidor
+            System.out.println("API - Valor recibido en búsqueda: [" + valor + "]");
             lista = conexion.selectList("cliente.buscarPorNombre", valor);
         } catch (Exception e) {
             e.printStackTrace();

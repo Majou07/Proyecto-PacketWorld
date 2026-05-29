@@ -23,8 +23,9 @@ import javafx.stage.Stage;
 
 public class FXMLClientesController implements Initializable {
     @FXML private TableView<Cliente> tvClientes;
-    @FXML private TableColumn colNombre, colTelefono, colCorreo, colCP;
+    @FXML private TableColumn  colTelefono, colCorreo, colCP;
     @FXML private TableColumn<Cliente, String> colDireccion;
+    @FXML private TableColumn<Cliente, String> colNombre;
     @FXML private TextField tfBusqueda;
     @FXML
     private Button btBusqueda;
@@ -44,19 +45,28 @@ public class FXMLClientesController implements Initializable {
     
 
     private void configurarTabla() {
-        colNombre.setCellValueFactory(new PropertyValueFactory("nombre"));
-        colTelefono.setCellValueFactory(new PropertyValueFactory("telefono"));
-        colCorreo.setCellValueFactory(new PropertyValueFactory("correoElectronico"));
-        colCP.setCellValueFactory(new PropertyValueFactory("codigoPostal"));
-        colDireccion.setCellValueFactory(cellData -> {
+    // Nombre completo
+    colNombre.setCellValueFactory(cellData -> {
         Cliente c = cellData.getValue();
+        String nombreCompleto =
+                (c.getNombre() != null ? c.getNombre() : "") + " " +
+                (c.getApellidoPaterno() != null ? c.getApellidoPaterno() : "") + " " +
+                (c.getApellidoMaterno() != null ? c.getApellidoMaterno() : "");
+        return new javafx.beans.property.SimpleStringProperty(nombreCompleto.trim());
+    });
 
+    colTelefono.setCellValueFactory(new PropertyValueFactory<>("telefono"));
+    colCorreo.setCellValueFactory(new PropertyValueFactory<>("correoElectronico"));
+    colCP.setCellValueFactory(new PropertyValueFactory<>("codigoPostal"));
+
+    // Dirección completa
+    colDireccion.setCellValueFactory(cellData -> {
+        Cliente c = cellData.getValue();
         String direccion =
                 (c.getCalle() != null ? c.getCalle() : "") + " " +
                 (c.getNumero() != null ? c.getNumero() : "") + ", " +
                 (c.getColonia() != null ? c.getColonia() : "");
-
-        return new javafx.beans.property.SimpleStringProperty(direccion);
+        return new javafx.beans.property.SimpleStringProperty(direccion.trim());
     });
 }
 
@@ -132,13 +142,12 @@ public class FXMLClientesController implements Initializable {
 
     @FXML
     private void clicBuscar(ActionEvent event) {
-       String filtro = cbFiltro.getValue();       // "Nombre", "Teléfono" o "Correo"
+    String filtro = cbFiltro.getValue();       // "Nombre", "Teléfono" o "Correo"
     String valor = tfBusqueda.getText().trim(); // texto ingresado en el campo
 
     if (valor.isEmpty()) {
-        Utilidades.mostrarAlertaSimple("Búsqueda",
-                "Por favor ingresa un valor para buscar.",
-                Alert.AlertType.WARNING);
+        // Si no hay texto, recargamos todos los clientes
+        cargarDatos();
         return;
     }
 
