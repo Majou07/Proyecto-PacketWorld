@@ -143,54 +143,41 @@ public class FXMLFormularioColaboradorController implements Initializable {
     }
 
     public void inicializarValores(Colaborador colaborador) {
+    this.colaboradorEdicion = colaborador;
 
-        this.colaboradorEdicion = colaborador;
+    if (colaborador != null) {
+        lbTitulo.setText("Actualizar Colaborador");
 
-        if (colaborador != null) {
-            
+        tfNombre.setText(colaborador.getNombre());
+        tfPaterno.setText(colaborador.getApellidoPaterno());
+        tfMaterno.setText(colaborador.getApellidoMaterno());
+        tfCurp.setText(colaborador.getCurp());
+        tfCorreo.setText(colaborador.getCorreoElectronico());
+        tfNoPersonal.setText(colaborador.getNumeroPersonal());
+        // Mostrar longitud de la contraseña con asteriscos
+        if (colaborador.getContrasena() != null) {
+        int longitud = colaborador.getContrasena().length();
+        String oculto = new String(new char[longitud]).replace("\0", "*");
+        pfContrasena.setText(oculto);
+    }
 
-            lbTitulo.setText("Actualizar Colaborador");
+        // Bloquear campos que no deben editarse
+        tfNoPersonal.setDisable(true);
+        cbRol.setDisable(true);
 
-            tfNombre.setText(colaborador.getNombre());
-            tfPaterno.setText(colaborador.getApellidoPaterno());
-            tfMaterno.setText(colaborador.getApellidoMaterno());
-            tfCurp.setText(colaborador.getCurp());
-            tfCorreo.setText(colaborador.getCorreoElectronico());
-            tfNoPersonal.setText(colaborador.getNumeroPersonal());
-            pfContrasena.setText(colaborador.getContrasena());
-
-            seleccionarRol(colaborador.getIdRol());
-            seleccionarSucursal(colaborador.getCodigoSucursal());
-            
-            // Hints
-            tfCurp.setPromptText("18 caracteres");
-            tfCorreo.setPromptText("ejemplo@correo.com");
-            tfNoPersonal.setPromptText("EMP001");
-            pfContrasena.setPromptText("Mínimo 8 caracteres");
-            tfNumeroLicencia.setPromptText("LIC123456");
-            
-            //Bloquear campos que no deben editarse
-            tfNoPersonal.setDisable(true);
-            cbRol.setDisable(true);
-
-             // Validación conductor
-        boolean esConductor = cbRol.getValue() != null
-                && cbRol.getValue()
-                        .getNombreRol()
-                        .equalsIgnoreCase(Constantes.ROL_CONDUCTOR);
+        // Validación conductor
+        boolean esConductor = colaborador.getIdRol() != 0
+                && Constantes.ROL_CONDUCTOR.equalsIgnoreCase(colaborador.getRol());
 
         tfNumeroLicencia.setDisable(!esConductor);
 
         if (esConductor) {
-
             tfNumeroLicencia.setText(
-                    colaborador.getNumeroLicencia() != null
-                    ? colaborador.getNumeroLicencia()
-                    : ""
+                colaborador.getNumeroLicencia() != null
+                ? colaborador.getNumeroLicencia()
+                : ""
             );
-
         } else {
-
             tfNumeroLicencia.clear();
         }
 
@@ -202,60 +189,62 @@ public class FXMLFormularioColaboradorController implements Initializable {
     }
 }
 
-    private void cargarRoles() {
-
+   private void cargarRoles() {
     Task<List<Rol>> task = new Task<List<Rol>>() {
         @Override
         protected List<Rol> call() {
             HashMap<String, Object> respuesta = ColaboradorImp.obtenerRoles();
-
             if ((boolean) respuesta.get(Constantes.KEY_ERROR)) {
                 return null;
             }
-
             return (List<Rol>) respuesta.get("roles");
         }
     };
 
     task.setOnSucceeded(e -> {
         List<Rol> lista = task.getValue();
-
         if (lista != null) {
             roles = FXCollections.observableArrayList(lista);
             cbRol.setItems(roles);
+
+            // Si estamos editando, seleccionar el rol
+            if (colaboradorEdicion != null) {
+                seleccionarRol(colaboradorEdicion.getIdRol());
+            }
         }
     });
 
     new Thread(task).start();
 }
 
-    private void cargarSucursales() {
-
+private void cargarSucursales() {
     Task<List<Sucursal>> task = new Task<List<Sucursal>>() {
         @Override
         protected List<Sucursal> call() {
-
             HashMap<String, Object> respuesta = SucursalImp.obtenerSucursales();
-
             if ((boolean) respuesta.get(Constantes.KEY_ERROR)) {
                 return null;
             }
-
             return (List<Sucursal>) respuesta.get("sucursales");
         }
     };
 
     task.setOnSucceeded(e -> {
         List<Sucursal> lista = task.getValue();
-
         if (lista != null) {
             sucursales = FXCollections.observableArrayList(lista);
             cbSucursal.setItems(sucursales);
+
+            // Si estamos editando, seleccionar la sucursal
+            if (colaboradorEdicion != null) {
+                seleccionarSucursal(colaboradorEdicion.getCodigoSucursal());
+            }
         }
     });
 
     new Thread(task).start();
 }
+
 
     @FXML
     private void clicSubirFoto(ActionEvent event) {
