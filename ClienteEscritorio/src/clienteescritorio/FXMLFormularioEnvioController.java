@@ -29,7 +29,6 @@ public class FXMLFormularioEnvioController implements Initializable {
     @FXML private TextField tfApMaternoDest;
     @FXML private TextField tfNumero;
     @FXML private TextField tfCalle;
-    @FXML private TextField tfColonia;
     @FXML private TextField tfCiudad;
     @FXML private TextField tfCP;
     @FXML private TextField tfEstado;
@@ -38,6 +37,8 @@ public class FXMLFormularioEnvioController implements Initializable {
     
     @FXML private Label lbErrorNombre, lbErrorApPaterno, lbErrorApMaterno, lbErrorNumero, lbErrorCP, 
             lbErrorCliente, lbErrorSucursal, lbErrorCalle, lbErrorColonia;
+    @FXML
+    private ComboBox<String> cbColonia;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -89,7 +90,12 @@ public class FXMLFormularioEnvioController implements Initializable {
                     
                     tfCiudad.setText(primera.getCiudad());
                     tfEstado.setText(primera.getEstado());
-                    tfColonia.setText(primera.getColonia()); 
+                    cbColonia.getItems().clear();
+                    
+                    for (Direccion d : direcciones) {
+                        cbColonia.getItems().add(d.getColonia());
+                    }
+                    cbColonia.getSelectionModel().selectFirst();
                     
                     tfCP.setStyle("-fx-border-color: green;");
                 } else {
@@ -108,7 +114,9 @@ public class FXMLFormularioEnvioController implements Initializable {
         tfCP.setStyle("-fx-border-color: red;");
         tfCiudad.setText("");
         tfEstado.setText("");
-        tfColonia.setText("");
+        
+        cbColonia.getItems().clear();
+        cbColonia.getSelectionModel().clearSelection();
     }
     
      
@@ -124,7 +132,7 @@ public class FXMLFormularioEnvioController implements Initializable {
             envio.setDestinatarioApMaterno(tfApMaternoDest.getText());
             envio.setDestinoCalle(tfCalle.getText());
             envio.setDestinoNumero(tfNumero.getText());
-            envio.setDestinoColonia(tfColonia.getText());
+            envio.setDestinoColonia(cbColonia.getValue());
             envio.setDestinoCodigoPostal(tfCP.getText());
             envio.setDestinoCiudad(tfCiudad.getText());
             envio.setDestinoEstado(tfEstado.getText());
@@ -148,11 +156,31 @@ public class FXMLFormularioEnvioController implements Initializable {
         valido &= revisarVacio(tfApPaternoDest, lbErrorApPaterno);
         valido &= revisarVacio(tfNumero, lbErrorNumero);
         valido &= revisarVacio(tfCalle, lbErrorCalle);
-        valido &= revisarVacio(tfColonia, lbErrorColonia);
         valido &= revisarVacio(tfCP, lbErrorCP);
         
-        if (cbCliente.getValue() == null) { lbErrorCliente.setVisible(true); valido = false; }
-        if (cbSucursal.getValue() == null) { lbErrorSucursal.setVisible(true); valido = false; }
+        if (cbCliente.getValue() == null) {
+        lbErrorCliente.setText("Este campo es obligatorio");
+        lbErrorCliente.setVisible(true);
+        valido = false;
+    } else {
+        lbErrorCliente.setVisible(false);
+    }
+
+    if (cbSucursal.getValue() == null) {
+        lbErrorSucursal.setText("Este campo es obligatorio");
+        lbErrorSucursal.setVisible(true);
+        valido = false;
+    } else {
+        lbErrorSucursal.setVisible(false);
+    }
+
+    if (cbColonia.getValue() == null || cbColonia.getValue().trim().isEmpty()) {
+        lbErrorColonia.setText("Este campo es obligatorio");
+        lbErrorColonia.setVisible(true);
+        valido = false;
+    } else {
+        lbErrorColonia.setVisible(false);
+    }
         
         return valido;
     }
@@ -192,15 +220,31 @@ public class FXMLFormularioEnvioController implements Initializable {
     public void prepararFormulario(Envio envio) {
         this.envioEdicion = envio;
         this.esEdicion = true;
+        
         tfNombreDest.setText(envio.getDestinatarioNombre());
         tfApPaternoDest.setText(envio.getDestinatarioApPaterno());
         tfApMaternoDest.setText(envio.getDestinatarioApMaterno());
         tfCalle.setText(envio.getDestinoCalle());
         tfNumero.setText(envio.getDestinoNumero());
-        tfColonia.setText(envio.getDestinoColonia());
+        cbColonia.getItems().clear();
+        cbColonia.getItems().add(envio.getDestinoColonia());
+        cbColonia.getSelectionModel().select(envio.getDestinoColonia());
         tfCP.setText(envio.getDestinoCodigoPostal());
         tfCiudad.setText(envio.getDestinoCiudad());
         tfEstado.setText(envio.getDestinoEstado());
+        
+        for (Cliente c : cbCliente.getItems()) {
+        if (c.getIdCliente() == envio.getIdClienteRemitente()) {
+            cbCliente.getSelectionModel().select(c);
+            break;
+        }
+    }
+        for (Sucursal s : cbSucursal.getItems()) {
+        if (s.getCodigoSucursal().equals(envio.getCodigoSucursalOrigen())) {
+            cbSucursal.getSelectionModel().select(s);
+            break;
+        }
+    }
     }
   
 

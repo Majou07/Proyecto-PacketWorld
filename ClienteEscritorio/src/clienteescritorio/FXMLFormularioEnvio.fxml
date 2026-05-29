@@ -73,7 +73,7 @@
             <VBox spacing="2.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                <children>
                   <Label text="Colonia *" />
-                  <TextField fx:id="tfColonia" />
+                  <ComboBox fx:id="cbColonia" />
                   <Label fx:id="lbErrorColonia" text="Requerido" textFill="RED" visible="false" />
                </children>
             </VBox>
