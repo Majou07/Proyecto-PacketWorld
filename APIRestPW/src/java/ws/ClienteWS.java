@@ -37,12 +37,31 @@ public class ClienteWS {
         return ClienteImp.eliminar(idCliente);
     }
     
-  @Path("buscar")
-@GET
-@Produces(MediaType.APPLICATION_JSON)
-public List<Cliente> buscar(
-        @QueryParam("valor") String valor) {
+    @Path("buscar/nombre/{valor}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Cliente> buscarPorNombre(@PathParam("valor") String valor) {
+        return ClienteImp.buscarPorNombre(valor);
+    }
 
-    return ClienteImp.buscarClientes(valor);
-}    
+    // =========================
+    // BUSCAR POR TELEFONO
+    // =========================
+    @Path("buscar/telefono/{valor}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Cliente> buscarPorTelefono(@PathParam("valor") String valor) {
+        return ClienteImp.buscarPorTelefono(valor);
+    }
+
+    // =========================
+    // BUSCAR POR CORREO
+    // =========================
+    @Path("buscar/correo/{valor}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Cliente> buscarPorCorreo(@PathParam("valor") String valor) {
+        return ClienteImp.buscarPorCorreo(valor);
+    }
+  
 }

@@ -1,5 +1,6 @@
 package dominio;
 import dto.Respuesta;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,29 +73,52 @@ public class ClienteImp {
         }
         return resp;
     }
-    
-    public static List<Cliente> buscarClientes(String valor) {
-
-    List<Cliente> lista = null;
-    SqlSession session = MyBatisUtil.getSession();
-
-    if (session != null) {
+    public static List<Cliente> buscarPorNombre(String valor) {
+    List<Cliente> lista = new ArrayList<>();
+    SqlSession conexion = MyBatisUtil.getSession();
+    if (conexion != null) {
         try {
+            lista = conexion.selectList("cliente.buscarPorNombre", valor);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            conexion.close();
+        }
+    }
+    return lista != null ? lista : new ArrayList<>();
+}
 
-            HashMap<String, String> parametros = new HashMap<>();
-            parametros.put("valor", valor);
-
-            lista = session.selectList("cliente.buscarClientes", parametros);
+public static List<Cliente> buscarPorTelefono(String valor) {
+    List<Cliente> lista = new ArrayList<>();
+    SqlSession conexion = MyBatisUtil.getSession();
+    if (conexion != null) {
+        try {
+            lista = conexion.selectList("cliente.buscarPorTelefono", valor);
+            System.out.println("Valor recibido en búsqueda: [" + valor + "]");
 
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            session.close();
+            conexion.close();
         }
     }
-
-    return lista;
+    return lista != null ? lista : new ArrayList<>();
 }
-    
-    
+
+public static List<Cliente> buscarPorCorreo(String valor) {
+    List<Cliente> lista = new ArrayList<>();
+    SqlSession conexion = MyBatisUtil.getSession();
+    if (conexion != null) {
+        try {
+            lista = conexion.selectList("cliente.buscarPorCorreo", valor);
+            System.out.println("Valor recibido en búsqueda: [" + valor + "]");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            conexion.close();
+        }
+    }
+    return lista != null ? lista : new ArrayList<>();
+}
 }

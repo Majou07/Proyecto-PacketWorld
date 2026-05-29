@@ -8,7 +8,11 @@
         FROM cliente
     </select>
     
-    <select id="buscarClientes" parameterType="map" resultType="pojo.Cliente">
+    <!-- BUSCAR POR NOMBRE -->
+    <select id="buscarPorNombre"
+            parameterType="string"
+            resultType="pojo.Cliente">
+
         SELECT id_cliente AS idCliente,
                nombre,
                apellido_paterno AS apellidoPaterno,
@@ -20,14 +24,53 @@
                telefono,
                correo_electronico AS correoElectronico
         FROM cliente
-        WHERE
-            CONCAT(nombre, ' ', apellido_paterno, ' ', apellido_materno)
-            LIKE CONCAT('%', #{busqueda}, '%')
-            OR telefono LIKE CONCAT('%', #{busqueda}, '%')
-            OR correo_electronico LIKE CONCAT('%', #{busqueda}, '%')
+        WHERE CONCAT(nombre, ' ', apellido_paterno, ' ', apellido_materno)
+              LIKE CONCAT('%', #{valor}, '%')
+
     </select>
-    
-    
+
+
+    <!-- BUSCAR POR TELEFONO -->
+    <select id="buscarPorTelefono"
+            parameterType="string"
+            resultType="pojo.Cliente">
+
+        SELECT id_cliente AS idCliente,
+               nombre,
+               apellido_paterno AS apellidoPaterno,
+               apellido_materno AS apellidoMaterno,
+               calle,
+               numero,
+               colonia,
+               codigo_postal AS codigoPostal,
+               telefono,
+               correo_electronico AS correoElectronico
+        FROM cliente
+        WHERE telefono LIKE CONCAT('%', #{valor}, '%')
+
+    </select>
+
+
+    <!-- BUSCAR POR CORREO -->
+    <select id="buscarPorCorreo"
+            parameterType="string"
+            resultType="pojo.Cliente">
+
+        SELECT id_cliente AS idCliente,
+               nombre,
+               apellido_paterno AS apellidoPaterno,
+               apellido_materno AS apellidoMaterno,
+               calle,
+               numero,
+               colonia,
+               codigo_postal AS codigoPostal,
+               telefono,
+               correo_electronico AS correoElectronico
+        FROM cliente
+        WHERE correo_electronico LIKE CONCAT('%', #{valor}, '%')
+
+    </select>
+
 
     <insert id="registrar" parameterType="pojo.Cliente">
         INSERT INTO cliente (nombre, apellido_paterno, apellido_materno, calle, numero, colonia, codigo_postal, telefono, correo_electronico)
